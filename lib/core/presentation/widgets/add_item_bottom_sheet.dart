@@ -38,8 +38,10 @@ class AddItemBottomSheet extends StatelessWidget {
           subtitle: Text(
             S.of(context).activityExample,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7)),
           ),
           // ignore: sized_box_for_whitespace
           leading: Container(
@@ -50,6 +52,33 @@ class AddItemBottomSheet extends StatelessWidget {
               )),
           onTap: () {
             _showAddActivityScreen(context);
+          },
+        ),
+        ListTile(
+          title: Text(
+            "Repas", // TODO replace with S.of(context).mealLabel
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
+          ),
+          subtitle: Text(
+            "créer un repas", // TODO replace with S.of(context).mealExample
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7)),
+          ),
+          // ignore: sized_box_for_whitespace
+          leading: Container(
+              height: double.infinity,
+              child: Icon(
+                IntakeTypeEntity.breakfast.getIconData(),
+                color: Theme.of(context).colorScheme.onSurface,
+              )),
+          onTap: () {
+            _showAddMealCreationScreen(context);
           },
         ),
         const Divider(indent: 16, endIndent: 16),
@@ -64,8 +93,10 @@ class AddItemBottomSheet extends StatelessWidget {
           subtitle: Text(
             S.of(context).breakfastExample,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7)),
           ),
           // ignore: sized_box_for_whitespace
           leading: Container(
@@ -86,8 +117,10 @@ class AddItemBottomSheet extends StatelessWidget {
           subtitle: Text(
             S.of(context).lunchExample,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7)),
           ),
           // ignore: sized_box_for_whitespace
           leading: Container(
@@ -108,8 +141,10 @@ class AddItemBottomSheet extends StatelessWidget {
           subtitle: Text(
             S.of(context).dinnerExample,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7)),
           ),
           // ignore: sized_box_for_whitespace
           leading: Container(
@@ -130,8 +165,10 @@ class AddItemBottomSheet extends StatelessWidget {
           subtitle: Text(
             S.of(context).snackExample,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color:
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7)),
           ),
           // ignore: sized_box_for_whitespace
           leading: Container(
@@ -158,5 +195,12 @@ class AddItemBottomSheet extends StatelessWidget {
     Navigator.of(context).pop();
     Navigator.of(context).pushNamed(NavigationOptions.addActivityRoute,
         arguments: AddActivityScreenArguments(day: day));
+  }
+
+  void _showAddMealCreationScreen(BuildContext context) {
+    Navigator.of(context).pop();
+    Navigator.of(context).pushNamed(
+      NavigationOptions.createMealRoute,
+    );
   }
 }
