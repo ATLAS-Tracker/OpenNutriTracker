@@ -45,9 +45,10 @@ class IntakeCard extends StatelessWidget {
                   : null,
               child: Stack(
                 children: [
-                  intake.meal.mainImageUrl != null
+                  intake.meal.mainImageUrl != null &&
+                          intake.meal.mealOrRecipe != "recipe"
                       ? CachedNetworkImage(
-                          cacheManager: locator<CacheManager>(),
+                          cacheManager: locator<CacheManager>(), // todo
                           imageUrl: intake.meal.mainImageUrl ?? "",
                           imageBuilder: (context, imageProvider) => Container(
                             decoration: BoxDecoration(
@@ -65,7 +66,8 @@ class IntakeCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Theme.of(context)
                           .colorScheme
-                          .secondaryContainer.withValues(alpha: 0.5),
+                          .secondaryContainer
+                          .withValues(alpha: 0.5),
                     ),
                   ),
                   Container(
@@ -74,7 +76,8 @@ class IntakeCard extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: Theme.of(context)
                             .colorScheme
-                            .tertiaryContainer.withValues(alpha: 0.8),
+                            .tertiaryContainer
+                            .withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(20)),
                     child: Text(
                       '${intake.totalKcal.toInt()} kcal',
@@ -114,8 +117,8 @@ class IntakeCard extends StatelessWidget {
                                 ?.copyWith(
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .onSecondaryContainer.withValues(
-                                            alpha: 0.7)),
+                                        .onSecondaryContainer
+                                        .withValues(alpha: 0.7)),
                           ),
                         ],
                       ))
