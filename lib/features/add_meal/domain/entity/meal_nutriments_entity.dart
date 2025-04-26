@@ -15,6 +15,7 @@ class MealNutrimentsEntity extends Equatable {
   final double? sugars100;
   final double? saturatedFat100;
   final double? fiber100;
+  final String? mealOrRecipe;
 
   double? get energyPerUnit => _getValuePerUnit(energyKcal100);
 
@@ -31,7 +32,8 @@ class MealNutrimentsEntity extends Equatable {
       required this.proteins100,
       required this.sugars100,
       required this.saturatedFat100,
-      required this.fiber100});
+      required this.fiber100,
+      required this.mealOrRecipe});
 
   factory MealNutrimentsEntity.empty() => const MealNutrimentsEntity(
       energyKcal100: null,
@@ -40,7 +42,8 @@ class MealNutrimentsEntity extends Equatable {
       proteins100: null,
       sugars100: null,
       saturatedFat100: null,
-      fiber100: null);
+      fiber100: null,
+      mealOrRecipe: "meal");
 
   factory MealNutrimentsEntity.fromMealNutrimentsDBO(
       MealNutrimentsDBO nutriments) {
@@ -51,7 +54,8 @@ class MealNutrimentsEntity extends Equatable {
         proteins100: nutriments.proteins100,
         sugars100: nutriments.sugars100,
         saturatedFat100: nutriments.saturatedFat100,
-        fiber100: nutriments.fiber100);
+        fiber100: nutriments.fiber100,
+        mealOrRecipe: nutriments.mealOrRecipe);
   }
 
   factory MealNutrimentsEntity.fromOffNutriments(
@@ -69,7 +73,8 @@ class MealNutrimentsEntity extends Equatable {
         sugars100: (offNutriments.sugars_100g as Object?).asDoubleOrNull(),
         saturatedFat100:
             (offNutriments.saturated_fat_100g as Object?).asDoubleOrNull(),
-        fiber100: (offNutriments.fiber_100g as Object?).asDoubleOrNull());
+        fiber100: (offNutriments.fiber_100g as Object?).asDoubleOrNull(),
+        mealOrRecipe: "meal");
   }
 
   factory MealNutrimentsEntity.fromFDCNutriments(
@@ -126,11 +131,14 @@ class MealNutrimentsEntity extends Equatable {
         proteins100: proteinsTotal,
         sugars100: sugarTotal,
         saturatedFat100: saturatedFatTotal,
-        fiber100: fiberTotal);
+        fiber100: fiberTotal,
+        mealOrRecipe: "meal");
   }
 
-  static double? _getValuePerUnit(double? valuePer100) {
-    if (valuePer100 != null) {
+  double? _getValuePerUnit(double? valuePer100) {
+    if (mealOrRecipe == "recipe" && valuePer100 != null) {
+      return valuePer100;
+    } else if (valuePer100 != null) {
       return valuePer100 / 100;
     } else {
       return null;
