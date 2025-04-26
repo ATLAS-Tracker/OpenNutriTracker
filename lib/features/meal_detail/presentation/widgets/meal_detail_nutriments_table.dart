@@ -26,8 +26,9 @@ class MealDetailNutrimentsTable extends StatelessWidget {
             ?.copyWith(fontWeight: FontWeight.bold) ??
         const TextStyle();
 
-    final headerText = usesImperialUnits && servingQuantity != null
-        ? "${S.of(context).perServingLabel} (${servingQuantity!.roundToPrecision(1)}${servingUnit ?? 'g/ml'})"
+    final headerText = (usesImperialUnits && servingQuantity != null) ||
+            product.mealOrRecipe == "recipe"
+        ? "${S.of(context).perServingLabel} (${servingQuantity!.roundToPrecision(1)} ${servingUnit ?? 'g/ml'})"
         : S.of(context).per100gmlLabel;
 
     return Column(

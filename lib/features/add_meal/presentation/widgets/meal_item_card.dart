@@ -35,24 +35,35 @@ class MealItemCard extends StatelessWidget {
           height: 100,
           child: Center(
               child: ListTile(
-            leading: mealEntity.thumbnailImageUrl != null
+            leading: mealEntity.mealOrRecipe == "recipe"
                 ? ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: CachedNetworkImage(
-                      cacheManager: locator<CacheManager>(),
-                      fit: BoxFit.cover,
-                      width: 60,
-                      height: 60,
-                      imageUrl: mealEntity.thumbnailImageUrl ?? "",
-                    ))
-                : ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
                         width: 60,
                         height: 60,
                         color: Theme.of(context).colorScheme.secondaryContainer,
                         child: const Icon(Icons.restaurant_outlined)),
-                  ),
+                  )
+                : mealEntity.thumbnailImageUrl != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: CachedNetworkImage(
+                          cacheManager: locator<CacheManager>(),
+                          fit: BoxFit.cover,
+                          width: 60,
+                          height: 60,
+                          imageUrl: mealEntity.thumbnailImageUrl ?? "",
+                        ))
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                            width: 60,
+                            height: 60,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer,
+                            child: const Icon(Icons.restaurant_outlined)),
+                      ),
             title: AutoSizeText.rich(
                 TextSpan(
                     text: mealEntity.name ?? "?",

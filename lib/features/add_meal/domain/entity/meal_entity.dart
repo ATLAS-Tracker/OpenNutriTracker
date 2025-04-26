@@ -145,6 +145,10 @@ class MealEntity extends Equatable {
         source: MealSourceEntity.fdc);
   }
 
+  String? get mealOrRecipe {
+    return nutriments.mealOrRecipe;
+  }
+
   /// Value returned from OFF can either be String, int or double.
   /// Try casting it to a double value for calculation
   static double? _tryQuantityCast(dynamic value) {
