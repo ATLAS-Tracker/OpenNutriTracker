@@ -9,6 +9,7 @@ import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dar
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
 import 'package:opennutritracker/generated/l10n.dart';
+import 'package:opennutritracker/features/create_meal/presentation/bloc/create_meal_bloc.dart';
 
 class MealDetailBottomSheet extends StatelessWidget {
   final MealEntity product;
@@ -123,7 +124,7 @@ class MealDetailBottomSheet extends StatelessWidget {
                             ).copyWith(
                                 elevation: ButtonStyleButton.allOrNull(0.0)),
                             icon: const Icon(Icons.add_outlined),
-                            label: Text(S.of(context).addLabel)),
+                            label: Text("JENNNN")),
                       ),
                       productMissingRequiredInfo
                           ? Text(S.of(context).missingProductInfo,
@@ -156,26 +157,39 @@ class MealDetailBottomSheet extends StatelessWidget {
   }
 
   void onAddButtonPressed(BuildContext context) {
-    mealDetailBloc.addIntake(
-        context,
-        mealDetailBloc.state.selectedUnit,
-        mealDetailBloc.state.totalQuantityConverted,
-        intakeTypeEntity,
-        product,
-        day);
+    late final CreateMealBloc _createMealBloc = locator<CreateMealBloc>();
 
-    // Refresh Home Page
-    locator<HomeBloc>().add(const LoadItemsEvent());
+    if (_createMealBloc.state.isOnCreateMealScreen) {
+      _createMealBloc.addIntake(
+          mealDetailBloc.state.selectedUnit,
+          mealDetailBloc.state.totalQuantityConverted,
+          intakeTypeEntity,
+          product,
+          day);
+    } else {
+      mealDetailBloc.addIntake(
+          context,
+          mealDetailBloc.state.selectedUnit,
+          mealDetailBloc.state.totalQuantityConverted,
+          intakeTypeEntity,
+          product,
+          day);
 
-    // Refresh Diary Page
-    locator<DiaryBloc>().add(const LoadDiaryYearEvent());
-    locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
+      // ici
+
+      // Refresh Home Page
+      locator<HomeBloc>().add(const LoadItemsEvent());
+
+      // Refresh Diary Page
+      locator<DiaryBloc>().add(const LoadDiaryYearEvent());
+      locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
+    }
 
     // Show snackbar and return to dashboard
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(S.of(context).infoAddedIntakeLabel)));
-    Navigator.of(context)
-        .popUntil(ModalRoute.withName(NavigationOptions.mainRoute));
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
 
   DropdownMenuItem<String> _getServingDropdownItem(BuildContext context) {
