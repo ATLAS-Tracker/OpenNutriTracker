@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/intake_vertical_list.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
+import 'package:opennutritracker/core/presentation/widgets/edit_dialog.dart';
 
 class MealCreationScreen extends StatefulWidget {
   const MealCreationScreen({super.key});
@@ -87,7 +88,18 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
 
   void onIntakeItemTapped(BuildContext context, IntakeEntity intakeEntity,
       bool usesImperialUnits) async {
-    // TODO
+    final changeIntakeAmount = await showDialog<double>(
+      context: context,
+      builder: (context) => EditDialog(
+        intakeEntity: intakeEntity,
+        usesImperialUnits: usesImperialUnits,
+      ),
+    );
+
+    if (changeIntakeAmount != null) {
+      locator<CreateMealBloc>()
+          .updateIntakeAmount(intakeEntity.id, changeIntakeAmount);
+    }
   }
 
   void _showAddItemScreen(
