@@ -42,6 +42,11 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
     emit(state.copyWith(intakeList: List.from(_intakeList)));
   }
 
+  void removeIntake(String intakeId) {
+    _intakeList.removeWhere((intake) => intake.id == intakeId);
+    emit(state.copyWith(intakeList: List.from(_intakeList)));
+  }
+
   void updateIntakeAmount(String intakeId, double newAmount) {
     final index = _intakeList.indexWhere((intake) => intake.id == intakeId);
     if (index != -1) {
