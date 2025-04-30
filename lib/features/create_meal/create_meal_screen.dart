@@ -12,6 +12,7 @@ import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/edit_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/delete_dialog.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class MealCreationScreen extends StatefulWidget {
   const MealCreationScreen({super.key});
@@ -23,6 +24,7 @@ class MealCreationScreen extends StatefulWidget {
 class _MealCreationScreenState extends State<MealCreationScreen> {
   final log = Logger('MealCreationScreen');
   late final CreateMealBloc _createMealBloc;
+  final _nameTextController = TextEditingController();
   bool _isDragging = false;
 
   @override
@@ -45,7 +47,17 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Recette")),
+      appBar: AppBar(
+        title: Text("Recette"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+            child: FilledButton(
+                onPressed: () => _onSavePressed(true),
+                child: Text(S.of(context).buttonSaveLabel)),
+          )
+        ],
+      ),
       body: Stack(
         children: [
           Padding(
@@ -53,22 +65,89 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                TextFormField(
+                  controller: _nameTextController,
+                  decoration: InputDecoration(
+                    labelText: S.of(context).mealNameLabel,
+                    border: const OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.text,
+                ),
+                const SizedBox(height: 16),
                 BlocBuilder<CreateMealBloc, CreateMealState>(
                   bloc: _createMealBloc,
                   builder: (context, state) {
-                    if (state.intakeList.isEmpty) {
+                    final intakeList = state.intakeList;
+
+                    if (intakeList.isEmpty) {
                       return const Text("Aucun aliment ajouté.");
                     }
 
-                    return IntakeVerticalList(
-                      day: DateTime.now(),
-                      title: S.of(context).snackLabel,
-                      addMealType: AddMealType.snackType,
-                      listIcon: IntakeTypeEntity.snack.getIconData(),
-                      intakeList: state.intakeList,
-                      onItemDragCallback: onIntakeItemDrag,
-                      onItemTappedCallback: onIntakeItemTapped,
-                      usesImperialUnits: true,
+                    return Column(
+                      children: [
+                        IntakeVerticalList(
+                          day: DateTime.now(),
+                          title: "",
+                          addMealType: AddMealType.snackType,
+                          listIcon: Icons.functions,
+                          intakeList: intakeList,
+                          onItemDragCallback: onIntakeItemDrag,
+                          onItemTappedCallback: onIntakeItemTapped,
+                          usesImperialUnits: true,
+                        ),
+                        const SizedBox(height: 32),
+                        if (state.totalCarbs +
+                                state.totalFats +
+                                state.totalProteins >
+                            0)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Center(
+                              child: PieChart(
+                                dataMap: {
+                                  'Protéine': state.totalProteins,
+                                  'Glucide': state.totalCarbs,
+                                  'Lipide': state.totalFats
+                                },
+                                animationDuration:
+                                    const Duration(milliseconds: 800),
+                                chartLegendSpacing: 32,
+                                chartRadius:
+                                    MediaQuery.of(context).size.width / 2.5,
+                                colorList: [
+                                  Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer,
+                                  Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer,
+                                  Theme.of(context)
+                                      .colorScheme
+                                      .onTertiaryContainer,
+                                ],
+                                initialAngleInDegree: 0,
+                                chartType: ChartType.ring,
+                                ringStrokeWidth: 32,
+                                centerText: "",
+                                legendOptions: const LegendOptions(
+                                  showLegendsInRow: false,
+                                  legendPosition: LegendPosition.bottom,
+                                  showLegends: true,
+                                  legendShape: BoxShape.circle,
+                                  legendTextStyle:
+                                      TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                chartValuesOptions: const ChartValuesOptions(
+                                  showChartValueBackground: true,
+                                  showChartValues: true,
+                                  showChartValuesInPercentage: false,
+                                  showChartValuesOutside: true,
+                                  decimalPlaces: 1,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     );
                   },
                 ),
@@ -158,4 +237,6 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
       _isDragging = false;
     });
   }
+
+  void _onSavePressed(bool usesImperialUnits) {}
 }

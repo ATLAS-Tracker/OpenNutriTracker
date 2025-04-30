@@ -37,22 +37,45 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
     );
 
     _intakeList.add(intakeEntity);
-
-    // Émet un nouvel état avec la liste mise à jour
-    emit(state.copyWith(intakeList: List.from(_intakeList)));
+    _emitUpdatedState();
   }
 
   void removeIntake(String intakeId) {
     _intakeList.removeWhere((intake) => intake.id == intakeId);
-    emit(state.copyWith(intakeList: List.from(_intakeList)));
+    _emitUpdatedState();
   }
 
   void updateIntakeAmount(String intakeId, double newAmount) {
     final index = _intakeList.indexWhere((intake) => intake.id == intakeId);
     if (index != -1) {
-      final updatedIntake = _intakeList[index].copyWith(amount: newAmount);
-      _intakeList[index] = updatedIntake;
-      emit(state.copyWith(intakeList: List.from(_intakeList)));
+      _intakeList[index] = _intakeList[index].copyWith(amount: newAmount);
+      _emitUpdatedState();
     }
+  }
+
+  void _emitUpdatedState() {
+    final totals = _computeMacros();
+    emit(state.copyWith(
+      intakeList: List.from(_intakeList),
+      totalProteins: totals['proteins']!,
+      totalCarbs: totals['carbs']!,
+      totalFats: totals['fats']!,
+    ));
+  }
+
+  Map<String, double> _computeMacros() {
+    double proteins = 0, carbs = 0, fats = 0;
+
+    for (final intake in _intakeList) {
+      proteins += intake.totalProteinsGram;
+      carbs += intake.totalCarbsGram;
+      fats += intake.totalFatsGram;
+    }
+
+    return {
+      'proteins': proteins,
+      'carbs': carbs,
+      'fats': fats,
+    };
   }
 }
