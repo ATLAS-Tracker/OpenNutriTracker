@@ -19,67 +19,58 @@ class AddItemBottomSheet extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            S.of(context).addItemLabel,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onSurface),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(8.0),
+                  title: Text(
+                    S.of(context).activityLabel,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface),
+                  ),
+                  subtitle: Text(
+                    "ex: course",
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withAlpha(180)),
+                  ),
+                  leading: Icon(
+                    UserActivityEntity.getIconData(),
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onTap: () => _showAddActivityScreen(context),
+                ),
+              ),
+              Expanded(
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(8.0),
+                  title: Text(
+                    "Recette", // à remplacer par S.of(context).mealLabel
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface),
+                  ),
+                  subtitle: Text(
+                    "Créer un repas", // à remplacer par S.of(context).mealExample
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withAlpha(180)),
+                  ),
+                  leading: Icon(
+                    Icons.receipt,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onTap: () => _showAddMealCreationScreen(context),
+                ),
+              ),
+            ],
           ),
-        ),
-        ListTile(
-          title: Text(
-            S.of(context).activityLabel,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
-          ),
-          subtitle: Text(
-            S.of(context).activityExample,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.7)),
-          ),
-          // ignore: sized_box_for_whitespace
-          leading: Container(
-              height: double.infinity,
-              child: Icon(
-                UserActivityEntity.getIconData(),
-                color: Theme.of(context).colorScheme.onSurface,
-              )),
-          onTap: () {
-            _showAddActivityScreen(context);
-          },
-        ),
-        ListTile(
-          title: Text(
-            "Repas", // TODO replace with S.of(context).mealLabel
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
-          ),
-          subtitle: Text(
-            "créer un repas", // TODO replace with S.of(context).mealExample
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.7)),
-          ),
-          // ignore: sized_box_for_whitespace
-          leading: Container(
-              height: double.infinity,
-              child: Icon(
-                IntakeTypeEntity.breakfast.getIconData(),
-                color: Theme.of(context).colorScheme.onSurface,
-              )),
-          onTap: () {
-            _showAddMealCreationScreen(context);
-          },
         ),
         const Divider(indent: 16, endIndent: 16),
         ListTile(
