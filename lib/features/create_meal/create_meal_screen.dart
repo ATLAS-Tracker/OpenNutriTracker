@@ -8,10 +8,12 @@ import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/create_meal/presentation/bloc/create_meal_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/intake_vertical_list.dart';
+import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/edit_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/delete_dialog.dart';
+import 'package:opennutritracker/features/create_meal/create_meal_modal.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class MealCreationScreen extends StatefulWidget {
@@ -238,5 +240,16 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
     });
   }
 
-  void _onSavePressed(bool usesImperialUnits) {}
+  void _onSavePressed(bool usesImperialUnits) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16.0),
+                topRight: Radius.circular(16.0))),
+        builder: (BuildContext context) {
+          return CalendarMealTypeSelector(onDateSelected: (date) {});
+        });
+  }
 }
