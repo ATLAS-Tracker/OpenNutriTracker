@@ -55,9 +55,19 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
           actions: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-              child: FilledButton(
-                onPressed: () => _onSavePressed(true),
-                child: Text(S.of(context).buttonSaveLabel),
+              child: BlocBuilder<CreateMealBloc, CreateMealState>(
+                bloc: _createMealBloc,
+                builder: (context, state) {
+                  final isButtonEnabled =
+                      _nameTextController.text.trim().isNotEmpty &&
+                          state.intakeList.isNotEmpty;
+
+                  return FilledButton(
+                    onPressed:
+                        isButtonEnabled ? () => _onSavePressed(true) : null,
+                    child: Text(S.of(context).buttonSaveLabel),
+                  );
+                },
               ),
             )
           ],
