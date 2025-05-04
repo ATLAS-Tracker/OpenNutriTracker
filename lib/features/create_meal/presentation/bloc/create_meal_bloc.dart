@@ -54,7 +54,7 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
   }
 
   void _emitUpdatedState() {
-    final totals = _computeMacros();
+    final totals = computeMacros();
     emit(state.copyWith(
       intakeList: List.from(_intakeList),
       totalProteins: totals['proteins']!,
@@ -63,7 +63,7 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
     ));
   }
 
-  Map<String, double> _computeMacros() {
+  Map<String, double> computeMacros() {
     double proteins = 0, carbs = 0, fats = 0;
 
     for (final intake in _intakeList) {

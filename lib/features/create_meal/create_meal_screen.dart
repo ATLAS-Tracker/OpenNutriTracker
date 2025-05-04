@@ -8,8 +8,6 @@ import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/create_meal/presentation/bloc/create_meal_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/intake_vertical_list.dart';
-import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
-import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/edit_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/delete_dialog.dart';
@@ -241,6 +239,7 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
   }
 
   void _onSavePressed(bool usesImperialUnits) {
+    final recipeName = _nameTextController.text;
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -249,7 +248,10 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
                 topLeft: Radius.circular(16.0),
                 topRight: Radius.circular(16.0))),
         builder: (BuildContext context) {
-          return CalendarMealTypeSelector(onDateSelected: (date) {});
+          return CalendarMealTypeSelector(
+            onDateSelected: (date) {},
+            mealName: recipeName,
+          );
         });
   }
 }
