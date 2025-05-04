@@ -10,6 +10,9 @@ import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dar
 import 'package:opennutritracker/core/utils/id_generator.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_nutriments_entity.dart';
 import 'package:logging/logging.dart';
+import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
+import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
+import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 
 class CalendarMealTypeSelector extends StatefulWidget {
   final Function(DateTime) onDateSelected;
@@ -100,6 +103,16 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
 
     // locator<MealDetailBloc>().addIntake(context, 'g', '100',
     //     _mealTypes[_currentMealIndex], meal, _selectedDate);
+
+    // // Refresh Home Page
+    // locator<HomeBloc>().add(const LoadItemsEvent());
+
+    // // Refresh Diary Page
+    // locator<DiaryBloc>().add(const LoadDiaryYearEvent());
+    // locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
+
+    // Navigator.of(context).pop();
+    // Navigator.of(context).pop();
 
     _log.fine(
         'Meal added: ${meal.name} (protein : ${meal.nutriments.proteins100}, carbs : ${meal.nutriments.carbohydrates100}, fats : ${meal.nutriments.fat100}) with type: ${_mealTypes[_currentMealIndex]} at $_selectedDate');
