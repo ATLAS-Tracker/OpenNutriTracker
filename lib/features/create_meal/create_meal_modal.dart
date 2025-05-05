@@ -78,13 +78,13 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
     final macros = locator<CreateMealBloc>().computeMacros();
 
     final nutriment = MealNutrimentsEntity(
-        energyKcal100: null,
+        energyKcal100: macros['energy'],
         carbohydrates100: macros['carbs'],
         fat100: macros['fats'],
         proteins100: macros['proteins'],
-        sugars100: null,
-        saturatedFat100: null,
-        fiber100: null);
+        sugars100: macros['sugars'],
+        saturatedFat100: macros['saturatedFat'],
+        fiber100: macros['fiber']);
 
     final meal = MealEntity(
         code: IdGenerator.getUniqueID(),
@@ -93,8 +93,8 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
         url: "",
         thumbnailImageUrl: "",
         mainImageUrl: "",
-        mealQuantity: "",
-        mealUnit: "",
+        mealQuantity: macros['weightTotal']?.toString(),
+        mealUnit: "g",
         servingQuantity: null,
         servingUnit: "",
         servingSize: "",
