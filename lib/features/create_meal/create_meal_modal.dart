@@ -169,6 +169,9 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
       _selectedDate,
     );
 
+    // Clean the list of intake
+    locator<CreateMealBloc>().clearIntakeList();
+
     locator<HomeBloc>().add(const LoadItemsEvent());
     locator<DiaryBloc>().add(const LoadDiaryYearEvent());
     locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());

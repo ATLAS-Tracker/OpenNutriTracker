@@ -10,16 +10,20 @@ part 'create_meal_event.dart';
 part 'create_meal_state.dart';
 
 class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
-  final GetConfigUsecase _getConfigUsecase;
   List<IntakeEntity> _intakeList = [];
 
-  CreateMealBloc(this._getConfigUsecase) : super(const CreateMealState()) {
+  CreateMealBloc() : super(const CreateMealState()) {
     on<InitializeCreateMealEvent>((event, emit) async {
       emit(state.copyWith(isOnCreateMealScreen: true));
     });
     on<ExitCreateMealScreenEvent>((event, emit) async {
       emit(state.copyWith(isOnCreateMealScreen: false));
     });
+  }
+
+  void clearIntakeList() {
+    _intakeList.clear();
+    _emitUpdatedState();
   }
 
   void addIntake(String unit, String amountText, IntakeTypeEntity type,
