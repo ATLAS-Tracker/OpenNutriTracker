@@ -57,45 +57,33 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
     final totals = computeMacros();
     emit(state.copyWith(
       intakeList: List.from(_intakeList),
-      totalProteins: totals['proteins']!,
-      totalCarbs: totals['carbs']!,
-      totalFats: totals['fats']!,
+      totalProteins: totals['totalProteins']!,
+      totalCarbs: totals['totalCarbs']!,
+      totalFats: totals['totalFats']!,
     ));
   }
 
   Map<String, double> computeMacros() {
-    double proteins = 0,
-        carbs = 0,
-        fats = 0,
-        sugars = 0,
-        saturatedFat = 0,
-        fiber = 0,
-        energyKcal = 0;
-    double weightTotal = 0;
+    double totalProteins = 0;
+    double totalCarbs = 0;
+    double totalFats = 0;
+    double totalKcal = 0;
 
     for (final intake in _intakeList) {
       final nutriments = intake.meal.nutriments;
+      final amount = intake.amount;
 
-      // Macros if liquid we consider 1ml = 1g
-      proteins += nutriments.proteins100 ?? 0;
-      carbs += nutriments.carbohydrates100 ?? 0;
-      fats += nutriments.fat100 ?? 0;
-      sugars += nutriments.sugars100 ?? 0;
-      saturatedFat += nutriments.saturatedFat100 ?? 0;
-      fiber += nutriments.fiber100 ?? 0;
-      energyKcal += nutriments.energyKcal100 ?? 0;
-      weightTotal += intake.amount;
+      totalProteins += (nutriments.proteins100 ?? 0) * amount / 100;
+      totalCarbs += (nutriments.carbohydrates100 ?? 0) * amount / 100;
+      totalFats += (nutriments.fat100 ?? 0) * amount / 100;
+      totalKcal += (nutriments.energyKcal100 ?? 0) * amount / 100;
     }
 
     return {
-      'proteins': proteins,
-      'carbs': carbs,
-      'fats': fats,
-      'sugars': sugars,
-      'saturatedFat': saturatedFat,
-      'fiber': fiber,
-      'energyKcal': energyKcal,
-      'weightTotal': weightTotal,
+      'totalProteins': totalProteins,
+      'totalCarbs': totalCarbs,
+      'totalFats': totalFats,
+      'totalKcal': totalKcal,
     };
   }
 }

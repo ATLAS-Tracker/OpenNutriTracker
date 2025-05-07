@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:opennutritracker/features/diary/presentation/widgets/diary_table_calendar.dart';
 import 'package:opennutritracker/core/domain/entity/tracked_day_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
@@ -18,8 +19,11 @@ class CalendarMealTypeSelector extends StatefulWidget {
   final Function(DateTime) onDateSelected;
   final String mealName;
 
-  const CalendarMealTypeSelector(
-      {super.key, required this.onDateSelected, required this.mealName});
+  const CalendarMealTypeSelector({
+    super.key,
+    required this.onDateSelected,
+    required this.mealName,
+  });
 
   @override
   State<CalendarMealTypeSelector> createState() =>
@@ -33,10 +37,58 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
 
   final List<IntakeTypeEntity> _mealTypes = IntakeTypeEntity.values;
 
+  late final TextEditingController mealPortionCountController;
+  late final TextEditingController portionsEatenController;
+
+  bool isSaveEnabled = false;
+
   @override
   void initState() {
     super.initState();
     _selectedDate = DateTime.now();
+
+    mealPortionCountController = TextEditingController();
+    portionsEatenController = TextEditingController();
+
+    mealPortionCountController.addListener(_validateInputs);
+    portionsEatenController.addListener(() {
+      _validatePortions();
+      _validateInputs();
+    });
+  }
+
+  @override
+  void dispose() {
+    mealPortionCountController.dispose();
+    portionsEatenController.dispose();
+    super.dispose();
+  }
+
+  void _validatePortions() {
+    final total = int.tryParse(mealPortionCountController.text) ?? 0;
+    final eaten = int.tryParse(portionsEatenController.text) ?? 0;
+
+    if (eaten > total && total > 0) {
+      portionsEatenController.text = total.toString();
+      portionsEatenController.selection = TextSelection.fromPosition(
+        TextPosition(offset: portionsEatenController.text.length),
+      );
+    }
+  }
+
+  bool _areInputsValid() {
+    final mealPortion = int.tryParse(mealPortionCountController.text) ?? 0;
+    final eaten = int.tryParse(portionsEatenController.text) ?? 0;
+    return mealPortion > 0 && eaten > 0;
+  }
+
+  void _validateInputs() {
+    final isValid = _areInputsValid();
+    if (isSaveEnabled != isValid) {
+      setState(() {
+        isSaveEnabled = isValid;
+      });
+    }
   }
 
   void _handleDateSelected(DateTime day, Map<String, TrackedDayEntity> _) {
@@ -73,49 +125,44 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
   }
 
   void _onSavePressed() {
-    // TODO when there is nothing protect to not save
+    final mealPortionCount = mealPortionCountController.text;
+    final portionsEaten = portionsEatenController.text;
 
     final macros = locator<CreateMealBloc>().computeMacros();
 
-    final nutriment = MealNutrimentsEntity(
-        energyKcal100: macros['energy'],
-        carbohydrates100: macros['carbs'],
-        fat100: macros['fats'],
-        proteins100: macros['proteins'],
-        sugars100: macros['sugars'],
-        saturatedFat100: macros['saturatedFat'],
-        fiber100: macros['fiber']);
+    final nutriment = MealNutrimentsEntity.empty();
 
     final meal = MealEntity(
-        code: IdGenerator.getUniqueID(),
-        name: widget.mealName,
-        brands: "",
-        url: "",
-        thumbnailImageUrl: "",
-        mainImageUrl: "",
-        mealQuantity: macros['weightTotal']?.toString(),
-        mealUnit: "g",
-        servingQuantity: null,
-        servingUnit: "",
-        servingSize: "",
-        nutriments: nutriment,
-        source: MealSourceEntity.custom);
+      code: IdGenerator.getUniqueID(),
+      name: widget.mealName,
+      brands: "",
+      url: "https://picsum.photos/200",
+      thumbnailImageUrl: "https://picsum.photos/200",
+      mainImageUrl: "https://picsum.photos/200",
+      mealQuantity: "",
+      mealUnit: "g",
+      servingQuantity: null,
+      servingUnit: "serving",
+      servingSize: mealPortionCount,
+      nutriments: nutriment,
+      source: MealSourceEntity.custom,
+    );
 
-    // locator<MealDetailBloc>().addIntake(context, 'g', '100',
-    //     _mealTypes[_currentMealIndex], meal, _selectedDate);
+    locator<MealDetailBloc>().addIntake(
+      context,
+      'serving',
+      portionsEaten,
+      _mealTypes[_currentMealIndex],
+      meal,
+      _selectedDate,
+    );
 
-    // // Refresh Home Page
-    // locator<HomeBloc>().add(const LoadItemsEvent());
+    locator<HomeBloc>().add(const LoadItemsEvent());
+    locator<DiaryBloc>().add(const LoadDiaryYearEvent());
+    locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
 
-    // // Refresh Diary Page
-    // locator<DiaryBloc>().add(const LoadDiaryYearEvent());
-    // locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
-
-    // Navigator.of(context).pop();
-    // Navigator.of(context).pop();
-
-    _log.fine(
-        'Meal added: ${meal.name} (protein : ${meal.nutriments.proteins100}, carbs : ${meal.nutriments.carbohydrates100}, fats : ${meal.nutriments.fat100}) with type: ${_mealTypes[_currentMealIndex]} at $_selectedDate');
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
 
   @override
@@ -127,7 +174,7 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          /// Sélecteur de type de repas
+          /// Meal type selector
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -153,7 +200,36 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
           ),
           const SizedBox(height: 16),
 
-          /// Calendrier
+          /// Portion inputs
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: mealPortionCountController,
+                  decoration: const InputDecoration(
+                    labelText: "Meal portion count",
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: TextFormField(
+                  controller: portionsEatenController,
+                  decoration: const InputDecoration(
+                    labelText: "Portions eaten",
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                ),
+              ),
+            ],
+          ),
+
+          /// Calendar
           DiaryTableCalendar(
             onDateSelected: _handleDateSelected,
             calendarDurationDays: const Duration(days: 30),
@@ -163,9 +239,12 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
             trackedDaysMap: const {},
           ),
           const SizedBox(height: 16),
+
+          /// Save button
           FilledButton(
-              onPressed: () => _onSavePressed(),
-              child: Text(S.of(context).buttonSaveLabel)),
+            onPressed: isSaveEnabled ? _onSavePressed : null,
+            child: Text(S.of(context).buttonSaveLabel),
+          ),
           const SizedBox(height: 16),
         ],
       ),
