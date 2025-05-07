@@ -120,9 +120,10 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
                               child: Center(
                                 child: PieChart(
                                   dataMap: {
-                                    'Protéine': state.totalProteins,
-                                    'Glucide': state.totalCarbs,
-                                    'Lipide': state.totalFats
+                                    'Protéine': state.totalProteins / 100,
+                                    'Glucide': state.totalCarbs / 100,
+                                    'Lipide': state.totalFats /
+                                        100, // TODO remove this when find a better solution for conversion
                                   },
                                   animationDuration:
                                       const Duration(milliseconds: 800),

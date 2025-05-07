@@ -130,7 +130,14 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
 
     final macros = locator<CreateMealBloc>().computeMacros();
 
-    final nutriment = MealNutrimentsEntity.empty();
+    final nutriment = MealNutrimentsEntity(
+        energyKcal100: macros['totalKcal'],
+        carbohydrates100: macros['totalCarbs'],
+        fat100: macros['totalFats'],
+        proteins100: macros['totalProteins'],
+        sugars100: null,
+        saturatedFat100: null,
+        fiber100: null);
 
     final meal = MealEntity(
       code: IdGenerator.getUniqueID(),
@@ -139,19 +146,24 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
       url: "https://picsum.photos/200",
       thumbnailImageUrl: "https://picsum.photos/200",
       mainImageUrl: "https://picsum.photos/200",
-      mealQuantity: "",
-      mealUnit: "g",
+      mealQuantity: mealPortionCount,
+      mealUnit: "serving",
       servingQuantity: null,
-      servingUnit: "serving",
-      servingSize: mealPortionCount,
+      servingUnit: "",
+      servingSize: "",
       nutriments: nutriment,
       source: MealSourceEntity.custom,
     );
 
+    // TODO optimize this
+    final portionRatio = (int.tryParse(portionsEaten) ?? 0) /
+        (int.tryParse(mealPortionCount) ?? 1);
+    final portionRatioString = portionRatio.toString();
+
     locator<MealDetailBloc>().addIntake(
       context,
       'serving',
-      portionsEaten,
+      portionRatioString,
       _mealTypes[_currentMealIndex],
       meal,
       _selectedDate,
