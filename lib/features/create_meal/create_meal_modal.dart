@@ -149,7 +149,7 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
       mealQuantity: mealPortionCount,
       mealUnit: "serving",
       servingQuantity: null,
-      servingUnit: "",
+      servingUnit: "serving",
       servingSize: "",
       nutriments: nutriment,
       source: MealSourceEntity.custom,
