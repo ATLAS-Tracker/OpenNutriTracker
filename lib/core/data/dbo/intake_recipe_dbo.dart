@@ -6,7 +6,7 @@ import 'package:opennutritracker/core/domain/entity/intake_recipe_entity.dart';
 
 part 'intake_recipe_dbo.g.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 18)
 @JsonSerializable()
 class IntakeRecipeDBO extends HiveObject {
   @HiveField(0)

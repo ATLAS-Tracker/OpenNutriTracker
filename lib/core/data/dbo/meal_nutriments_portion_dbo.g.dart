@@ -9,7 +9,7 @@ part of 'meal_nutriments_portion_dbo.dart';
 class MealNutrimentsPerPortionDBOAdapter
     extends TypeAdapter<MealNutrimentsPerPortionDBO> {
   @override
-  final int typeId = 3;
+  final int typeId = 17;
 
   @override
   MealNutrimentsPerPortionDBO read(BinaryReader reader) {

@@ -2,12 +2,14 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get_it/get_it.dart';
 import 'package:opennutritracker/core/data/data_source/config_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/intake_data_source.dart';
+import 'package:opennutritracker/core/data/data_source/intake_recipe_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/physical_activity_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/tracked_day_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/user_activity_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/user_data_source.dart';
 import 'package:opennutritracker/core/data/repository/config_repository.dart';
 import 'package:opennutritracker/core/data/repository/intake_repository.dart';
+import 'package:opennutritracker/core/data/repository/intake_recipe_repository.dart';
 import 'package:opennutritracker/core/data/repository/physical_activity_repository.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
@@ -177,6 +179,8 @@ Future<void> initLocator() async {
       .registerLazySingleton<UserRepository>(() => UserRepository(locator()));
   locator.registerLazySingleton<IntakeRepository>(
       () => IntakeRepository(locator()));
+  locator.registerLazySingleton<IntakeRecipeRepository>(
+      () => IntakeRecipeRepository(locator()));
   locator.registerLazySingleton<ProductsRepository>(
       () => ProductsRepository(locator(), locator(), locator()));
   locator.registerLazySingleton<UserActivityRepository>(
@@ -193,6 +197,8 @@ Future<void> initLocator() async {
       () => UserDataSource(hiveDBProvider.userBox));
   locator.registerLazySingleton<IntakeDataSource>(
       () => IntakeDataSource(hiveDBProvider.intakeBox));
+  locator.registerLazySingleton<IntakeRecipeDataSource>(
+      () => IntakeRecipeDataSource(hiveDBProvider.intakeRecipeBox));
   locator.registerLazySingleton<UserActivityDataSource>(
       () => UserActivityDataSource(hiveDBProvider.userActivityBox));
   locator.registerLazySingleton<PhysicalActivityDataSource>(

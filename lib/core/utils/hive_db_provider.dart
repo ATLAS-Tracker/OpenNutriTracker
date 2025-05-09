@@ -6,6 +6,9 @@ import 'package:opennutritracker/core/data/data_source/user_activity_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/app_theme_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/config_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/intake_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/intake_recipe_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/recipe_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/meal_nutriments_portion_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/intake_type_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/physical_activity_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/meal_dbo.dart';
@@ -22,9 +25,11 @@ class HiveDBProvider extends ChangeNotifier {
   static const userActivityBoxName = 'UserActivityBox';
   static const userBoxName = 'UserBox';
   static const trackedDayBoxName = 'TrackedDayBox';
+  static const intakeRecipeBoxName = 'IntakeRecipeBox';
 
   late Box<ConfigDBO> configBox;
   late Box<IntakeDBO> intakeBox;
+  late Box<IntakeRecipeDBO> intakeRecipeBox;
   late Box<UserActivityDBO> userActivityBox;
   late Box<UserDBO> userBox;
   late Box<TrackedDayDBO> trackedDayBox;
@@ -34,7 +39,10 @@ class HiveDBProvider extends ChangeNotifier {
     await Hive.initFlutter();
     Hive.registerAdapter(ConfigDBOAdapter());
     Hive.registerAdapter(IntakeDBOAdapter());
+    Hive.registerAdapter(IntakeRecipeDBOAdapter());
     Hive.registerAdapter(MealDBOAdapter());
+    Hive.registerAdapter(RecipeDBOAdapter());
+    Hive.registerAdapter(MealNutrimentsPerPortionDBOAdapter());
     Hive.registerAdapter(MealNutrimentsDBOAdapter());
     Hive.registerAdapter(MealSourceDBOAdapter());
     Hive.registerAdapter(IntakeTypeDBOAdapter());
@@ -52,6 +60,8 @@ class HiveDBProvider extends ChangeNotifier {
         await Hive.openBox(configBoxName, encryptionCipher: encryptionCypher);
     intakeBox =
         await Hive.openBox(intakeBoxName, encryptionCipher: encryptionCypher);
+    intakeRecipeBox = await Hive.openBox(intakeRecipeBoxName,
+        encryptionCipher: encryptionCypher);
     userActivityBox = await Hive.openBox(userActivityBoxName,
         encryptionCipher: encryptionCypher);
     userBox =

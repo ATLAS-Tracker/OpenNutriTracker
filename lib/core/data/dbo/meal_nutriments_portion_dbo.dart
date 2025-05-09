@@ -4,7 +4,7 @@ import 'package:opennutritracker/features/create_meal/domain/entity/meal_nutrime
 
 part 'meal_nutriments_portion_dbo.g.dart';
 
-@HiveType(typeId: 3)
+@HiveType(typeId: 17)
 @JsonSerializable()
 class MealNutrimentsPerPortionDBO extends HiveObject {
   @HiveField(0)

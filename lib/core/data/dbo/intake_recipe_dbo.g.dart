@@ -8,7 +8,7 @@ part of 'intake_recipe_dbo.dart';
 
 class IntakeRecipeDBOAdapter extends TypeAdapter<IntakeRecipeDBO> {
   @override
-  final int typeId = 0;
+  final int typeId = 18;
 
   @override
   IntakeRecipeDBO read(BinaryReader reader) {
