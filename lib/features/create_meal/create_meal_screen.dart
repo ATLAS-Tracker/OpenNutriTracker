@@ -11,7 +11,7 @@ import 'package:opennutritracker/features/home/presentation/widgets/intake_verti
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/edit_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/delete_dialog.dart';
-import 'package:opennutritracker/features/create_meal/create_meal_modal.dart';
+import 'package:opennutritracker/features/create_meal/widgets/create_meal_modal.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class MealCreationScreen extends StatefulWidget {
