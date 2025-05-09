@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
+import 'package:opennutritracker/core/domain/entity/intake_recipe_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/add_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_tracked_day_usecase.dart';
@@ -9,6 +10,7 @@ import 'package:opennutritracker/core/domain/usecase/delete_intake_usecase.dart'
 import 'package:opennutritracker/core/domain/usecase/delete_user_activity_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_intake_usecase.dart';
+import 'package:opennutritracker/core/domain/usecase/get_recipe_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_kcal_goal_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_macro_goal_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_activity_usecase.dart';
@@ -18,7 +20,7 @@ import 'package:opennutritracker/core/utils/calc/macro_calc.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
-
+import 'package:logging/logging.dart';
 part 'home_event.dart';
 
 part 'home_state.dart';
@@ -27,6 +29,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetConfigUsecase _getConfigUsecase;
   final AddConfigUsecase _addConfigUsecase;
   final GetIntakeUsecase _getIntakeUsecase;
+  final GetIntakeRecipeUsecase _getIntakeRecipeUsecase;
   final DeleteIntakeUsecase _deleteIntakeUsecase;
   final UpdateIntakeUsecase _updateIntakeUsecase;
   final GetUserActivityUsecase _getUserActivityUsecase;
@@ -36,11 +39,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetMacroGoalUsecase _getMacroGoalUsecase;
 
   DateTime currentDay = DateTime.now();
+  final log = Logger('HomeBloc');
 
   HomeBloc(
       this._getConfigUsecase,
       this._addConfigUsecase,
       this._getIntakeUsecase,
+      this._getIntakeRecipeUsecase,
       this._deleteIntakeUsecase,
       this._updateIntakeUsecase,
       this._getUserActivityUsecase,
@@ -59,28 +64,53 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       final breakfastIntakeList =
           await _getIntakeUsecase.getTodayBreakfastIntake();
-      final totalBreakfastKcal = getTotalKcal(breakfastIntakeList);
-      final totalBreakfastCarbs = getTotalCarbs(breakfastIntakeList);
-      final totalBreakfastFats = getTotalFats(breakfastIntakeList);
-      final totalBreakfastProteins = getTotalProteins(breakfastIntakeList);
+      final breakfastRecipeIntakeList =
+          await _getIntakeRecipeUsecase.getTodayBreakfastIntake();
+
+      final totalBreakfastKcal = getTotalKcal(breakfastIntakeList) +
+          getTotalKcalForRecipe(breakfastRecipeIntakeList);
+      final totalBreakfastCarbs = getTotalCarbs(breakfastIntakeList) +
+          getTotalCarbsForRecipe(breakfastRecipeIntakeList);
+      final totalBreakfastFats = getTotalFats(breakfastIntakeList) +
+          getTotalFatsForRecipe(breakfastRecipeIntakeList);
+      final totalBreakfastProteins = getTotalProteins(breakfastIntakeList) +
+          getTotalProteinsForRecipe(breakfastRecipeIntakeList);
 
       final lunchIntakeList = await _getIntakeUsecase.getTodayLunchIntake();
-      final totalLunchKcal = getTotalKcal(lunchIntakeList);
-      final totalLunchCarbs = getTotalCarbs(lunchIntakeList);
-      final totalLunchFats = getTotalFats(lunchIntakeList);
-      final totalLunchProteins = getTotalProteins(lunchIntakeList);
+      final lunchRecipeIntakeList =
+          await _getIntakeRecipeUsecase.getTodayLunchIntake();
+      final totalLunchKcal = getTotalKcal(lunchIntakeList) +
+          getTotalKcalForRecipe(lunchRecipeIntakeList);
+      final totalLunchCarbs = getTotalCarbs(lunchIntakeList) +
+          getTotalCarbsForRecipe(lunchRecipeIntakeList);
+      final totalLunchFats = getTotalFats(lunchIntakeList) +
+          getTotalFatsForRecipe(lunchRecipeIntakeList);
+      final totalLunchProteins = getTotalProteins(lunchIntakeList) +
+          getTotalProteinsForRecipe(lunchRecipeIntakeList);
 
       final dinnerIntakeList = await _getIntakeUsecase.getTodayDinnerIntake();
-      final totalDinnerKcal = getTotalKcal(dinnerIntakeList);
-      final totalDinnerCarbs = getTotalCarbs(dinnerIntakeList);
-      final totalDinnerFats = getTotalFats(dinnerIntakeList);
-      final totalDinnerProteins = getTotalProteins(dinnerIntakeList);
+      final dinnerRecipeIntakeList =
+          await _getIntakeRecipeUsecase.getTodayDinnerIntake();
+      final totalDinnerKcal = getTotalKcal(dinnerIntakeList) +
+          getTotalKcalForRecipe(dinnerRecipeIntakeList);
+      final totalDinnerCarbs = getTotalCarbs(dinnerIntakeList) +
+          getTotalCarbsForRecipe(dinnerRecipeIntakeList);
+      final totalDinnerFats = getTotalFats(dinnerIntakeList) +
+          getTotalFatsForRecipe(dinnerRecipeIntakeList);
+      final totalDinnerProteins = getTotalProteins(dinnerIntakeList) +
+          getTotalProteinsForRecipe(dinnerRecipeIntakeList);
 
       final snackIntakeList = await _getIntakeUsecase.getTodaySnackIntake();
-      final totalSnackKcal = getTotalKcal(snackIntakeList);
-      final totalSnackCarbs = getTotalCarbs(snackIntakeList);
-      final totalSnackFats = getTotalFats(snackIntakeList);
-      final totalSnackProteins = getTotalProteins(snackIntakeList);
+      final snackRecipeIntakeList =
+          await _getIntakeRecipeUsecase.getTodaySnackIntake();
+      final totalSnackKcal = getTotalKcal(snackIntakeList) +
+          getTotalKcalForRecipe(snackRecipeIntakeList);
+      final totalSnackCarbs = getTotalCarbs(snackIntakeList) +
+          getTotalCarbsForRecipe(snackRecipeIntakeList);
+      final totalSnackFats = getTotalFats(snackIntakeList) +
+          getTotalFatsForRecipe(snackRecipeIntakeList);
+      final totalSnackProteins = getTotalProteins(snackIntakeList) +
+          getTotalProteinsForRecipe(snackRecipeIntakeList);
 
       final totalKcalIntake = totalBreakfastKcal +
           totalLunchKcal +
@@ -98,6 +128,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           totalLunchProteins +
           totalDinnerProteins +
           totalSnackProteins;
+
+      log.fine(
+          'Total Intake - Kcal: $totalKcalIntake, Carbs: $totalCarbsIntake, Fats: $totalFatsIntake, Proteins: $totalProteinsIntake');
 
       final userActivities =
           await _getUserActivityUsecase.getTodayUserActivity();
@@ -147,6 +180,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   double getTotalProteins(List<IntakeEntity> intakeList) =>
       intakeList.map((intake) => intake.totalProteinsGram).toList().sum;
+
+  double getTotalKcalForRecipe(List<IntakeRecipeEntity> intakeRecipeList) =>
+      intakeRecipeList.map((intake) => intake.totalKcal).toList().sum;
+
+  double getTotalCarbsForRecipe(List<IntakeRecipeEntity> intakeRecipeList) =>
+      intakeRecipeList.map((intake) => intake.totalCarbsGram).toList().sum;
+
+  double getTotalFatsForRecipe(List<IntakeRecipeEntity> intakeRecipeList) =>
+      intakeRecipeList.map((intake) => intake.totalFatsGram).toList().sum;
+
+  double getTotalProteinsForRecipe(List<IntakeRecipeEntity> intakeRecipeList) =>
+      intakeRecipeList.map((intake) => intake.totalProteinsGram).toList().sum;
 
   void saveConfigData(bool acceptedDisclaimer) async {
     _addConfigUsecase.setConfigDisclaimer(acceptedDisclaimer);
