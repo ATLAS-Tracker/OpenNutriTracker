@@ -1,18 +1,28 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
-import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/utils/id_generator.dart';
-
+import 'package:opennutritracker/core/domain/usecase/add_tracked_day_usecase.dart';
+import 'package:opennutritracker/core/domain/usecase/add_recipe_intake_usecase.dart';
+import 'package:opennutritracker/core/domain/usecase/get_kcal_goal_usecase.dart';
+import 'package:opennutritracker/core/domain/usecase/get_macro_goal_usecase.dart';
+import 'package:opennutritracker/core/domain/entity/intake_recipe_entity.dart';
+import 'package:opennutritracker/features/create_meal/domain/entity/recipe.dart';
 part 'create_meal_event.dart';
 part 'create_meal_state.dart';
 
 class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
   List<IntakeEntity> _intakeList = [];
+  final AddIntakeRecipeUsecase _addRecipeIntakeUseCase;
+  final AddTrackedDayUsecase _addTrackedDayUsecase;
+  final GetKcalGoalUsecase _getKcalGoalUsecase;
+  final GetMacroGoalUsecase _getMacroGoalUsecase;
 
-  CreateMealBloc() : super(const CreateMealState()) {
+  CreateMealBloc(this._addRecipeIntakeUseCase, this._addTrackedDayUsecase,
+      this._getKcalGoalUsecase, this._getMacroGoalUsecase)
+      : super(const CreateMealState()) {
     on<InitializeCreateMealEvent>((event, emit) async {
       emit(state.copyWith(isOnCreateMealScreen: true));
     });
@@ -91,5 +101,45 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
       'totalFats': totalFats,
       'totalKcal': totalKcal,
     };
+  }
+
+  void addRecipeIntake(String unit, String amountText, IntakeTypeEntity type,
+      Recipe recipe, DateTime day) async {
+    final quantity = double.parse(amountText.replaceAll(',', '.'));
+
+    final intakeRecipeEntity = IntakeRecipeEntity(
+        id: IdGenerator.getUniqueID(),
+        unit: unit,
+        amount: quantity,
+        type: type,
+        recipe: recipe,
+        dateTime: day);
+
+    await _addRecipeIntakeUseCase.addIntake(intakeRecipeEntity);
+    _updateTrackedDay(intakeRecipeEntity, day);
+  }
+
+  Future<void> _updateTrackedDay(
+      IntakeRecipeEntity intakeRecipeEntity, DateTime day) async {
+    final hasTrackedDay = await _addTrackedDayUsecase.hasTrackedDay(day);
+    if (!hasTrackedDay) {
+      final totalKcalGoal = await _getKcalGoalUsecase.getKcalGoal();
+      final totalCarbsGoal =
+          await _getMacroGoalUsecase.getCarbsGoal(totalKcalGoal);
+      final totalFatGoal =
+          await _getMacroGoalUsecase.getFatsGoal(totalKcalGoal);
+      final totalProteinGoal =
+          await _getMacroGoalUsecase.getProteinsGoal(totalKcalGoal);
+
+      await _addTrackedDayUsecase.addNewTrackedDay(
+          day, totalKcalGoal, totalCarbsGoal, totalFatGoal, totalProteinGoal);
+    }
+
+    _addTrackedDayUsecase.addDayCaloriesTracked(
+        day, intakeRecipeEntity.totalKcal);
+    _addTrackedDayUsecase.addDayMacrosTracked(day,
+        carbsTracked: intakeRecipeEntity.totalCarbsGram,
+        fatTracked: intakeRecipeEntity.totalFatsGram,
+        proteinTracked: intakeRecipeEntity.totalProteinsGram);
   }
 }

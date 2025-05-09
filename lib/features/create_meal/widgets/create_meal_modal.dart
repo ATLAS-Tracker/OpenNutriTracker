@@ -7,9 +7,9 @@ import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/create_meal/presentation/bloc/create_meal_bloc.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
-import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/core/utils/id_generator.dart';
-import 'package:opennutritracker/features/add_meal/domain/entity/meal_nutriments_entity.dart';
+import 'package:opennutritracker/features/create_meal/domain/entity/recipe.dart';
+import 'package:opennutritracker/features/create_meal/domain/entity/meal_nutriments_portion.dart';
 import 'package:logging/logging.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
@@ -130,42 +130,27 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
 
     final macros = locator<CreateMealBloc>().computeMacros();
 
-    final nutriment = MealNutrimentsEntity(
-        energyKcal100: macros['totalKcal'],
-        carbohydrates100: macros['totalCarbs'],
-        fat100: macros['totalFats'],
-        proteins100: macros['totalProteins'],
-        sugars100: null,
-        saturatedFat100: null,
-        fiber100: null);
+    final nutriment = MealNutrimentsEntityPortion(
+        energyKcalTotal: macros['totalKcal'],
+        carbohydratesTotal: macros['totalCarbs'],
+        fatTotal: macros['totalFats'],
+        proteinsTotal: macros['totalProteins'],
+        sugarsTotal: null,
+        saturatedFatTotal: null,
+        fiberTotal: null,
+        numberOfPortions: int.tryParse(mealPortionCount) ?? 1);
 
-    final meal = MealEntity(
+    final recipe = Recipe(
       code: IdGenerator.getUniqueID(),
       name: widget.mealName,
-      brands: "",
-      url: "https://picsum.photos/200",
-      thumbnailImageUrl: "https://picsum.photos/200",
-      mainImageUrl: "https://picsum.photos/200",
-      mealQuantity: mealPortionCount,
-      mealUnit: "serving",
-      servingQuantity: null,
-      servingUnit: "serving",
-      servingSize: "",
       nutriments: nutriment,
-      source: MealSourceEntity.custom,
     );
 
-    // TODO optimize this
-    final portionRatio = (int.tryParse(portionsEaten) ?? 0) /
-        (int.tryParse(mealPortionCount) ?? 1);
-    final portionRatioString = portionRatio.toString();
-
-    locator<MealDetailBloc>().addIntake(
-      context,
+    locator<CreateMealBloc>().addRecipeIntake(
       'serving',
-      portionRatioString,
+      portionsEaten,
       _mealTypes[_currentMealIndex],
-      meal,
+      recipe,
       _selectedDate,
     );
 
