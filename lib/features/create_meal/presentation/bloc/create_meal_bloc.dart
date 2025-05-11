@@ -77,12 +77,10 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
       final nutriments = intake.meal.nutriments;
       final amount = intake.amount;
 
-      // We don't divide by 100 here because later we will divide by 100 (we work with portions so later we don't have to divide by 100)
-      // TODO: find a better way to do this
-      totalProteins += (nutriments.proteins100 ?? 0) * amount;
-      totalCarbs += (nutriments.carbohydrates100 ?? 0) * amount;
-      totalFats += (nutriments.fat100 ?? 0) * amount;
-      totalKcal += (nutriments.energyKcal100 ?? 0) * amount;
+      totalProteins += (nutriments.proteins100 ?? 0) * amount / 100;
+      totalCarbs += (nutriments.carbohydrates100 ?? 0) * amount / 100;
+      totalFats += (nutriments.fat100 ?? 0) * amount / 100;
+      totalKcal += (nutriments.energyKcal100 ?? 0) * amount / 100;
     }
 
     return {

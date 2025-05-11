@@ -137,7 +137,8 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
         proteins100: macros['totalProteins'],
         sugars100: null,
         saturatedFat100: null,
-        fiber100: null);
+        fiber100: null,
+        mealOrRecipe: "recipe");
 
     final meal = MealEntity(
       code: IdGenerator.getUniqueID(),
@@ -148,7 +149,7 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
       mainImageUrl: "https://picsum.photos/200",
       mealQuantity: mealPortionCount,
       mealUnit: "serving",
-      servingQuantity: null,
+      servingQuantity: 1,
       servingUnit: "serving",
       servingSize: "",
       nutriments: nutriment,

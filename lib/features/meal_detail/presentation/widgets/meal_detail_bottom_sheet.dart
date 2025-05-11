@@ -82,27 +82,38 @@ class MealDetailBottomSheet extends StatelessWidget {
                           ),
                           const SizedBox(width: 16.0),
                           Expanded(
-                              child: DropdownButtonFormField(
-                                  isExpanded: true,
-                                  value: selectedUnit,
-                                  decoration: InputDecoration(
-                                      border: const OutlineInputBorder(),
-                                      labelText: S.of(context).unitLabel),
-                                  items: <DropdownMenuItem<String>>[
-                                    if (product.hasServingValues)
-                                      _getServingDropdownItem(context),
-                                    if (product.isSolid ||
-                                        !product.isLiquid && !product.isSolid)
-                                      ..._getSolidUnitDropdownItems(context),
-                                    if (product.isLiquid ||
-                                        !product.isLiquid && !product.isSolid)
-                                      ..._getLiquidUnitDropdownItems(context),
-                                    ..._getOtherDropdownItems(context)
-                                  ],
-                                  onChanged: (value) {
-                                    onQuantityOrUnitChanged(
-                                        quantityTextController.text, value);
-                                  }))
+                            child: DropdownButtonFormField<String>(
+                              isExpanded: true,
+                              value: (product.mealOrRecipe != null &&
+                                      product.mealOrRecipe == "recipe")
+                                  ? UnitDropdownItem.serving.toString()
+                                  : selectedUnit,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: S.of(context).unitLabel,
+                              ),
+                              items: (product.mealOrRecipe != null &&
+                                      product.mealOrRecipe == "recipe")
+                                  ? [_getServingDropdownItem(context)]
+                                  : <DropdownMenuItem<String>>[
+                                      if (product.hasServingValues)
+                                        _getServingDropdownItem(context),
+                                      if (product.isSolid ||
+                                          (!product.isLiquid &&
+                                              !product.isSolid))
+                                        ..._getSolidUnitDropdownItems(context),
+                                      if (product.isLiquid ||
+                                          (!product.isLiquid &&
+                                              !product.isSolid))
+                                        ..._getLiquidUnitDropdownItems(context),
+                                      ..._getOtherDropdownItems(context),
+                                    ],
+                              onChanged: (value) {
+                                onQuantityOrUnitChanged(
+                                    quantityTextController.text, value);
+                              },
+                            ),
+                          )
                         ],
                       ),
                       SizedBox(
