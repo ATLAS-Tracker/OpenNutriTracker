@@ -75,7 +75,6 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
       } else if (meal.isSolid) {
         _initialUnit = _usesImperialUnits
             ? UnitDropdownItem.oz.toString()
-
             : UnitDropdownItem.g.toString();
       } else {
         _initialUnit = UnitDropdownItem.gml.toString();
@@ -173,18 +172,21 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                             : const SizedBox()));
           }),
           actions: [
-            IconButton(
+            if (meal.mealOrRecipe != "recipe")
+              IconButton(
                 onPressed: () {
-                  Navigator.of(context)
-                      .pushNamed(NavigationOptions.editMealRoute,
-                          arguments: EditMealScreenArguments(
-                            _day,
-                            meal,
-                            intakeTypeEntity,
-                            _usesImperialUnits,
-                          ));
+                  Navigator.of(context).pushNamed(
+                    NavigationOptions.editMealRoute,
+                    arguments: EditMealScreenArguments(
+                      _day,
+                      meal,
+                      intakeTypeEntity,
+                      _usesImperialUnits,
+                    ),
+                  );
                 },
-                icon: const Icon(Icons.edit_outlined))
+                icon: const Icon(Icons.edit_outlined),
+              ),
           ],
         ),
         SliverList(

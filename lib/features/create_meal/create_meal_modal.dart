@@ -127,14 +127,15 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
   void _onSavePressed() {
     final mealPortionCount = mealPortionCountController.text;
     final portionsEaten = portionsEatenController.text;
+    final int mealPortionCountInt = int.tryParse(mealPortionCount) ?? 1;
 
     final macros = locator<CreateMealBloc>().computeMacros();
 
     final nutriment = MealNutrimentsEntity(
-        energyKcal100: macros['totalKcal'],
-        carbohydrates100: macros['totalCarbs'],
-        fat100: macros['totalFats'],
-        proteins100: macros['totalProteins'],
+        energyKcal100: macros['totalKcal']! / mealPortionCountInt,
+        carbohydrates100: macros['totalCarbs']! / mealPortionCountInt,
+        fat100: macros['totalFats']! / mealPortionCountInt,
+        proteins100: macros['totalProteins']! / mealPortionCountInt,
         sugars100: null,
         saturatedFat100: null,
         fiber100: null,
@@ -151,20 +152,15 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
       mealUnit: "serving",
       servingQuantity: 1,
       servingUnit: "serving",
-      servingSize: "",
+      servingSize: "portion",
       nutriments: nutriment,
       source: MealSourceEntity.custom,
     );
 
-    // TODO optimize this
-    final portionRatio = (int.tryParse(portionsEaten) ?? 0) /
-        (int.tryParse(mealPortionCount) ?? 1);
-    final portionRatioString = portionRatio.toString();
-
     locator<MealDetailBloc>().addIntake(
       context,
       'serving',
-      portionRatioString,
+      portionsEaten,
       _mealTypes[_currentMealIndex],
       meal,
       _selectedDate,
