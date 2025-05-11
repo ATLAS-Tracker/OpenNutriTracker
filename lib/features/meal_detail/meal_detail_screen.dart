@@ -196,25 +196,38 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(80),
               child: GestureDetector(
-                  child: Hero(
-                    tag: ImageFullScreen.fullScreenHeroTag,
-                    child: CachedNetworkImage(
-                      width: 250,
-                      height: 250,
-                      cacheManager: locator<CacheManager>(),
-                      imageUrl: meal.mainImageUrl ?? "",
-                      fit: BoxFit.cover,
-                      placeholder: (context, string) => const MealPlaceholder(),
-                      errorWidget: (context, url, error) =>
-                          const MealPlaceholder(),
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                        NavigationOptions.imageFullScreenRoute,
-                        arguments:
-                            ImageFullScreenArguments(meal.mainImageUrl ?? ""));
-                  }),
+                onTap: () {
+                  Navigator.of(context).pushNamed(
+                    NavigationOptions.imageFullScreenRoute,
+                    arguments:
+                        ImageFullScreenArguments(meal.mainImageUrl ?? ""),
+                  );
+                },
+                child: meal.mealOrRecipe == "recipe"
+                    ? Container(
+                        width: 250,
+                        height: 250,
+                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        child: const Icon(
+                          Icons.restaurant_outlined,
+                          size: 80,
+                        ),
+                      )
+                    : Hero(
+                        tag: ImageFullScreen.fullScreenHeroTag,
+                        child: CachedNetworkImage(
+                          width: 250,
+                          height: 250,
+                          cacheManager: locator<CacheManager>(),
+                          imageUrl: meal.mainImageUrl ?? "",
+                          fit: BoxFit.cover,
+                          placeholder: (context, string) =>
+                              const MealPlaceholder(),
+                          errorWidget: (context, url, error) =>
+                              const MealPlaceholder(),
+                        ),
+                      ),
+              ),
             ),
           ),
           Padding(
