@@ -15,6 +15,7 @@ import 'package:opennutritracker/features/add_meal/presentation/widgets/meal_ite
 import 'package:opennutritracker/features/add_meal/presentation/bloc/products_bloc.dart';
 import 'package:opennutritracker/features/edit_meal/presentation/edit_meal_screen.dart';
 import 'package:opennutritracker/features/scanner/scanner_screen.dart';
+import 'package:opennutritracker/features/create_meal/presentation/bloc/create_meal_bloc.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 class AddMealScreen extends StatefulWidget {
@@ -215,20 +216,33 @@ class _AddMealScreenState extends State<AddMealScreen>
                                 child: CircularProgressIndicator(),
                               );
                             } else if (state is RecentMealLoadedState) {
-                              return state.recentMeals.isNotEmpty
+                              final isOnCreateMealScreen =
+                                  locator<CreateMealBloc>()
+                                      .state
+                                      .isOnCreateMealScreen;
+
+                              final filteredMeals = isOnCreateMealScreen
+                                  ? state.recentMeals
+                                      .where((meal) =>
+                                          meal.mealOrRecipe != 'recipe')
+                                      .toList()
+                                  : state.recentMeals;
+
+                              return filteredMeals.isNotEmpty
                                   ? Flexible(
                                       child: ListView.builder(
-                                          itemCount: state.recentMeals.length,
-                                          itemBuilder: (context, index) {
-                                            return MealItemCard(
-                                              day: _day,
-                                              mealEntity:
-                                                  state.recentMeals[index],
-                                              addMealType: _mealType,
-                                              usesImperialUnits:
-                                                  state.usesImperialUnits,
-                                            );
-                                          }))
+                                        itemCount: filteredMeals.length,
+                                        itemBuilder: (context, index) {
+                                          return MealItemCard(
+                                            day: _day,
+                                            mealEntity: filteredMeals[index],
+                                            addMealType: _mealType,
+                                            usesImperialUnits:
+                                                state.usesImperialUnits,
+                                          );
+                                        },
+                                      ),
+                                    )
                                   : const NoResultsWidget();
                             } else if (state is RecentMealFailedState) {
                               return ErrorDialog(

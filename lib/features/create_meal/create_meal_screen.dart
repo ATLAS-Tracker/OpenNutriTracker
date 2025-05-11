@@ -102,12 +102,13 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
                           IntakeVerticalList(
                             day: DateTime.now(),
                             title: "",
-                            addMealType: AddMealType.snackType,
+                            addMealType:
+                                AddMealType.snackType, // TODO Pierre refactor
                             listIcon: Icons.functions,
                             intakeList: intakeList,
                             onItemDragCallback: onIntakeItemDrag,
                             onItemTappedCallback: onIntakeItemTapped,
-                            usesImperialUnits: true,
+                            usesImperialUnits: false,
                           ),
                           const SizedBox(height: 32),
                           if (state.totalCarbs +
