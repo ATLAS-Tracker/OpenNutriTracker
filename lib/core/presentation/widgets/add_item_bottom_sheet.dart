@@ -19,13 +19,13 @@ class AddItemBottomSheet extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: ListTile(
-                  contentPadding: const EdgeInsets.all(8.0),
+                  contentPadding: const EdgeInsets.all(0),
                   title: Text(
                     S.of(context).activityLabel,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -48,7 +48,7 @@ class AddItemBottomSheet extends StatelessWidget {
               ),
               Expanded(
                 child: ListTile(
-                  contentPadding: const EdgeInsets.all(8.0),
+                  contentPadding: const EdgeInsets.all(0),
                   title: Text(
                     "Recette", // à remplacer par S.of(context).mealLabel
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -179,6 +179,7 @@ class AddItemBottomSheet extends StatelessWidget {
         arguments: AddMealScreenArguments(
           itemType,
           day,
+          "meal",
         ));
   }
 

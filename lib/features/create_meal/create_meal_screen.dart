@@ -238,6 +238,7 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
       arguments: AddMealScreenArguments(
         itemType,
         day,
+        "recipe",
       ),
     );
   }

@@ -30,6 +30,7 @@ class _AddMealScreenState extends State<AddMealScreen>
 
   late AddMealType _mealType;
   late DateTime _day;
+  late String _mealOrRecipe;
 
   late ProductsBloc _productsBloc;
   late FoodBloc _foodBloc;
@@ -56,6 +57,7 @@ class _AddMealScreenState extends State<AddMealScreen>
         ModalRoute.of(context)?.settings.arguments as AddMealScreenArguments;
     _mealType = args.mealType;
     _day = args.day;
+    _mealOrRecipe = args.mealOrRecipe;
     super.didChangeDependencies();
   }
 
@@ -69,7 +71,8 @@ class _AddMealScreenState extends State<AddMealScreen>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(_mealType.getTypeName(context)),
+          title: Text(
+              _mealOrRecipe == "recipe" ? "" : _mealType.getTypeName(context)),
           actions: [
             BlocBuilder<AddMealBloc, AddMealState>(
               bloc: locator<AddMealBloc>()..add(InitializeAddMealEvent()),
@@ -311,6 +314,7 @@ class _AddMealScreenState extends State<AddMealScreen>
 class AddMealScreenArguments {
   final AddMealType mealType;
   final DateTime day;
+  final String mealOrRecipe;
 
-  AddMealScreenArguments(this.mealType, this.day);
+  AddMealScreenArguments(this.mealType, this.day, this.mealOrRecipe);
 }
