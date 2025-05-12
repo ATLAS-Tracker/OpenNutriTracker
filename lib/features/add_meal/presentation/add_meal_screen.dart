@@ -4,6 +4,7 @@ import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.dart';
+import 'package:opennutritracker/features/add_meal/presentation/recipe_results_list.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/add_meal_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/food_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/recent_meal_bloc.dart';
@@ -205,50 +206,10 @@ class _AddMealScreenState extends State<AddMealScreen>
                       )
                     ],
                   ),
-                  Column(
-                    children: [
-                      Container(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          alignment: Alignment.centerLeft,
-                          child: Text("Recette",
-                              style:
-                                  Theme.of(context).textTheme.headlineSmall)),
-                      BlocBuilder<RecipeSearchBloc, RecipeSearchState>(
-                        bloc: _recipeSearchBloc,
-                        builder: (context, state) {
-                          if (state is RecipeInitial) {
-                            return const DefaultsResultsWidget();
-                          } else if (state is RecipeLoadingState) {
-                            return const Padding(
-                              padding: EdgeInsets.only(top: 32),
-                              child: CircularProgressIndicator(),
-                            );
-                          } else if (state is RecipeLoadedState) {
-                            return state.recipes.isNotEmpty
-                                ? Flexible(
-                                    child: ListView.builder(
-                                        itemCount: state.recipes.length,
-                                        itemBuilder: (context, index) {
-                                          return MealItemCard(
-                                            day: _day,
-                                            mealEntity: state.recipes[index],
-                                            addMealType: _mealType,
-                                            usesImperialUnits:
-                                                state.usesImperialUnits,
-                                          );
-                                        }))
-                                : const NoResultsWidget();
-                          } else if (state is RecipeFailedState) {
-                            return ErrorDialog(
-                              errorText: "Aucune recette trouvée",
-                              onRefreshPressed: _onRecipeRefreshButtonPressed,
-                            );
-                          } else {
-                            return const SizedBox();
-                          }
-                        },
-                      )
-                    ],
+                  RecipeResultsList(
+                    day: _day,
+                    mealType: _mealType,
+                    bloc: _recipeSearchBloc,
                   ),
                   Column(
                     children: [
