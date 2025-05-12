@@ -45,6 +45,7 @@ import 'package:opennutritracker/features/add_meal/presentation/bloc/food_bloc.d
 import 'package:opennutritracker/features/create_meal/presentation/bloc/create_meal_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/products_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/recent_meal_bloc.dart';
+import 'package:opennutritracker/features/add_meal/presentation/bloc/recipe_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
 import 'package:opennutritracker/features/edit_meal/presentation/bloc/edit_meal_bloc.dart';
@@ -116,6 +117,7 @@ Future<void> initLocator() async {
       .registerFactory<ProductsBloc>(() => ProductsBloc(locator(), locator()));
   locator.registerFactory<FoodBloc>(() => FoodBloc(locator(), locator()));
   locator.registerFactory(() => RecentMealBloc(locator(), locator()));
+  locator.registerFactory(() => RecipeBloc(locator(), locator()));
 
   // UseCases
   locator.registerLazySingleton<GetConfigUsecase>(

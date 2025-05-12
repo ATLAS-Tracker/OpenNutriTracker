@@ -7,6 +7,7 @@ import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.da
 import 'package:opennutritracker/features/add_meal/presentation/bloc/add_meal_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/food_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/recent_meal_bloc.dart';
+import 'package:opennutritracker/features/add_meal/presentation/bloc/recipe_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/default_results_widget.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/meal_search_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,6 +37,7 @@ class _AddMealScreenState extends State<AddMealScreen>
   late ProductsBloc _productsBloc;
   late FoodBloc _foodBloc;
   late RecentMealBloc _recentMealBloc;
+  late RecipeBloc _recipeBloc;
 
   late TabController _tabController;
 
@@ -44,7 +46,8 @@ class _AddMealScreenState extends State<AddMealScreen>
     _productsBloc = locator<ProductsBloc>();
     _foodBloc = locator<FoodBloc>();
     _recentMealBloc = locator<RecentMealBloc>();
-    _tabController = TabController(length: 3, vsync: this);
+    _recipeBloc = locator<RecipeBloc>();
+    _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
       // Update search results when tab changes
       _onSearchSubmit(_searchStringListener.value);
@@ -104,6 +107,7 @@ class _AddMealScreenState extends State<AddMealScreen>
                   tabs: [
                     Tab(text: S.of(context).searchProductsPage),
                     Tab(text: S.of(context).searchFoodPage),
+                    Tab(text: "Recette"),
                     Tab(text: S.of(context).recentlyAddedLabel)
                   ],
                   controller: _tabController,
@@ -203,6 +207,51 @@ class _AddMealScreenState extends State<AddMealScreen>
                   ),
                   Column(
                     children: [
+                      Container(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          alignment: Alignment.centerLeft,
+                          child: Text("Recette",
+                              style:
+                                  Theme.of(context).textTheme.headlineSmall)),
+                      BlocBuilder<RecipeBloc, RecipeState>(
+                        bloc: _recipeBloc,
+                        builder: (context, state) {
+                          if (state is RecipeInitial) {
+                            return const DefaultsResultsWidget();
+                          } else if (state is RecipeLoadingState) {
+                            return const Padding(
+                              padding: EdgeInsets.only(top: 32),
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state is RecipeLoadedState) {
+                            return state.recipes.isNotEmpty
+                                ? Flexible(
+                                    child: ListView.builder(
+                                        itemCount: state.recipes.length,
+                                        itemBuilder: (context, index) {
+                                          return MealItemCard(
+                                            day: _day,
+                                            mealEntity: state.recipes[index],
+                                            addMealType: _mealType,
+                                            usesImperialUnits:
+                                                state.usesImperialUnits,
+                                          );
+                                        }))
+                                : const NoResultsWidget();
+                          } else if (state is RecipeFailedState) {
+                            return ErrorDialog(
+                              errorText: "Aucune recette trouvée",
+                              onRefreshPressed: _onRecipeRefreshButtonPressed,
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        },
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: [
                       BlocBuilder<RecentMealBloc, RecentMealState>(
                           bloc: _recentMealBloc,
                           builder: (context, state) {
@@ -271,6 +320,10 @@ class _AddMealScreenState extends State<AddMealScreen>
     _foodBloc.add(const RefreshFoodEvent());
   }
 
+  void _onRecipeRefreshButtonPressed() {
+    _recipeBloc.add(const LoadRecipeEvent(searchString: ""));
+  }
+
   void _onRecentMealsRefreshButtonPressed() {
     _recentMealBloc.add(const LoadRecentMealEvent(searchString: ""));
   }
@@ -279,10 +332,16 @@ class _AddMealScreenState extends State<AddMealScreen>
     switch (_tabController.index) {
       case 0:
         _productsBloc.add(LoadProductsEvent(searchString: inputText));
+        break;
       case 1:
         _foodBloc.add(LoadFoodEvent(searchString: inputText));
+        break;
       case 2:
+        _recipeBloc.add(LoadRecipeEvent(searchString: inputText));
+        break;
+      case 3:
         _recentMealBloc.add(LoadRecentMealEvent(searchString: inputText));
+        break;
     }
   }
 
