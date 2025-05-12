@@ -6,19 +6,19 @@ import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_intake_usecase.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 
-part 'recipe_event.dart';
+part 'recipe_search_event.dart';
 
-part 'recipe_state.dart';
+part 'recipe_search_state.dart';
 
-class RecipeBloc extends Bloc<RecipeEvent, RecipeState> {
-  final log = Logger('RecipeBloc');
+class RecipeSearchBloc extends Bloc<RecipeSearchEvent, RecipeSearchState> {
+  final log = Logger('RecipeSearchBloc');
 
   final GetIntakeUsecase _getIntakeUsecase;
   final GetConfigUsecase _getConfigUsecase;
 
-  RecipeBloc(this._getIntakeUsecase, this._getConfigUsecase)
+  RecipeSearchBloc(this._getIntakeUsecase, this._getConfigUsecase)
       : super(RecipeInitial()) {
-    on<LoadRecipeEvent>((event, emit) async {
+    on<LoadRecipeSearchEvent>((event, emit) async {
       emit(RecipeLoadingState());
       try {
         final config = await _getConfigUsecase.getConfig();

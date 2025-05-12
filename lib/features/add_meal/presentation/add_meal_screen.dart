@@ -7,7 +7,7 @@ import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.da
 import 'package:opennutritracker/features/add_meal/presentation/bloc/add_meal_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/food_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/recent_meal_bloc.dart';
-import 'package:opennutritracker/features/add_meal/presentation/bloc/recipe_bloc.dart';
+import 'package:opennutritracker/features/add_meal/presentation/bloc/recipe_search_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/default_results_widget.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/meal_search_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +37,7 @@ class _AddMealScreenState extends State<AddMealScreen>
   late ProductsBloc _productsBloc;
   late FoodBloc _foodBloc;
   late RecentMealBloc _recentMealBloc;
-  late RecipeBloc _recipeBloc;
+  late RecipeSearchBloc _recipeSearchBloc;
 
   late TabController _tabController;
 
@@ -46,7 +46,7 @@ class _AddMealScreenState extends State<AddMealScreen>
     _productsBloc = locator<ProductsBloc>();
     _foodBloc = locator<FoodBloc>();
     _recentMealBloc = locator<RecentMealBloc>();
-    _recipeBloc = locator<RecipeBloc>();
+    _recipeSearchBloc = locator<RecipeSearchBloc>();
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
       // Update search results when tab changes
@@ -213,8 +213,8 @@ class _AddMealScreenState extends State<AddMealScreen>
                           child: Text("Recette",
                               style:
                                   Theme.of(context).textTheme.headlineSmall)),
-                      BlocBuilder<RecipeBloc, RecipeState>(
-                        bloc: _recipeBloc,
+                      BlocBuilder<RecipeSearchBloc, RecipeSearchState>(
+                        bloc: _recipeSearchBloc,
                         builder: (context, state) {
                           if (state is RecipeInitial) {
                             return const DefaultsResultsWidget();
@@ -321,7 +321,7 @@ class _AddMealScreenState extends State<AddMealScreen>
   }
 
   void _onRecipeRefreshButtonPressed() {
-    _recipeBloc.add(const LoadRecipeEvent(searchString: ""));
+    _recipeSearchBloc.add(const LoadRecipeSearchEvent(searchString: ""));
   }
 
   void _onRecentMealsRefreshButtonPressed() {
@@ -337,7 +337,7 @@ class _AddMealScreenState extends State<AddMealScreen>
         _foodBloc.add(LoadFoodEvent(searchString: inputText));
         break;
       case 2:
-        _recipeBloc.add(LoadRecipeEvent(searchString: inputText));
+        _recipeSearchBloc.add(LoadRecipeSearchEvent(searchString: inputText));
         break;
       case 3:
         _recentMealBloc.add(LoadRecentMealEvent(searchString: inputText));

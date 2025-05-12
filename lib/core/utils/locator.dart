@@ -45,11 +45,12 @@ import 'package:opennutritracker/features/add_meal/presentation/bloc/food_bloc.d
 import 'package:opennutritracker/features/create_meal/presentation/bloc/create_meal_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/products_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/recent_meal_bloc.dart';
-import 'package:opennutritracker/features/add_meal/presentation/bloc/recipe_bloc.dart';
+import 'package:opennutritracker/features/add_meal/presentation/bloc/recipe_search_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
 import 'package:opennutritracker/features/edit_meal/presentation/bloc/edit_meal_bloc.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
+import 'package:opennutritracker/features/recipe/presentation/bloc/recipe_bloc.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
 import 'package:opennutritracker/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:opennutritracker/features/profile/presentation/bloc/profile_bloc.dart';
@@ -93,6 +94,8 @@ Future<void> initLocator() async {
       locator(),
       locator(),
       locator()));
+
+  locator.registerLazySingleton<RecipeBloc>(() => RecipeBloc());
   locator.registerLazySingleton(() => DiaryBloc(locator(), locator()));
   locator.registerLazySingleton(() => CalendarDayBloc(
       locator(), locator(), locator(), locator(), locator(), locator()));
@@ -117,7 +120,7 @@ Future<void> initLocator() async {
       .registerFactory<ProductsBloc>(() => ProductsBloc(locator(), locator()));
   locator.registerFactory<FoodBloc>(() => FoodBloc(locator(), locator()));
   locator.registerFactory(() => RecentMealBloc(locator(), locator()));
-  locator.registerFactory(() => RecipeBloc(locator(), locator()));
+  locator.registerFactory(() => RecipeSearchBloc(locator(), locator()));
 
   // UseCases
   locator.registerLazySingleton<GetConfigUsecase>(
