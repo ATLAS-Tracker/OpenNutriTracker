@@ -6,6 +6,9 @@ import 'package:opennutritracker/features/add_meal/presentation/widgets/meal_ite
 import 'package:opennutritracker/features/add_meal/presentation/widgets/default_results_widget.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/no_results_widget.dart';
 import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.dart';
+import 'package:opennutritracker/core/domain/usecase/delete_intake_usecase.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
+import 'package:logging/logging.dart';
 
 class RecipeResultsList extends StatefulWidget {
   final DateTime day;
@@ -24,12 +27,18 @@ class RecipeResultsList extends StatefulWidget {
 }
 
 class _RecipeResultsListState extends State<RecipeResultsList> {
+  final _log = Logger('Recipe Result List');
+  bool _isDragging = false;
+  final DeleteIntakeUsecase _deleteIntakeUsecase =
+      locator<DeleteIntakeUsecase>();
+
   void _onRecipeRefreshButtonPressed() {
     widget.bloc.add(const LoadRecipeSearchEvent(searchString: ""));
   }
 
   @override
   Widget build(BuildContext context) {
+    _log.fine("Recipe result list build method");
     return Column(
       children: [
         BlocBuilder<RecipeSearchBloc, RecipeSearchState>(
@@ -45,16 +54,101 @@ class _RecipeResultsListState extends State<RecipeResultsList> {
             } else if (state is RecipeLoadedState) {
               return state.recipes.isNotEmpty
                   ? Flexible(
-                      child: ListView.builder(
-                        itemCount: state.recipes.length,
-                        itemBuilder: (context, index) {
-                          return MealItemCard(
-                            day: widget.day,
-                            mealEntity: state.recipes[index],
-                            addMealType: widget.mealType,
-                            usesImperialUnits: state.usesImperialUnits,
-                          );
-                        },
+                      child: Stack(
+                        children: [
+                          ListView.builder(
+                            itemCount: state.recipes.length,
+                            itemBuilder: (context, index) {
+                              final recipe = state.recipes[index];
+                              return LongPressDraggable(
+                                data: recipe,
+                                onDragStarted: () {
+                                  setState(() {
+                                    _isDragging = true;
+                                  });
+                                },
+                                onDraggableCanceled: (_, __) {
+                                  setState(() {
+                                    _isDragging = false;
+                                  });
+                                },
+                                onDragEnd: (_) {
+                                  setState(() {
+                                    _isDragging = false;
+                                  });
+                                },
+                                feedback: Material(
+                                  color: Colors.transparent,
+                                  child: ConstrainedBox(
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 300),
+                                    child: Opacity(
+                                      opacity: 0.85,
+                                      child: MealItemCard(
+                                        day: widget.day,
+                                        mealEntity: recipe,
+                                        addMealType: widget.mealType,
+                                        usesImperialUnits:
+                                            state.usesImperialUnits,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                childWhenDragging: Opacity(
+                                  opacity: 0.3,
+                                  child: MealItemCard(
+                                    day: widget.day,
+                                    mealEntity: recipe,
+                                    addMealType: widget.mealType,
+                                    usesImperialUnits: state.usesImperialUnits,
+                                  ),
+                                ),
+                                child: MealItemCard(
+                                  day: widget.day,
+                                  mealEntity: recipe,
+                                  addMealType: widget.mealType,
+                                  usesImperialUnits: state.usesImperialUnits,
+                                ),
+                              );
+                            },
+                          ),
+                          if (_isDragging)
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                height: 70,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .error
+                                    .withAlpha(80),
+                                child: DragTarget(
+                                  onWillAccept: (data) => true,
+                                  onAccept: (data) {
+                                    setState(() {
+                                      _isDragging = false;
+                                    });
+                                    // Logique de suppression à implémenter plus tard
+                                    // print("Suppression demandée pour $data");
+                                  },
+                                  onLeave: (data) {
+                                    setState(() {
+                                      _isDragging = false;
+                                    });
+                                  },
+                                  builder:
+                                      (context, candidateData, rejectedData) {
+                                    return const Center(
+                                      child: Icon(
+                                        Icons.delete_outline,
+                                        size: 36,
+                                        color: Colors.white,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     )
                   : const NoResultsWidget();
@@ -67,7 +161,7 @@ class _RecipeResultsListState extends State<RecipeResultsList> {
               return const SizedBox();
             }
           },
-        )
+        ),
       ],
     );
   }
