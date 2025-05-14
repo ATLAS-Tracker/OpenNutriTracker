@@ -134,7 +134,7 @@ class MealDetailBottomSheet extends StatelessWidget {
                             ).copyWith(
                                 elevation: ButtonStyleButton.allOrNull(0.0)),
                             icon: const Icon(Icons.add_outlined),
-                            label: Text("JENNNN")),
+                            label: Text(S.of(context).addLabel)),
                       ),
                       productMissingRequiredInfo
                           ? Text(S.of(context).missingProductInfo,

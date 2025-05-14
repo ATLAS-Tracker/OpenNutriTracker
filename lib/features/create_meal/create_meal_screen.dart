@@ -51,7 +51,7 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Recette"),
+          title: Text(S.of(context).recipeLabel),
           actions: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -94,7 +94,7 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
                       final intakeList = state.intakeList;
 
                       if (intakeList.isEmpty) {
-                        return const Text("Aucun aliment ajouté.");
+                        return Text(S.of(context).noFoodAddedLabel);
                       }
 
                       return Column(

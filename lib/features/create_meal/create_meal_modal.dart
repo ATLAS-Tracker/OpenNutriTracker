@@ -149,10 +149,10 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
       thumbnailImageUrl: "https://picsum.photos/200",
       mainImageUrl: "https://picsum.photos/200",
       mealQuantity: mealPortionCount,
-      mealUnit: "serving",
+      mealUnit: S.of(context).servingLabel,
       servingQuantity: 1,
-      servingUnit: "serving",
-      servingSize: "portion",
+      servingUnit: S.of(context).servingLabel,
+      servingSize: S.of(context).servingLabel,
       nutriments: nutriment,
       source: MealSourceEntity.custom,
     );
@@ -218,8 +218,8 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
               Expanded(
                 child: TextFormField(
                   controller: mealPortionCountController,
-                  decoration: const InputDecoration(
-                    labelText: "Meal portion count",
+                  decoration: InputDecoration(
+                    labelText: S.of(context).mealPortionLabel,
                     border: OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,

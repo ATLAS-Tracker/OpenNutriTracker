@@ -107,7 +107,7 @@ class _AddMealScreenState extends State<AddMealScreen>
                   tabs: [
                     Tab(text: S.of(context).searchProductsPage),
                     Tab(text: S.of(context).searchFoodPage),
-                    Tab(text: "Recette"),
+                    Tab(text: S.of(context).recipeLabel),
                     Tab(text: S.of(context).recentlyAddedLabel)
                   ],
                   controller: _tabController,
@@ -210,7 +210,7 @@ class _AddMealScreenState extends State<AddMealScreen>
                       Container(
                           padding: const EdgeInsets.only(left: 8.0),
                           alignment: Alignment.centerLeft,
-                          child: Text("Recette",
+                          child: Text(S.of(context).recipeLabel,
                               style:
                                   Theme.of(context).textTheme.headlineSmall)),
                       BlocBuilder<RecipeBloc, RecipeState>(
@@ -240,7 +240,7 @@ class _AddMealScreenState extends State<AddMealScreen>
                                 : const NoResultsWidget();
                           } else if (state is RecipeFailedState) {
                             return ErrorDialog(
-                              errorText: "Aucune recette trouvée",
+                              errorText: S.of(context).errorRecipeLabel,
                               onRefreshPressed: _onRecipeRefreshButtonPressed,
                             );
                           } else {

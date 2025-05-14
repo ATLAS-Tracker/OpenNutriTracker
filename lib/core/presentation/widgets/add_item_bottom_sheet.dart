@@ -32,7 +32,7 @@ class AddItemBottomSheet extends StatelessWidget {
                         color: Theme.of(context).colorScheme.onSurface),
                   ),
                   subtitle: Text(
-                    "ex: course",
+                    S.of(context).exampleOfActivityLabel,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Theme.of(context)
                             .colorScheme
@@ -50,7 +50,9 @@ class AddItemBottomSheet extends StatelessWidget {
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(0),
                   title: Text(
-                    "Recette", // à remplacer par S.of(context).mealLabel
+                    S
+                        .of(context)
+                        .recipeLabel, // à remplacer par S.of(context).mealLabel
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Theme.of(context).colorScheme.onSurface),
                   ),
