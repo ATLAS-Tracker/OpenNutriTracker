@@ -14,6 +14,8 @@ import 'package:logging/logging.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
+import 'package:opennutritracker/core/domain/usecase/add_recipe_usecase.dart';
+import 'package:opennutritracker/core/domain/entity/recipe_entity.dart';
 
 class CalendarMealTypeSelector extends StatefulWidget {
   final Function(DateTime) onDateSelected;
@@ -165,6 +167,13 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
       meal,
       _selectedDate,
     );
+
+    // Add the recipe to the DB to keep tracking of the mealEntity composing the recipe
+    final recipe = RecipeEntity(
+        meal: meal,
+        ingredients:
+            locator<CreateMealBloc>().getListOfIntakeForRecipeEntity());
+    locator<AddRecipeUsecase>().addRecipe(recipe);
 
     // Clean the list of intake
     locator<CreateMealBloc>().clearIntakeList();

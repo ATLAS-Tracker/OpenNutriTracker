@@ -9,6 +9,7 @@ import 'package:opennutritracker/core/presentation/widgets/image_full_screen.dar
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
+import 'package:opennutritracker/features/create_meal/create_meal_screen.dart';
 import 'package:opennutritracker/features/edit_meal/presentation/edit_meal_screen.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/widgets/meal_detail_bottom_sheet.dart';
@@ -18,6 +19,7 @@ import 'package:opennutritracker/features/meal_detail/presentation/widgets/meal_
 import 'package:opennutritracker/features/meal_detail/presentation/widgets/meal_placeholder.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/widgets/meal_title_expanded.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/widgets/off_disclaimer.dart';
+import 'package:opennutritracker/core/domain/usecase/get_recipe_usecase.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 class MealDetailScreen extends StatefulWidget {
@@ -149,46 +151,69 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
       controller: _scrollController,
       slivers: [
         SliverAppBar(
-          pinned: true,
-          expandedHeight: 200,
-          flexibleSpace: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-            final top = constraints.biggest.height;
-            final barsHeight =
-                MediaQuery.of(context).padding.top + kToolbarHeight;
-            const offset = 10;
-            return FlexibleSpaceBar(
-                expandedTitleScale: 1, // don't scale title
-                background: MealTitleExpanded(
-                    meal: meal, usesImperialUnits: _usesImperialUnits),
-                title: AnimatedOpacity(
-                    opacity: 1.0,
-                    duration: const Duration(milliseconds: 300),
-                    child:
-                        top > barsHeight - offset && top < barsHeight + offset
-                            ? Text(meal.name ?? '',
-                                style: Theme.of(context).textTheme.titleLarge,
-                                overflow: TextOverflow.ellipsis)
-                            : const SizedBox()));
-          }),
-          actions: [
-            if (meal.mealOrRecipe != "recipe")
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed(
-                    NavigationOptions.editMealRoute,
-                    arguments: EditMealScreenArguments(
-                      _day,
-                      meal,
-                      intakeTypeEntity,
-                      _usesImperialUnits,
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.edit_outlined),
-              ),
-          ],
-        ),
+            pinned: true,
+            expandedHeight: 200,
+            flexibleSpace: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+              final top = constraints.biggest.height;
+              final barsHeight =
+                  MediaQuery.of(context).padding.top + kToolbarHeight;
+              const offset = 10;
+              return FlexibleSpaceBar(
+                  expandedTitleScale: 1, // don't scale title
+                  background: MealTitleExpanded(
+                      meal: meal, usesImperialUnits: _usesImperialUnits),
+                  title: AnimatedOpacity(
+                      opacity: 1.0,
+                      duration: const Duration(milliseconds: 300),
+                      child:
+                          top > barsHeight - offset && top < barsHeight + offset
+                              ? Text(meal.name ?? '',
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                  overflow: TextOverflow.ellipsis)
+                              : const SizedBox()));
+            }),
+            actions: [
+              if (meal.mealOrRecipe == "recipe")
+                IconButton(
+                  onPressed: () async {
+                    final recipe = await locator<GetRecipeUsecase>()
+                        .getRecipeById(meal.code!);
+                    if (recipe == null) {
+                      // Facultatif : message d'erreur si la recette n'est pas trouvée
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Recette introuvable.")),
+                      );
+                      return;
+                    }
+
+                    Navigator.of(context).pushNamed(
+                      NavigationOptions.createMealRoute,
+                      arguments: CreateMealScreenArguments(
+                        meal.code!,
+                        meal.name!,
+                        recipe,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.edit_outlined),
+                )
+              else
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(
+                      NavigationOptions.editMealRoute,
+                      arguments: EditMealScreenArguments(
+                        _day,
+                        meal,
+                        intakeTypeEntity,
+                        _usesImperialUnits,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.edit_outlined),
+                ),
+            ]),
         SliverList(
             delegate: SliverChildListDelegate([
           const SizedBox(height: 16),

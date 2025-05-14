@@ -2,7 +2,7 @@ part of 'create_meal_bloc.dart';
 
 class CreateMealState extends Equatable {
   final bool isOnCreateMealScreen;
-  final List<IntakeEntity> intakeList;
+  final List<IntakeForRecipeEntity> intakeList;
 
   final double totalProteins;
   final double totalCarbs;
@@ -17,7 +17,7 @@ class CreateMealState extends Equatable {
   });
 
   CreateMealState copyWith(
-      {List<IntakeEntity>? intakeList,
+      {List<IntakeForRecipeEntity>? intakeList,
       bool? isOnCreateMealScreen,
       double? totalProteins,
       double? totalCarbs,

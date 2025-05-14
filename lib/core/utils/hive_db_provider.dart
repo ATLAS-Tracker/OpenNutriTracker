@@ -24,12 +24,14 @@ class HiveDBProvider extends ChangeNotifier {
   static const userActivityBoxName = 'UserActivityBox';
   static const userBoxName = 'UserBox';
   static const trackedDayBoxName = 'TrackedDayBox';
+  static const recipeBoxName = "RecipeBox";
 
   late Box<ConfigDBO> configBox;
   late Box<IntakeDBO> intakeBox;
   late Box<UserActivityDBO> userActivityBox;
   late Box<UserDBO> userBox;
   late Box<TrackedDayDBO> trackedDayBox;
+  late Box<RecipesDBO> recipeBox;
 
   Future<void> initHiveDB(Uint8List encryptionKey) async {
     final encryptionCypher = HiveAesCipher(encryptionKey);
@@ -37,12 +39,12 @@ class HiveDBProvider extends ChangeNotifier {
     Hive.registerAdapter(ConfigDBOAdapter());
     Hive.registerAdapter(IntakeDBOAdapter());
     Hive.registerAdapter(MealDBOAdapter());
-    Hive.registerAdapter(RecipesDBOAdapter());
     Hive.registerAdapter(IntakeForRecipeDBOAdapter());
 
     Hive.registerAdapter(MealNutrimentsDBOAdapter());
     Hive.registerAdapter(MealSourceDBOAdapter());
     Hive.registerAdapter(IntakeTypeDBOAdapter());
+    Hive.registerAdapter(RecipesDBOAdapter());
     Hive.registerAdapter(UserDBOAdapter());
     Hive.registerAdapter(UserGenderDBOAdapter());
     Hive.registerAdapter(UserWeightGoalDBOAdapter());
@@ -57,6 +59,8 @@ class HiveDBProvider extends ChangeNotifier {
         await Hive.openBox(configBoxName, encryptionCipher: encryptionCypher);
     intakeBox =
         await Hive.openBox(intakeBoxName, encryptionCipher: encryptionCypher);
+    recipeBox =
+        await Hive.openBox(recipeBoxName, encryptionCipher: encryptionCypher);
     userActivityBox = await Hive.openBox(userActivityBoxName,
         encryptionCipher: encryptionCypher);
     userBox =

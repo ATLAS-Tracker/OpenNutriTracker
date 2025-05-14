@@ -17,3 +17,12 @@ class ExitCreateMealScreenEvent extends CreateMealEvent {
   @override
   List<Object?> get props => [];
 }
+
+class SetIntakeListFromRecipeEvent extends CreateMealEvent {
+  final List<IntakeForRecipeEntity> ingredients;
+
+  const SetIntakeListFromRecipeEvent(this.ingredients);
+
+  @override
+  List<Object?> get props => [ingredients];
+}

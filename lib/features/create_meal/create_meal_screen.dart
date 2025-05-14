@@ -8,10 +8,12 @@ import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/create_meal/presentation/bloc/create_meal_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/intake_vertical_list.dart';
+import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/edit_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/delete_dialog.dart';
 import 'package:opennutritracker/features/create_meal/create_meal_modal.dart';
+import 'package:opennutritracker/core/domain/entity/recipe_entity.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class MealCreationScreen extends StatefulWidget {
@@ -26,6 +28,9 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
   late final CreateMealBloc _createMealBloc;
   final _nameTextController = TextEditingController();
   bool _isDragging = false;
+  late String _id = "";
+  late String _name = "";
+  bool _isInitialized = false;
 
   @override
   void initState() {
@@ -42,6 +47,30 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
     log.info(
         "ExitCreateMealScreenEvent added: isOnCreateMealScreen set to false");
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_isInitialized) return;
+    _isInitialized = true;
+
+    final args = ModalRoute.of(context)?.settings.arguments;
+
+    if (args is CreateMealScreenArguments) {
+      _id = args.id;
+      _name = args.name;
+      _nameTextController.text = _name;
+
+      // Envoie les ingrédients au bloc de façon réactive (déclenche UI update)
+      _createMealBloc
+          .add(SetIntakeListFromRecipeEvent(args.recipe.ingredients));
+    } else {
+      _id = UniqueKey().toString();
+      _name = "";
+      _nameTextController.text = "";
+    }
   }
 
   @override
@@ -97,6 +126,19 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
                         return const Text("Aucun aliment ajouté.");
                       }
 
+                      final now = DateTime.now();
+                      final convertedIntakeList =
+                          state.intakeList.map((ingredient) {
+                        return IntakeEntity(
+                          id: ingredient.code ?? ingredient.name ?? "",
+                          unit: ingredient.unit ?? "g",
+                          amount: ingredient.amount ?? 0,
+                          type: IntakeTypeEntity.breakfast,
+                          meal: ingredient.meal!,
+                          dateTime: now,
+                        );
+                      }).toList();
+
                       return Column(
                         children: [
                           IntakeVerticalList(
@@ -105,7 +147,7 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
                             addMealType:
                                 AddMealType.snackType, // TODO Pierre refactor
                             listIcon: Icons.functions,
-                            intakeList: intakeList,
+                            intakeList: convertedIntakeList,
                             onItemDragCallback: onIntakeItemDrag,
                             onItemTappedCallback: onIntakeItemTapped,
                             usesImperialUnits: false,
@@ -272,4 +314,11 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
           );
         });
   }
+}
+
+class CreateMealScreenArguments {
+  final String id;
+  final String name;
+  final RecipeEntity recipe;
+  CreateMealScreenArguments(this.id, this.name, this.recipe);
 }

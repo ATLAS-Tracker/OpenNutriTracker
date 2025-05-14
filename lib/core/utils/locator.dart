@@ -2,24 +2,28 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get_it/get_it.dart';
 import 'package:opennutritracker/core/data/data_source/config_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/intake_data_source.dart';
+import 'package:opennutritracker/core/data/data_source/recipe_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/physical_activity_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/tracked_day_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/user_activity_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/user_data_source.dart';
 import 'package:opennutritracker/core/data/repository/config_repository.dart';
 import 'package:opennutritracker/core/data/repository/intake_repository.dart';
+import 'package:opennutritracker/core/data/repository/recipe_repository.dart';
 import 'package:opennutritracker/core/data/repository/physical_activity_repository.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_repository.dart';
 import 'package:opennutritracker/core/domain/usecase/add_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_intake_usecase.dart';
+import 'package:opennutritracker/core/domain/usecase/add_recipe_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_tracked_day_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_user_activity_usercase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_user_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_user_activity_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
+import 'package:opennutritracker/core/domain/usecase/get_recipe_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_kcal_goal_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_macro_goal_usecase.dart';
@@ -143,6 +147,10 @@ Future<void> initLocator() async {
       () => DeleteIntakeUsecase(locator()));
   locator.registerLazySingleton<UpdateIntakeUsecase>(
       () => UpdateIntakeUsecase(locator()));
+  locator.registerLazySingleton<AddRecipeUsecase>(
+      () => AddRecipeUsecase(locator()));
+  locator.registerLazySingleton<GetRecipeUsecase>(
+      () => GetRecipeUsecase(locator()));
   locator.registerLazySingleton<GetUserActivityUsecase>(
       () => GetUserActivityUsecase(locator()));
   locator.registerLazySingleton<AddUserActivityUsecase>(
@@ -169,6 +177,8 @@ Future<void> initLocator() async {
       .registerLazySingleton<UserRepository>(() => UserRepository(locator()));
   locator.registerLazySingleton<IntakeRepository>(
       () => IntakeRepository(locator()));
+  locator.registerLazySingleton<RecipeRepository>(
+      () => RecipeRepository(locator()));
   locator.registerLazySingleton<ProductsRepository>(
       () => ProductsRepository(locator(), locator(), locator()));
   locator.registerLazySingleton<UserActivityRepository>(
@@ -185,6 +195,8 @@ Future<void> initLocator() async {
       () => UserDataSource(hiveDBProvider.userBox));
   locator.registerLazySingleton<IntakeDataSource>(
       () => IntakeDataSource(hiveDBProvider.intakeBox));
+  locator.registerLazySingleton<RecipesDataSource>(
+      () => RecipesDataSource(hiveDBProvider.recipeBox));
   locator.registerLazySingleton<UserActivityDataSource>(
       () => UserActivityDataSource(hiveDBProvider.userActivityBox));
   locator.registerLazySingleton<PhysicalActivityDataSource>(
