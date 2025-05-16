@@ -274,8 +274,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "quantityLabel": MessageLookupByLibrary.simpleMessage("Quantité"),
         "readLabel": MessageLookupByLibrary.simpleMessage(
             "J’ai lu et j’accepte la politique de confidentialité."),
-        "recentlyAddedLabel": MessageLookupByLibrary.simpleMessage("Récemment"),
-        "recipeLabel": MessageLookupByLibrary.simpleMessage("Recette"),
+        "recentlyAddedLabel": MessageLookupByLibrary.simpleMessage("Récents"),
+        "recipeLabel": MessageLookupByLibrary.simpleMessage("Recettes"),
         "reportErrorDialogText": MessageLookupByLibrary.simpleMessage(
             "Souhaitez-vous signaler une erreur au développeur ?"),
         "saturatedFatLabel":
