@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:opennutritracker/core/domain/usecase/delete_recipe_usecase.dart';
 import 'package:opennutritracker/features/diary/presentation/widgets/diary_table_calendar.dart';
 import 'package:opennutritracker/core/domain/entity/tracked_day_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
@@ -22,11 +23,13 @@ import 'package:opennutritracker/core/utils/navigation_options.dart';
 class CalendarMealTypeSelector extends StatefulWidget {
   final Function(DateTime) onDateSelected;
   final String mealName;
+  final String? idOfRecipeToModify;
 
   const CalendarMealTypeSelector({
     super.key,
     required this.onDateSelected,
     required this.mealName,
+    required this.idOfRecipeToModify,
   });
 
   @override
@@ -160,6 +163,11 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
       nutriments: nutriment,
       source: MealSourceEntity.custom,
     );
+
+    // In case we want to modify recipe we need to delete the previous version before adding the new one
+    if (widget.idOfRecipeToModify != null) {
+      locator<DeleteRecipeUsecase>().deleteRecipe(widget.idOfRecipeToModify!);
+    }
 
     locator<MealDetailBloc>().addIntake(
       context,

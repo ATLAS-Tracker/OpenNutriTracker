@@ -311,6 +311,7 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
           return CalendarMealTypeSelector(
             onDateSelected: (date) {},
             mealName: recipeName,
+            idOfRecipeToModify: _id,
           );
         });
   }
