@@ -22,23 +22,18 @@ class RecipeSearchBloc extends Bloc<RecipeSearchEvent, RecipeSearchState> {
       emit(RecipeLoadingState());
       try {
         final config = await _getConfigUsecase.getConfig();
-        final recentIntake = await _getIntakeUsecase.getRecentIntake();
+        final recipeIntake = await _getIntakeUsecase.getIntakeByRecipe();
         final searchString = (event.searchString).toLowerCase();
 
         if (searchString.isEmpty) {
           emit(RecipeLoadedState(
-            recipes: recentIntake
-                .where((intake) => intake.meal.mealOrRecipe == "recipe")
-                .map((intake) => intake.meal)
-                .toList(),
+            recipes: recipeIntake.map((intake) => intake.meal).toList(),
             usesImperialUnits: config.usesImperialUnits,
           ));
         } else {
           emit(RecipeLoadedState(
-            recipes: recentIntake
-                .where((intake) =>
-                    intake.meal.mealOrRecipe == "recipe" &&
-                    matchesSearchString(searchString)(intake))
+            recipes: recipeIntake
+                .where((intake) => matchesSearchString(searchString)(intake))
                 .map((intake) => intake.meal)
                 .toList(),
             usesImperialUnits: config.usesImperialUnits,

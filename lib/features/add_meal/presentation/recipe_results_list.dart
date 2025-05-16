@@ -9,6 +9,7 @@ import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.da
 import 'package:opennutritracker/core/domain/usecase/delete_intake_usecase.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:logging/logging.dart';
+import 'package:opennutritracker/generated/l10n.dart';
 
 class RecipeResultsList extends StatefulWidget {
   final DateTime day;
@@ -152,7 +153,7 @@ class _RecipeResultsListState extends State<RecipeResultsList> {
                   : const Center(child: NoResultsWidget());
             } else if (state is RecipeFailedState) {
               return ErrorDialog(
-                errorText: "Aucune recette trouvée",
+                errorText: S.of(context).errorRecipeLabel,
                 onRefreshPressed: _onRecipeRefreshButtonPressed,
               );
             } else {
