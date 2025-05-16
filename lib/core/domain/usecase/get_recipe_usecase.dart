@@ -9,4 +9,8 @@ class GetRecipeUsecase {
   Future<RecipeEntity?> getRecipeById(String id) async {
     return _recipeRepository.getRecipeByKey(id);
   }
+
+  Future<List<RecipeEntity>> getAllRecipes() async {
+    return _recipeRepository.getAllRecipes();
+  }
 }
