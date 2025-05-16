@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/core/domain/entity/intake_for_recipe_entity.dart';
+import 'package:opennutritracker/core/domain/usecase/get_recipe_usecase.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/utils/id_generator.dart';
@@ -10,6 +12,7 @@ part 'create_meal_state.dart';
 
 class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
   List<IntakeForRecipeEntity> _intakeList = [];
+  GetRecipeUsecase _recipeUsecase = locator<GetRecipeUsecase>();
 
   CreateMealBloc() : super(const CreateMealState()) {
     on<InitializeCreateMealEvent>((event, emit) async {
@@ -39,19 +42,35 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
     _emitUpdatedState();
   }
 
-  void addIntake(String unit, String amountText, IntakeTypeEntity type,
-      MealEntity meal, DateTime day) {
+  Future<void> addIntake(String unit, String amountText, IntakeTypeEntity type,
+      MealEntity meal, DateTime day) async {
     final quantity = double.tryParse(amountText.replaceAll(',', '.'));
     if (quantity == null) return;
 
-    final intakeEntity = IntakeForRecipeEntity(
-      code: IdGenerator.getUniqueID(),
-      unit: unit,
-      amount: quantity,
-      meal: meal,
-    );
+    if (meal.mealOrRecipe == "recipe") {
+      final recipe = await _recipeUsecase.getRecipeById(meal.code!);
+      if (recipe == null) return;
 
-    _intakeList.add(intakeEntity);
+      // On ajoute les ingrédients de la recette dans la liste d’intake
+      for (final ingredient in recipe.ingredients) {
+        final intake = IntakeForRecipeEntity(
+          code: ingredient.code ?? IdGenerator.getUniqueID(),
+          unit: ingredient.unit ?? "g",
+          amount: ingredient.amount ?? 0,
+          meal: ingredient.meal,
+        );
+        _intakeList.add(intake);
+      }
+    } else {
+      final intakeEntity = IntakeForRecipeEntity(
+        code: IdGenerator.getUniqueID(),
+        unit: unit,
+        amount: quantity,
+        meal: meal,
+      );
+      _intakeList.add(intakeEntity);
+    }
+
     _emitUpdatedState();
   }
 
