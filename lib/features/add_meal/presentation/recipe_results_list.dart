@@ -6,8 +6,7 @@ import 'package:opennutritracker/features/add_meal/presentation/widgets/meal_ite
 import 'package:opennutritracker/features/add_meal/presentation/widgets/default_results_widget.dart';
 import 'package:opennutritracker/features/add_meal/presentation/widgets/no_results_widget.dart';
 import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.dart';
-import 'package:opennutritracker/core/domain/usecase/delete_intake_usecase.dart';
-import 'package:opennutritracker/core/utils/locator.dart';
+import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:logging/logging.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
@@ -30,8 +29,6 @@ class RecipeResultsList extends StatefulWidget {
 class _RecipeResultsListState extends State<RecipeResultsList> {
   final _log = Logger('Recipe Result List');
   bool _isDragging = false;
-  final DeleteIntakeUsecase _deleteIntakeUsecase =
-      locator<DeleteIntakeUsecase>();
 
   void _onRecipeRefreshButtonPressed() {
     widget.bloc.add(const LoadRecipeSearchEvent(searchString: ""));
@@ -126,8 +123,12 @@ class _RecipeResultsListState extends State<RecipeResultsList> {
                                     setState(() {
                                       _isDragging = false;
                                     });
-                                    // Logique de suppression à implémenter plus tard
-                                    // print("Suppression demandée pour $data");
+
+                                    if (data is MealEntity &&
+                                        data.code != null) {
+                                      widget.bloc.add(DeleteRecipeEvent(
+                                          recipeId: data.code!));
+                                    }
                                   },
                                   onLeave: (data) {
                                     setState(() {

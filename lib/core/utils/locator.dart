@@ -22,6 +22,7 @@ import 'package:opennutritracker/core/domain/usecase/add_user_activity_usercase.
 import 'package:opennutritracker/core/domain/usecase/add_user_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_user_activity_usecase.dart';
+import 'package:opennutritracker/core/domain/usecase/delete_recipe_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_recipe_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_intake_usecase.dart';
@@ -124,7 +125,8 @@ Future<void> initLocator() async {
       .registerFactory<ProductsBloc>(() => ProductsBloc(locator(), locator()));
   locator.registerFactory<FoodBloc>(() => FoodBloc(locator(), locator()));
   locator.registerFactory(() => RecentMealBloc(locator(), locator()));
-  locator.registerFactory(() => RecipeSearchBloc(locator(), locator()));
+  locator
+      .registerFactory(() => RecipeSearchBloc(locator(), locator(), locator()));
 
   // UseCases
   locator.registerLazySingleton<GetConfigUsecase>(
@@ -145,6 +147,8 @@ Future<void> initLocator() async {
       () => AddIntakeUsecase(locator()));
   locator.registerLazySingleton<DeleteIntakeUsecase>(
       () => DeleteIntakeUsecase(locator()));
+  locator.registerLazySingleton<DeleteRecipeUsecase>(
+      () => DeleteRecipeUsecase(locator()));
   locator.registerLazySingleton<UpdateIntakeUsecase>(
       () => UpdateIntakeUsecase(locator()));
   locator.registerLazySingleton<AddRecipeUsecase>(

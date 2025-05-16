@@ -13,3 +13,13 @@ class LoadRecipeSearchEvent extends RecipeSearchEvent {
   @override
   List<Object?> get props => [];
 }
+
+class DeleteRecipeEvent extends RecipeSearchEvent {
+  final String recipeId;
+
+  /// an empty `searchString` will load all RecentMeal
+  const DeleteRecipeEvent({required this.recipeId});
+
+  @override
+  List<Object?> get props => [];
+}
