@@ -16,6 +16,8 @@ import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dar
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 import 'package:opennutritracker/core/domain/usecase/add_recipe_usecase.dart';
 import 'package:opennutritracker/core/domain/entity/recipe_entity.dart';
+import 'package:opennutritracker/features/add_meal/presentation/bloc/recipe_search_bloc.dart';
+import 'package:opennutritracker/core/utils/navigation_options.dart';
 
 class CalendarMealTypeSelector extends StatefulWidget {
   final Function(DateTime) onDateSelected;
@@ -181,9 +183,13 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
     locator<HomeBloc>().add(const LoadItemsEvent());
     locator<DiaryBloc>().add(const LoadDiaryYearEvent());
     locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
+    locator<RecipeSearchBloc>()
+        .add(const LoadRecipeSearchEvent(searchString: ""));
 
-    Navigator.of(context).pop();
-    Navigator.of(context).pop();
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      NavigationOptions.mainRoute,
+      (route) => false,
+    );
   }
 
   @override

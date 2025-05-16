@@ -10,4 +10,5 @@ class NavigationOptions {
   static const activityDetailRoute = "activityDetail";
   static const imageFullScreenRoute = "imageFullScreen";
   static const createMealRoute = 'createMeal';
+  static const recipeRoute = "recipe";
 }

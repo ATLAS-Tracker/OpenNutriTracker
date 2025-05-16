@@ -57,7 +57,9 @@ class AddItemBottomSheet extends StatelessWidget {
                         color: Theme.of(context).colorScheme.onSurface),
                   ),
                   subtitle: Text(
-                    "Créer un repas", // à remplacer par S.of(context).mealExample
+                    S
+                        .of(context)
+                        .recipeLabel, // à remplacer par S.of(context).mealExample
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Theme.of(context)
                             .colorScheme
@@ -194,7 +196,7 @@ class AddItemBottomSheet extends StatelessWidget {
   void _showAddMealCreationScreen(BuildContext context) {
     Navigator.of(context).pop();
     Navigator.of(context).pushNamed(
-      NavigationOptions.createMealRoute,
+      NavigationOptions.recipeRoute,
     );
   }
 }

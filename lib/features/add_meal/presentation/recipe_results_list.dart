@@ -117,10 +117,8 @@ class _RecipeResultsListState extends State<RecipeResultsList> {
                               alignment: Alignment.bottomCenter,
                               child: Container(
                                 height: 70,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .error
-                                    .withAlpha(80),
+                                color: Theme.of(context).colorScheme.error
+                                  ..withValues(alpha: 0.3),
                                 child: DragTarget(
                                   onWillAccept: (data) => true,
                                   onAccept: (data) {
@@ -151,7 +149,7 @@ class _RecipeResultsListState extends State<RecipeResultsList> {
                         ],
                       ),
                     )
-                  : const NoResultsWidget();
+                  : const Center(child: NoResultsWidget());
             } else if (state is RecipeFailedState) {
               return ErrorDialog(
                 errorText: "Aucune recette trouvée",
