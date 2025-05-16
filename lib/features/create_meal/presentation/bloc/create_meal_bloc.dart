@@ -20,6 +20,7 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
     });
 
     on<ExitCreateMealScreenEvent>((event, emit) async {
+      clearIntakeList();
       emit(state.copyWith(isOnCreateMealScreen: false));
     });
 
