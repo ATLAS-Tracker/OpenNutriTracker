@@ -139,13 +139,13 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
     final macros = locator<CreateMealBloc>().computeMacros();
 
     final nutriment = MealNutrimentsEntity(
-        energyKcal100: macros['totalKcal']! / mealPortionCountInt,
-        carbohydrates100: macros['totalCarbs']! / mealPortionCountInt,
-        fat100: macros['totalFats']! / mealPortionCountInt,
-        proteins100: macros['totalProteins']! / mealPortionCountInt,
-        sugars100: null,
-        saturatedFat100: null,
-        fiber100: null,
+        energyKcalPerQuantity: macros['totalKcal']! / mealPortionCountInt,
+        carbohydratesPerQuantity: macros['totalCarbs']! / mealPortionCountInt,
+        fatPerQuantity: macros['totalFats']! / mealPortionCountInt,
+        proteinsPerQuantity: macros['totalProteins']! / mealPortionCountInt,
+        sugarsPerQuantity: null,
+        saturatedFatPerQuantity: null,
+        fiberPerQuantity: null,
         mealOrRecipe: "recipe");
 
     final meal = MealEntity(

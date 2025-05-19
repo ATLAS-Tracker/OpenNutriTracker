@@ -156,10 +156,10 @@ class MealDetailBottomSheet extends StatelessWidget {
 
   bool _hasRequiredProductInfoMissing() {
     final productNutriments = product.nutriments;
-    if (productNutriments.energyKcal100 == null ||
-        productNutriments.carbohydrates100 == null ||
-        productNutriments.fat100 == null ||
-        productNutriments.proteins100 == null) {
+    if (productNutriments.energyKcalPerQuantity == null ||
+        productNutriments.carbohydratesPerQuantity == null ||
+        productNutriments.fatPerQuantity == null ||
+        productNutriments.proteinsPerQuantity == null) {
       return true;
     } else {
       return false;
