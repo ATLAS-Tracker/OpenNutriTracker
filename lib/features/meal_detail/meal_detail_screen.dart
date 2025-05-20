@@ -195,7 +195,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                         meal.code!,
                         meal.name!,
                         recipe,
-                        meal.url!,
+                        meal.url,
                       ),
                     );
                   },

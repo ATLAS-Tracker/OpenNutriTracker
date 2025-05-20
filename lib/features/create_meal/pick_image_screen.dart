@@ -35,13 +35,6 @@ class _PhotoPickerButtonState extends State<PhotoPickerButton> {
       final imageFile = File(pickedFile.path);
       final appDir = await getApplicationDocumentsDirectory();
 
-      if (_imagePath != null) {
-        final oldFile = File(_imagePath!);
-        if (await oldFile.exists()) {
-          await oldFile.delete();
-        }
-      }
-
       final now = DateTime.now();
       final formattedTime =
           '${now.year}${_twoDigits(now.month)}${_twoDigits(now.day)}_${_twoDigits(now.hour)}${_twoDigits(now.minute)}${_twoDigits(now.second)}';

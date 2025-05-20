@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/core/domain/entity/intake_for_recipe_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/get_recipe_usecase.dart';
-import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/utils/id_generator.dart';
@@ -11,10 +10,10 @@ part 'create_meal_event.dart';
 part 'create_meal_state.dart';
 
 class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
+  final GetRecipeUsecase _recipeUsecase;
   List<IntakeForRecipeEntity> _intakeList = [];
-  final GetRecipeUsecase _recipeUsecase = locator<GetRecipeUsecase>();
 
-  CreateMealBloc() : super(const CreateMealState()) {
+  CreateMealBloc(this._recipeUsecase) : super(const CreateMealState()) {
     on<InitializeCreateMealEvent>((event, emit) async {
       emit(state.copyWith(isOnCreateMealScreen: true));
     });
@@ -30,9 +29,7 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
     });
   }
 
-  List<IntakeForRecipeEntity> getListOfIntakeForRecipeEntity() {
-    return _intakeList;
-  }
+  List<IntakeForRecipeEntity> getListOfIntakeForRecipeEntity() => _intakeList;
 
   void setListOfIntakeForRecipeEntity(List<IntakeForRecipeEntity> list) {
     _intakeList = list;
@@ -43,8 +40,13 @@ class CreateMealBloc extends Bloc<CreateMealEvent, CreateMealState> {
     _emitUpdatedState();
   }
 
-  Future<void> addIntake(String unit, String amountText, IntakeTypeEntity type,
-      MealEntity meal, DateTime day) async {
+  Future<void> addIntake(
+    String unit,
+    String amountText,
+    IntakeTypeEntity type,
+    MealEntity meal,
+    DateTime day,
+  ) async {
     final quantity = double.tryParse(amountText.replaceAll(',', '.'));
     if (quantity == null) return;
 

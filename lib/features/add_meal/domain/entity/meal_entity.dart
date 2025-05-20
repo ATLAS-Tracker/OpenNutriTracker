@@ -212,3 +212,37 @@ enum MealSourceEntity {
     return mealSourceEntity;
   }
 }
+
+extension MealEntityCopyWith on MealEntity {
+  MealEntity copyWith({
+    String? code,
+    String? name,
+    String? brands,
+    String? thumbnailImageUrl,
+    String? mainImageUrl,
+    String? url,
+    String? mealQuantity,
+    String? mealUnit,
+    double? servingQuantity,
+    String? servingUnit,
+    String? servingSize,
+    MealNutrimentsEntity? nutriments,
+    MealSourceEntity? source,
+  }) {
+    return MealEntity(
+      code: code ?? this.code,
+      name: name ?? this.name,
+      brands: brands ?? this.brands,
+      thumbnailImageUrl: thumbnailImageUrl ?? this.thumbnailImageUrl,
+      mainImageUrl: mainImageUrl ?? this.mainImageUrl,
+      url: url ?? this.url,
+      mealQuantity: mealQuantity ?? this.mealQuantity,
+      mealUnit: mealUnit ?? this.mealUnit,
+      servingQuantity: servingQuantity ?? this.servingQuantity,
+      servingUnit: servingUnit ?? this.servingUnit,
+      servingSize: servingSize ?? this.servingSize,
+      nutriments: nutriments ?? this.nutriments,
+      source: source ?? this.source,
+    );
+  }
+}

@@ -343,6 +343,6 @@ class CreateMealScreenArguments {
   final String id;
   final String name;
   final RecipeEntity recipe;
-  final String imagePath;
+  final String? imagePath;
   CreateMealScreenArguments(this.id, this.name, this.recipe, this.imagePath);
 }
