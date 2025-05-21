@@ -92,6 +92,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Özel bir yemek öğesi oluşturmak istiyor musunuz?"),
         "createCustomDialogTitle": MessageLookupByLibrary.simpleMessage(
             "Özel yemek öğesi oluşturulsun mu?"),
+        "createRecipeLabel":
+            MessageLookupByLibrary.simpleMessage("Öğün oluştur"),
         "dataCollectionLabel": MessageLookupByLibrary.simpleMessage(
             "Anonim kullanım verileri sağlayarak geliştirmeyi destekleyin"),
         "deleteTimeDialogContent": MessageLookupByLibrary.simpleMessage(
@@ -125,6 +127,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "E-posta uygulaması açılırken hata oluştu"),
         "errorProductNotFound":
             MessageLookupByLibrary.simpleMessage("Ürün bulunamadı"),
+        "errorRecipeLabel":
+            MessageLookupByLibrary.simpleMessage("Hiç tarif bulunamadı"),
+        "exampleOfActivityLabel":
+            MessageLookupByLibrary.simpleMessage("örn: bisiklet"),
         "fatLabel": MessageLookupByLibrary.simpleMessage("yağ"),
         "fiberLabel": MessageLookupByLibrary.simpleMessage("lif"),
         "genderFemaleLabel": MessageLookupByLibrary.simpleMessage("♀ kadın"),
@@ -161,6 +167,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "mealKcalLabel":
             MessageLookupByLibrary.simpleMessage("100 g/ml başına kalori"),
         "mealNameLabel": MessageLookupByLibrary.simpleMessage("Yemek adı"),
+        "mealPortionLabel":
+            MessageLookupByLibrary.simpleMessage("Porsiyon sayısı"),
         "mealProteinLabel":
             MessageLookupByLibrary.simpleMessage("100 g/ml başına protein"),
         "mealSizeLabel":
@@ -173,6 +181,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Üründe gerekli kalori veya makrobesin bilgisi eksik"),
         "noActivityRecentlyAddedLabel": MessageLookupByLibrary.simpleMessage(
             "Son zamanlarda eklenen aktivite yok"),
+        "noFoodAddedLabel":
+            MessageLookupByLibrary.simpleMessage("Hiçbir gıda eklenmedi"),
         "noMealsRecentlyAddedLabel": MessageLookupByLibrary.simpleMessage(
             "Son zamanlarda eklenen yemek yok"),
         "noResultsFound":
@@ -555,6 +565,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "palVeryActiveLabel": MessageLookupByLibrary.simpleMessage("Çok Aktif"),
         "per100gmlLabel":
             MessageLookupByLibrary.simpleMessage("100g/ml başına"),
+        "portionEatLabel":
+            MessageLookupByLibrary.simpleMessage("Yenilen porsiyon"),
         "privacyPolicyLabel":
             MessageLookupByLibrary.simpleMessage("Gizlilik politikası"),
         "profileLabel": MessageLookupByLibrary.simpleMessage("Profil"),
@@ -564,6 +576,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Gizlilik politikasını okudum ve kabul ediyorum."),
         "recentlyAddedLabel":
             MessageLookupByLibrary.simpleMessage("Son Eklenenler"),
+        "recipeLabel": MessageLookupByLibrary.simpleMessage("Tarif"),
         "reportErrorDialogText": MessageLookupByLibrary.simpleMessage(
             "Geliştiriciye bir hata bildirmek istiyor musunuz?"),
         "retryLabel": MessageLookupByLibrary.simpleMessage("Tekrar dene"),
