@@ -17,6 +17,8 @@ import 'package:opennutritracker/core/data/dbo/user_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_gender_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
+import 'package:opennutritracker/core/domain/enum/meal_type.dart';
+import 'package:opennutritracker/core/domain/enum/meal_type_adapter.dart';
 
 class HiveDBProvider extends ChangeNotifier {
   static const configBoxName = 'ConfigBox';
@@ -54,6 +56,7 @@ class HiveDBProvider extends ChangeNotifier {
     Hive.registerAdapter(PhysicalActivityDBOAdapter());
     Hive.registerAdapter(PhysicalActivityTypeDBOAdapter());
     Hive.registerAdapter(AppThemeDBOAdapter());
+    Hive.registerAdapter(MealTypeAdapter());
 
     configBox =
         await Hive.openBox(configBoxName, encryptionCipher: encryptionCypher);
