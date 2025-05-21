@@ -146,7 +146,7 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
         sugarsPerQuantity: null,
         saturatedFatPerQuantity: null,
         fiberPerQuantity: null,
-        mealOrRecipe: "recipe");
+        mealOrRecipe: MealType.recipe);
 
     final meal = MealEntity(
       code: IdGenerator.getUniqueID(),

@@ -54,7 +54,7 @@ class IntakeDataSource {
 
   Future<List<IntakeDBO>> getIntakeRecipe() async {
     return _intakeBox.values
-        .where((intake) => intake.meal.nutriments.mealOrRecipe == "recipe")
+        .where((intake) => intake.meal.nutriments.mealOrRecipe == MealType.recipe)
         .toList();
   }
 

@@ -24,7 +24,7 @@ class RecipeEntityFixtures {
       sugarsPerQuantity: 5,
       saturatedFatPerQuantity: 2,
       fiberPerQuantity: 4,
-      mealOrRecipe: "recipe",
+      mealOrRecipe: MealType.recipe,
     ),
     source: MealSourceEntity.custom,
   );

@@ -178,7 +178,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                               : const SizedBox()));
             }),
             actions: [
-              if (meal.mealOrRecipe == MealType.recipe)
+              if (meal.mealOrRecipe == MealType.recipe.toShortString())
                 IconButton(
                   onPressed: () async {
                     final recipe = await locator<GetRecipeUsecase>()
@@ -235,7 +235,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                     );
                   },
                   child: meal.mainImageUrl != null
-                      ? meal.mealOrRecipe == MealType.recipe
+                      ? meal.mealOrRecipe == MealType.recipe.toShortString()
                           ? Hero(
                               tag: ImageFullScreen.fullScreenHeroTag,
                               child: Container(

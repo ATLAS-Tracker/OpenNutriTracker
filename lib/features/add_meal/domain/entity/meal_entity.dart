@@ -146,7 +146,7 @@ class MealEntity extends Equatable {
   }
 
   String? get mealOrRecipe {
-    return nutriments.mealOrRecipe;
+    return nutriments.mealOrRecipe?.toShortString();
   }
 
   /// Value returned from OFF can either be String, int or double.

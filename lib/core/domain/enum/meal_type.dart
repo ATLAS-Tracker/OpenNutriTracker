@@ -1,4 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'meal_type.g.dart';
 
 /// Enum representing the type of a meal entry
 /// Can be either a meal or a recipe
@@ -28,7 +31,7 @@ extension MealTypeExtension on MealType {
 extension StringToMealTypeExtension on String {
   /// Convert String to MealType
   MealType toMealType() {
-    switch (this.toLowerCase()) {
+    switch (toLowerCase()) {
       case 'recipe':
         return MealType.recipe;
       case 'meal':
