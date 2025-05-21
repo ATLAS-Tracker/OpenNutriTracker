@@ -88,9 +88,9 @@ flutter:
   generate: true
   uses-material-design: true
 
-flutter_intl:
-  enabled: true
-  class_name: S
+  # Flutter Intl configuration
+  intl: true
+  intl_class_name: S
   main_locale: en
 
   assets:
