@@ -85,8 +85,13 @@ dev_dependencies:
   mockito: ^5.4.5
 
 flutter:
-
+  generate: true
   uses-material-design: true
+
+flutter_intl:
+  enabled: true
+  class_name: S
+  main_locale: en
 
   assets:
     - assets/icon/ont_logo_square.png
