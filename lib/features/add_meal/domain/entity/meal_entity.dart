@@ -41,6 +41,8 @@ class MealEntity extends Equatable {
   final MealSourceEntity source;
 
   final MealNutrimentsEntity nutriments;
+  
+  final List<MealEntity>? ingredients;
 
   bool get isLiquid => liquidUnits.contains(mealUnit);
 
@@ -59,7 +61,8 @@ class MealEntity extends Equatable {
       required this.servingUnit,
       required this.servingSize,
       required this.nutriments,
-      required this.source});
+      required this.source,
+      this.ingredients});
 
   factory MealEntity.empty() => MealEntity(
       code: IdGenerator.getUniqueID(),
@@ -187,7 +190,8 @@ enum MealSourceEntity {
   unknown,
   custom,
   off,
-  fdc;
+  fdc,
+  recipe;
 
   factory MealSourceEntity.fromMealSourceDBO(MealSourceDBO mealSourceDBO) {
     MealSourceEntity mealSourceEntity;
@@ -203,6 +207,9 @@ enum MealSourceEntity {
         break;
       case MealSourceDBO.fdc:
         mealSourceEntity = MealSourceEntity.fdc;
+        break;
+      case MealSourceDBO.recipe:
+        mealSourceEntity = MealSourceEntity.recipe;
         break;
     }
     return mealSourceEntity;
