@@ -1,7 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:opennutritracker/core/domain/enum/meal_type.dart';
-import 'package:opennutritracker/core/domain/enum/meal_type_json_converter.dart';
+// Note: Using MealTypeJsonConverter from meal_type.dart
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_nutriments_entity.dart';
 
 part 'meal_nutriments_dbo.g.dart';

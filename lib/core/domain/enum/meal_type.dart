@@ -1,11 +1,13 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'meal_type_extensions.dart';
 
 part 'meal_type.g.dart';
 
 /// Enum representing the type of a meal entry
 /// Can be either a meal or a recipe
 @HiveType(typeId: 10)
+@JsonEnum()
 enum MealType {
   @HiveField(0)
   meal,
@@ -13,44 +15,35 @@ enum MealType {
   recipe,
 }
 
-/// Extension methods for MealType enum
-extension MealTypeExtension on MealType {
-  /// Convert MealType enum to String
-  String toShortString() {
-    return toString().split('.').last;
-  }
-  
-  /// Check if this is a recipe type
-  bool get isRecipe => this == MealType.recipe;
-  
-  /// Check if this is a meal type
-  bool get isMeal => this == MealType.meal;
-}
+/// JSON converter for MealType enum
+class MealTypeJsonConverter implements JsonConverter<MealType?, String?> {
+  const MealTypeJsonConverter();
 
-/// Extension methods for String to convert to MealType
-extension StringToMealTypeExtension on String {
-  /// Convert String to MealType
-  MealType toMealType() {
-    switch (toLowerCase()) {
-      case 'recipe':
-        return MealType.recipe;
-      case 'meal':
-      default:
-        return MealType.meal;
-    }
+  @override
+  MealType? fromJson(String? json) {
+    if (json == null) return null;
+    return json.toMealType();
+  }
+
+  @override
+  String? toJson(MealType? object) {
+    return object?.toShortString();
   }
 }
 
-/// Extension methods for nullable MealType
-extension NullableMealTypeExtension on MealType? {
-  /// Convert nullable MealType to String
-  String? toShortString() {
-    return this?.toShortString();
+/// TypeAdapter for MealType enum to be used with Hive  
+class MealTypeAdapter extends TypeAdapter<MealType> {
+  @override
+  final int typeId = 10;
+
+  @override
+  MealType read(BinaryReader reader) {
+    final index = reader.readByte();
+    return MealType.values[index];
   }
-  
-  /// Check if this is a recipe type
-  bool get isRecipe => this == MealType.recipe;
-  
-  /// Check if this is a meal type
-  bool get isMeal => this == MealType.meal;
+
+  @override
+  void write(BinaryWriter writer, MealType obj) {
+    writer.writeByte(obj.index);
+  }
 }

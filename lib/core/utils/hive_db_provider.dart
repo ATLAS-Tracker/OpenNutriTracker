@@ -17,8 +17,7 @@ import 'package:opennutritracker/core/data/dbo/user_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_gender_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
-// Remove MealType import as it's only used through adapter
-import 'package:opennutritracker/core/domain/enum/meal_type_adapter.dart';
+import 'package:opennutritracker/core/domain/enum/meal_type.dart';
 
 class HiveDBProvider extends ChangeNotifier {
   static const configBoxName = 'ConfigBox';
