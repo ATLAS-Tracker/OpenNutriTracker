@@ -19,6 +19,9 @@ class MealEntity extends Equatable {
     'µg',
     'oz',
   };
+  
+  /// Type of the meal entry (regular meal or recipe)
+  final MealType mealType;
 
   final String? code;
   final String? name;
@@ -59,7 +62,8 @@ class MealEntity extends Equatable {
       required this.servingUnit,
       required this.servingSize,
       required this.nutriments,
-      required this.source});
+      required this.source,
+      this.mealType = MealType.meal});
 
   factory MealEntity.empty() => MealEntity(
       code: IdGenerator.getUniqueID(),
@@ -71,7 +75,8 @@ class MealEntity extends Equatable {
       servingUnit: 'gml',
       servingSize: '',
       nutriments: MealNutrimentsEntity.empty(),
-      source: MealSourceEntity.custom);
+      source: MealSourceEntity.custom,
+      mealType: MealType.meal);
 
   factory MealEntity.fromMealDBO(MealDBO mealDBO) => MealEntity(
       code: mealDBO.code,
@@ -87,7 +92,10 @@ class MealEntity extends Equatable {
       servingSize: mealDBO.servingSize,
       nutriments:
           MealNutrimentsEntity.fromMealNutrimentsDBO(mealDBO.nutriments),
-      source: MealSourceEntity.fromMealSourceDBO(mealDBO.source));
+      source: MealSourceEntity.fromMealSourceDBO(mealDBO.source),
+      mealType: mealDBO.mealType != null ? 
+          MealType.values.firstWhere((e) => e.name == mealDBO.mealType) : 
+          MealType.meal);
 
   factory MealEntity.fromOFFProduct(OFFProductDTO offProduct) {
     return MealEntity(
@@ -105,7 +113,8 @@ class MealEntity extends Equatable {
         servingSize: offProduct.serving_size,
         nutriments:
             MealNutrimentsEntity.fromOffNutriments(offProduct.nutriments),
-        source: MealSourceEntity.off);
+        source: MealSourceEntity.off,
+        mealType: MealType.meal);
   }
 
   factory MealEntity.fromFDCFood(FDCFoodDTO fdcFood) {
@@ -123,7 +132,8 @@ class MealEntity extends Equatable {
         servingSize: fdcFood.servingSizeUnit,
         nutriments:
             MealNutrimentsEntity.fromFDCNutriments(fdcFood.foodNutrients),
-        source: MealSourceEntity.fdc);
+        source: MealSourceEntity.fdc,
+        mealType: MealType.meal);
   }
 
   factory MealEntity.fromSpFDCFood(SpFdcFoodDTO foodItem) {
@@ -142,7 +152,8 @@ class MealEntity extends Equatable {
         servingSize:
             "${(foodItem.servingAmount ?? 1).toInt()} ${foodItem.servingSizeUnit}",
         nutriments: MealNutrimentsEntity.fromFDCNutriments(foodItem.nutrients),
-        source: MealSourceEntity.fdc);
+        source: MealSourceEntity.fdc,
+        mealType: MealType.meal);
   }
 
   /// Value returned from OFF can either be String, int or double.
@@ -180,7 +191,7 @@ class MealEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props => [code, name];
+  List<Object?> get props => [code, name, mealType];
 }
 
 enum MealSourceEntity {
@@ -207,4 +218,19 @@ enum MealSourceEntity {
     }
     return mealSourceEntity;
   }
+}
+
+/// Represents the type of a meal entry
+enum MealType {
+  /// Regular meal
+  meal,
+  
+  /// Recipe (a combination of ingredients)
+  recipe;
+  
+  /// Checks if the meal type is a recipe
+  bool get isRecipe => this == MealType.recipe;
+  
+  /// Checks if the meal type is a regular meal
+  bool get isMeal => this == MealType.meal;
 }
