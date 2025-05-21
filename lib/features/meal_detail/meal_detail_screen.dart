@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
+import 'package:opennutritracker/core/domain/enum/meal_type.dart';
+import 'package:opennutritracker/core/domain/enum/meal_type_extensions.dart';
 import 'package:opennutritracker/core/presentation/widgets/meal_value_unit_text.dart';
 import 'package:opennutritracker/core/presentation/widgets/image_full_screen.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
@@ -107,6 +109,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Function isRecipe = (String? mealType) => mealType == MealType.recipe.toShortString();
     return SafeArea(
       child: BlocBuilder<MealDetailBloc, MealDetailState>(
         bloc: _mealDetailBloc,
@@ -177,7 +180,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                               : const SizedBox()));
             }),
             actions: [
-              if (meal.mealOrRecipe == "recipe")
+              if (isRecipe(meal.mealOrRecipe))
                 IconButton(
                   onPressed: () async {
                     final recipe = await locator<GetRecipeUsecase>()
@@ -234,7 +237,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                     );
                   },
                   child: meal.mainImageUrl != null
-                      ? meal.mealOrRecipe == "recipe"
+                      ? isRecipe(meal.mealOrRecipe)
                           ? Hero(
                               tag: ImageFullScreen.fullScreenHeroTag,
                               child: Container(
