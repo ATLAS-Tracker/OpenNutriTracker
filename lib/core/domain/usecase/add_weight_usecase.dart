@@ -6,7 +6,7 @@ class AddWeightUsecase {
 
   AddWeightUsecase(this._userWeightRepository);
 
-  Future<void> addUserActivity(UserWeightEntity userWeightEntity) async {
+  Future<void> addUserWeight(UserWeightEntity userWeightEntity) async {
     return await _userWeightRepository.addUserWeight(userWeightEntity);
   }
 }

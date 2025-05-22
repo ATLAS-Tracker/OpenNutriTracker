@@ -3,7 +3,6 @@ import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_weight_usecase.dart';
-import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
 
 part 'weight_event.dart';
 
@@ -33,12 +32,6 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
       } else {
         finalWeight = 0.0;
       }
-      emit(WeightState(finalWeight));
-    });
-    on<WeightSave>((event, emit) {
-      log.info('Saving weight: $finalWeight');
-      _addWeightUsecase.addUserActivity(
-          UserWeightEntity(id: '', weight: finalWeight, date: DateTime.now()));
       emit(WeightState(finalWeight));
     });
   }

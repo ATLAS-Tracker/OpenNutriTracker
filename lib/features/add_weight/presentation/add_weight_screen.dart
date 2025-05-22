@@ -3,9 +3,9 @@ import 'package:opennutritracker/features/add_weight/presentation/bloc/weight_bl
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/generated/l10n.dart';
-
 import 'package:opennutritracker/core/domain/usecase/add_weight_usecase.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
+import 'package:opennutritracker/core/utils/id_generator.dart';
 
 class AddWeightScreen extends StatefulWidget {
   const AddWeightScreen({super.key});
@@ -74,9 +74,9 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () => _addWeightUsecase.addUserActivity(
+                    onPressed: () => _addWeightUsecase.addUserWeight(
                         UserWeightEntity(
-                            id: "id",
+                            id: IdGenerator.getUniqueID(),
                             weight: _weightBloc.finalWeight,
                             date: DateTime.now())),
                     child: Text("Save"),
