@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/core/domain/entity/user_bmi_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_gender_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_pal_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_goal_entity.dart';
 import 'package:opennutritracker/core/utils/calc/unit_calc.dart';
@@ -165,6 +166,21 @@ class _ProfilePageState extends State<ProfilePage> {
           onTap: () {
             _showSetGenderDialog(context, user);
           },
+        ),
+        ListTile(
+          title: Text(
+            S.of(context).userRoleLabel,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          subtitle: Text(
+            user.userRole.getName(context),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          leading: const SizedBox(
+            height: double.infinity,
+            child: Icon(Icons.person_outline),
+          ),
+          onTap: null, // Or implement a dialog to change role later
         ),
       ],
     );

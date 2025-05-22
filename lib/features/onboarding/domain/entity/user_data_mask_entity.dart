@@ -1,3 +1,4 @@
+import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_gender_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_pal_entity.dart';
@@ -13,6 +14,7 @@ class UserDataMaskEntity {
   double? weight;
   UserActivitySelectionEntity? activity;
   UserGoalSelectionEntity? goal;
+  UserRoleEntity? userRole;
 
   bool acceptDataCollection = false;
 
@@ -25,6 +27,7 @@ class UserDataMaskEntity {
       this.weight,
       this.activity,
       this.goal,
+      this.userRole,
       this.acceptDataCollection = false,
       this.usesImperialUnits = false});
 
@@ -34,6 +37,7 @@ class UserDataMaskEntity {
         height != null &&
         weight != null &&
         activity != null &&
+        userRole != null && 
         goal != null) {
       return true;
     } else {
@@ -92,6 +96,7 @@ class UserDataMaskEntity {
         weightKG: userWeight,
         gender: userGender,
         goal: userGoal,
-        pal: userPal);
+        pal: userPal,
+        userRole: userRole ?? UserRoleEntity.unspecified);
   }
 }
