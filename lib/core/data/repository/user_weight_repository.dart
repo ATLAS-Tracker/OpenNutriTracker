@@ -10,12 +10,16 @@ class UserWeightRepository {
   Future<void> addUserWeight(UserWeightEntity userWeight) async {
     final userWeightDbo = UserWeightDbo.fromUserWeightEntity(userWeight);
 
-    _userWeightDataSource.addUserWeight(userWeightDbo);
+    await _userWeightDataSource.addUserWeight(userWeightDbo);
   }
 
-  Future<UserWeightEntity> getUserWeightByDate(DateTime dateTime) async {
-    final UserWeightDbo weightDbo =
+  Future<UserWeightEntity?> getUserWeightByDate(DateTime dateTime) async {
+    final UserWeightDbo? weightDbo =
         await _userWeightDataSource.getUserWeightByDate(dateTime);
+
+    if (weightDbo == null) {
+      return null;
+    }
 
     return UserWeightEntity.fromUserWeightDbo(weightDbo);
   }

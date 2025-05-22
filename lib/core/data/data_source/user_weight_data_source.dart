@@ -8,14 +8,31 @@ class UserWeightDataSource {
   UserWeightDataSource(this._userWeightBox);
 
   Future<void> addUserWeight(UserWeightDbo userWeightDbo) async {
-    if (_userWeightBox.isNotEmpty) {
-      await _userWeightBox.clear();
+    dynamic keyToUpdate;
+    /* Iterate over the keys of the box to find a match, find if an entry for the same day already exists */
+    for (final key in _userWeightBox.keys) {
+      final existingDbo = _userWeightBox.get(key);
+      // Check if the DBO exists and is for the same day as the new DBO
+      if (existingDbo != null &&
+          DateUtils.isSameDay(existingDbo.date, userWeightDbo.date)) {
+        keyToUpdate = key; // Store the key of the DBO to be updated
+        break; // Found the entry, no need to search further
+      }
     }
-    await _userWeightBox.add(userWeightDbo);
+
+    if (keyToUpdate != null) {
+      await _userWeightBox.put(keyToUpdate, userWeightDbo);
+    } else {
+      await _userWeightBox.add(userWeightDbo);
+    }
   }
 
-  Future<UserWeightDbo> getUserWeightByDate(DateTime dateTime) async {
-    return _userWeightBox.values
-        .firstWhere((dbo) => DateUtils.isSameDay(dbo.date, dateTime));
+  Future<UserWeightDbo?> getUserWeightByDate(DateTime dateTime) async {
+    for (final dbo in _userWeightBox.values) {
+      if (DateUtils.isSameDay(dbo.date, dateTime)) {
+        return dbo;
+      }
+    }
+    return null;
   }
 }
