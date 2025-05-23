@@ -13,6 +13,10 @@ class UserWeightRepository {
     await _userWeightDataSource.addUserWeight(userWeightDbo);
   }
 
+  Future<void> deleteUserWeigthByDate(DateTime dateTime) async {
+    await _userWeightDataSource.deleteUserWeightByDate(dateTime);
+  }
+
   Future<UserWeightEntity?> getUserWeightByDate(DateTime dateTime) async {
     final UserWeightDbo? weightDbo =
         await _userWeightDataSource.getUserWeightByDate(dateTime);

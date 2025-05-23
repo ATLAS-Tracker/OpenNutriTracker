@@ -6,7 +6,7 @@ class GetWeightUsecase {
 
   GetWeightUsecase(this._userWeightRepository);
 
-  Future<UserWeightEntity?> getUserWeightForCurrentDay() async {
+  Future<UserWeightEntity?> getTodayUserWeight() async {
     return await _userWeightRepository.getUserWeightByDate(DateTime.now());
   }
 }

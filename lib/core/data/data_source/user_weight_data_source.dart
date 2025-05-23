@@ -27,6 +27,21 @@ class UserWeightDataSource {
     }
   }
 
+  Future<void> deleteUserWeightByDate(DateTime dateTime) async {
+    dynamic keyToDelete;
+    for (final key in _userWeightBox.keys) {
+      final existingDbo = _userWeightBox.get(key);
+      if (existingDbo != null &&
+          DateUtils.isSameDay(existingDbo.date, dateTime)) {
+        keyToDelete = key;
+        break;
+      }
+    }
+    if (keyToDelete != null) {
+      await _userWeightBox.delete(keyToDelete);
+    }
+  }
+
   Future<UserWeightDbo?> getUserWeightByDate(DateTime dateTime) async {
     for (final dbo in _userWeightBox.values) {
       if (DateUtils.isSameDay(dbo.date, dateTime)) {
