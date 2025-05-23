@@ -6,8 +6,10 @@ import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/onboarding/domain/entity/user_activity_selection_entity.dart';
 import 'package:opennutritracker/features/onboarding/domain/entity/user_gender_selection_entity.dart';
 import 'package:opennutritracker/features/onboarding/domain/entity/user_goal_selection_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
 import 'package:opennutritracker/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:opennutritracker/features/onboarding/presentation/onboarding_intro_page_body.dart';
+import 'package:opennutritracker/features/onboarding/presentation/widgets/onboarding_role_page_body.dart';
 import 'package:opennutritracker/features/onboarding/presentation/widgets/onboarding_fourth_page_body.dart';
 import 'package:opennutritracker/features/onboarding/presentation/widgets/onboarding_overview_page_body.dart';
 import 'package:opennutritracker/features/onboarding/presentation/widgets/onboarding_third_page_body.dart';
@@ -33,6 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _defaultImageWidget = null;
 
   bool _introPageButtonActive = false;
+  bool _rolePageButtonActive = false;
   bool _firstPageButtonActive = false;
   bool _secondPageButtonActive = false;
   bool _thirdPageButtonActive = false;
@@ -103,64 +106,79 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             footer: HighlightButton(
               buttonLabel: S.of(context).buttonStartLabel,
-              onButtonPressed: () => _scrollToPage(1),
+              onButtonPressed: () => _scrollToPage(1), // Scroll to Role page
               buttonActive: _introPageButtonActive,
             )),
         PageViewModel(
-            titleWidget: const SizedBox(),
-            // empty
+            titleWidget: Text(S.of(context).onboardingRoleQuestionTitle),
+            decoration: _pageDecoration,
+            image: _defaultImageWidget,
+            bodyWidget: OnboardingRolePageBody(
+              setPageContent: _setRolePageData,
+              initialRole: _onboardingBloc.userSelection.userRole,
+            ),
+            footer: HighlightButton(
+              buttonLabel: S.of(context).buttonNextLabel,
+              onButtonPressed: () => _scrollToPage(2), // Scroll to First page (Gender/Birthday)
+              buttonActive: _rolePageButtonActive,
+            )),
+        PageViewModel(
+            titleWidget: const SizedBox(), // empty
             decoration: _pageDecoration,
             image: _defaultImageWidget,
             bodyWidget: OnboardingFirstPageBody(
               setPageContent: _setFirstPageData,
+              initialGender: _onboardingBloc.userSelection.gender,
+              initialBirthday: _onboardingBloc.userSelection.birthday,
             ),
             footer: HighlightButton(
               buttonLabel: S.of(context).buttonNextLabel,
-              onButtonPressed: () => _scrollToPage(2),
+              onButtonPressed: () => _scrollToPage(3), // Scroll to Second page (Height/Weight)
               buttonActive: _firstPageButtonActive,
             )),
         PageViewModel(
-            titleWidget: const SizedBox(),
-            // empty
+            titleWidget: const SizedBox(), // empty
             decoration: _pageDecoration,
             image: _defaultImageWidget,
             bodyWidget: OnboardingSecondPageBody(
               setButtonContent: _setSecondPageData,
+              initialHeight: _onboardingBloc.userSelection.height,
+              initialWeight: _onboardingBloc.userSelection.weight,
+              initialUsesImperial: _onboardingBloc.userSelection.usesImperialUnits,
             ),
             footer: HighlightButton(
               buttonLabel: S.of(context).buttonNextLabel,
-              onButtonPressed: () => _scrollToPage(3),
+              onButtonPressed: () => _scrollToPage(4), // Scroll to Third page (Activity)
               buttonActive: _secondPageButtonActive,
             )),
         PageViewModel(
-            titleWidget: const SizedBox(),
-            // empty
+            titleWidget: const SizedBox(), // empty
             decoration: _pageDecoration,
             image: _defaultImageWidget,
             bodyWidget: OnboardingThirdPageBody(
               setButtonContent: _setThirdPageButton,
+              initialActivity: _onboardingBloc.userSelection.activity,
             ),
             footer: HighlightButton(
               buttonLabel: S.of(context).buttonNextLabel,
-              onButtonPressed: () => _scrollToPage(4),
+              onButtonPressed: () => _scrollToPage(5), // Scroll to Fourth page (Goal)
               buttonActive: _thirdPageButtonActive,
             )),
         PageViewModel(
-            titleWidget: const SizedBox(),
-            // empty
+            titleWidget: const SizedBox(), // empty
             decoration: _pageDecoration,
             image: _defaultImageWidget,
             bodyWidget: OnboardingFourthPageBody(
               setButtonContent: _setFourthPageButton,
+              initialGoal: _onboardingBloc.userSelection.goal,
             ),
             footer: HighlightButton(
               buttonLabel: S.of(context).buttonNextLabel,
-              onButtonPressed: () => _scrollToPage(5),
+              onButtonPressed: () => _scrollToPage(6), // Scroll to Overview page
               buttonActive: _fourthPageButtonActive,
             )),
         PageViewModel(
-            titleWidget: const SizedBox(),
-            // empty
+            titleWidget: const SizedBox(), // empty
             decoration: _pageDecoration,
             image: _defaultImageWidget,
             bodyWidget: OnboardingOverviewPageBody(
@@ -200,8 +218,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     setState(() {
       _onboardingBloc.userSelection.acceptDataCollection =
           acceptedDataCollection;
-
       _introPageButtonActive = active;
+    });
+  }
+
+  void _setRolePageData(bool active, UserRoleEntity? selectedRole) {
+    setState(() {
+      _onboardingBloc.userSelection.userRole = selectedRole;
+      _rolePageButtonActive = active;
     });
   }
 
@@ -210,7 +234,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     setState(() {
       _onboardingBloc.userSelection.gender = selectedGender;
       _onboardingBloc.userSelection.birthday = selectedBirthday;
-
       _firstPageButtonActive = active;
     });
   }
@@ -221,7 +244,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _onboardingBloc.userSelection.height = selectedHeight;
       _onboardingBloc.userSelection.weight = selectedWeight;
       _onboardingBloc.userSelection.usesImperialUnits = usesImperial;
-
       _secondPageButtonActive = active;
     });
   }
@@ -230,7 +252,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       bool active, UserActivitySelectionEntity? selectedActivity) {
     setState(() {
       _onboardingBloc.userSelection.activity = selectedActivity;
-
       _thirdPageButtonActive = active;
     });
   }
@@ -239,7 +260,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       bool active, UserGoalSelectionEntity? selectedGoal) {
     setState(() {
       _onboardingBloc.userSelection.goal = selectedGoal;
-
       _fourthPageButtonActive = active;
     });
   }
@@ -273,7 +293,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       // Error with user input
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(S.of(context).onboardingSaveUserError)));
-      _scrollToPage(1);
+      _scrollToPage(1); // Scroll to Role page if data is invalid
     }
   }
 }
