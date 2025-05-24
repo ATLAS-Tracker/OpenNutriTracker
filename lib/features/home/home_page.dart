@@ -5,7 +5,9 @@ import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/domain/entity/tracked_day_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/activity_vertial_list.dart';
+import 'package:opennutritracker/core/presentation/widgets/weight_vertical_list.dart';
 import 'package:opennutritracker/core/presentation/widgets/edit_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/delete_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/disclaimer_dialog.dart';
@@ -71,6 +73,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               state.dinnerIntakeList,
               state.snackIntakeList,
               state.userActivityList,
+              state.userWeightEntity,
               state.usesImperialUnits);
         } else {
           return _getLoadingContent();
@@ -112,10 +115,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       List<IntakeEntity> dinnerIntakeList,
       List<IntakeEntity> snackIntakeList,
       List<UserActivityEntity> userActivities,
+      UserWeightEntity? userWeight,
       bool usesImperialUnits) {
     if (showDisclaimerDialog) {
       _showDisclaimerDialog(context);
     }
+
     return Stack(children: [
       ListView(children: [
         DashboardWidget(
@@ -179,6 +184,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           title: S.of(context).activityLabel,
           userActivityList: userActivities,
           onItemLongPressedCallback: onActivityItemLongPressed,
+        ),
+        WeightVerticalList(
+          day: DateTime.now(),
+          title: S.of(context).weightLabel,
+          weight: userWeight,
         ),
         const SizedBox(height: 48.0)
       ]),
