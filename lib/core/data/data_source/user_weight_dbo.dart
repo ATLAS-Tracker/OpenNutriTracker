@@ -21,4 +21,9 @@ class UserWeightDbo extends HiveObject {
     return UserWeightDbo(
         userWeightEntity.id, userWeightEntity.weight, userWeightEntity.date);
   }
+
+  factory UserWeightDbo.fromJson(Map<String, dynamic> json) =>
+      _$UserWeightDboFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserWeightDboToJson(this);
 }
