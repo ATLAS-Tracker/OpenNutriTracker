@@ -7,7 +7,7 @@ import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
 class WeightVerticalList extends StatelessWidget {
   final DateTime day;
   final String title;
-  final double weight;
+  final UserWeightEntity? weight;
 
   const WeightVerticalList(
       {super.key,
@@ -42,10 +42,38 @@ class WeightVerticalList extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           itemCount: 1,
           itemBuilder: (BuildContext context, int index) {
-            return PlaceholderCard(
-                day: day,
-                onTap: () => _onPlaceholderCardTapped(context),
-                firstListElement: false);
+            if (weight == null) {
+              return PlaceholderCard(
+                  day: day,
+                  onTap: () => _onPlaceholderCardTapped(context),
+                  firstListElement: false);
+            } else {
+              return Align(
+                alignment: Alignment.topLeft,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 0, // Add leading padding
+                    ),
+                    SizedBox(
+                      width: 120,
+                      height: 120,
+                      child: Card(
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        child: InkWell(
+                          onTap: () => _onPlaceholderCardTapped(context),
+                          child: Text(weight!.weight.toStringAsFixed(1),
+                              style: Theme.of(context).textTheme.titleLarge),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
           },
         ),
       )

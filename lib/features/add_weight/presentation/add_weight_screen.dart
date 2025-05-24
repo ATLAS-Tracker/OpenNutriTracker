@@ -6,6 +6,7 @@ import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/core/domain/usecase/add_weight_usecase.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
 import 'package:opennutritracker/core/utils/id_generator.dart';
+import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 
 class AddWeightScreen extends StatefulWidget {
   const AddWeightScreen({super.key});
@@ -15,11 +16,13 @@ class AddWeightScreen extends StatefulWidget {
 }
 
 class _AddWeightScreenState extends State<AddWeightScreen> {
+  late HomeBloc _homeBloc;
   late WeightBloc _weightBloc;
   late AddWeightUsecase _addWeightUsecase;
 
   @override
   void initState() {
+    _homeBloc = locator<HomeBloc>();
     _weightBloc = locator<WeightBloc>();
     _addWeightUsecase = locator<AddWeightUsecase>();
     super.initState();
@@ -73,14 +76,16 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => _addWeightUsecase.addUserWeight(
-                        UserWeightEntity(
-                            id: IdGenerator.getUniqueID(),
-                            weight: _weightBloc.finalWeight,
-                            date: DateTime.now())),
-                    child: Text("Save"),
-                  ),
+                  child: ElevatedButton.icon(
+                      onPressed: () => _onButtonPressed(context),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onPrimaryContainer,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.primaryContainer,
+                      ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                      icon: const Icon(Icons.add_outlined),
+                      label: Text(S.of(context).buttonSaveLabel)),
                 ),
               ],
             ),
@@ -88,6 +93,14 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
         ),
       ),
     );
+  }
+
+  void _onButtonPressed(BuildContext context) {
+    _addWeightUsecase.addUserWeight(UserWeightEntity(
+        id: IdGenerator.getUniqueID(),
+        weight: _weightBloc.finalWeight,
+        date: DateTime.now()));
+    _homeBloc.add(const LoadItemsEvent());
   }
 }
 
