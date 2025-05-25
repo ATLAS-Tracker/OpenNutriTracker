@@ -8,6 +8,7 @@ import 'package:opennutritracker/core/domain/usecase/add_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_tracked_day_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_user_activity_usecase.dart';
+import 'package:opennutritracker/core/domain/usecase/delete_user_weight_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_kcal_goal_usecase.dart';
@@ -37,6 +38,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetKcalGoalUsecase _getKcalGoalUsecase;
   final GetMacroGoalUsecase _getMacroGoalUsecase;
   final GetWeightUsecase _getWeightUsecase;
+  final DeleteUserWeightUsecase _deleteUserWeightUsecase;
 
   DateTime currentDay = DateTime.now();
 
@@ -51,7 +53,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       this._addTrackedDayUseCase,
       this._getKcalGoalUsecase,
       this._getMacroGoalUsecase,
-      this._getWeightUsecase)
+      this._getWeightUsecase,
+      this._deleteUserWeightUsecase)
       : super(HomeInitial()) {
     on<LoadItemsEvent>((event, emit) async {
       emit(HomeLoadingState());
@@ -205,6 +208,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         proteinTracked: intakeEntity.totalProteinsGram);
 
     _updateDiaryPage(dateTime);
+  }
+
+  Future<void> deleteUserWeightItem() async {
+    await _deleteUserWeightUsecase.deleteTodayUserWeight();
   }
 
   Future<void> deleteUserActivityItem(UserActivityEntity activityEntity) async {

@@ -188,7 +188,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         WeightVerticalList(
           day: DateTime.now(),
           title: S.of(context).weightLabel,
-          weight: userWeight,
+          weightEntity: userWeight,
+          onItemLongPressedCallback: onWeightItemLongPressed,
         ),
         const SizedBox(height: 48.0)
       ]),
@@ -235,6 +236,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(S.of(context).itemDeletedSnackbar)));
       }
+    }
+  }
+
+  void onWeightItemLongPressed(BuildContext context) async {
+    final deleteIntake = await showDialog<bool>(
+        context: context, builder: (context) => const DeleteDialog());
+
+    if (deleteIntake != null) {
+      _homeBloc.deleteUserWeightItem();
+      _homeBloc.add(const LoadItemsEvent());
     }
   }
 

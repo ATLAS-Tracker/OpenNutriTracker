@@ -6,6 +6,6 @@ class DeleteUserWeightUsecase {
   DeleteUserWeightUsecase(this._userWeightRepository);
 
   Future<void> deleteTodayUserWeight() async {
-    await _userWeightRepository.deleteUserWeigthByDate(DateTime.now());
+    await _userWeightRepository.deleteUserWeightByDate(DateTime.now());
   }
 }

@@ -19,6 +19,7 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
   late HomeBloc _homeBloc;
   late WeightBloc _weightBloc;
   late AddWeightUsecase _addWeightUsecase;
+  late DateTime _day;
 
   @override
   void initState() {
@@ -29,6 +30,14 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
 
     /* init state.weight */
     _weightBloc.add(WeightLoadInitialRequested());
+  }
+
+  @override
+  void didChangeDependencies() {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as AddWeightScreenArguments;
+    _day = args.day;
+    super.didChangeDependencies();
   }
 
   @override
@@ -101,7 +110,7 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
     _addWeightUsecase.addUserWeight(UserWeightEntity(
         id: IdGenerator.getUniqueID(),
         weight: _weightBloc.state.weight,
-        date: DateTime.now()));
+        date: _day));
     _homeBloc.add(const LoadItemsEvent());
   }
 }

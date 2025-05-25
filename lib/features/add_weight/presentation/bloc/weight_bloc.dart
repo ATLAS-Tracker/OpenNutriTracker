@@ -18,7 +18,11 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
     on<WeightLoadInitialRequested>((event, emit) async {
       try {
         final userData = await _getUserUsecase.getUserData();
-        final initialUserWeight = userData.weightKG;
+        double initialUserWeight = state.weight;
+
+        if (initialUserWeight == 0) {
+          initialUserWeight = userData.weightKG;
+        }
 
         log.fine('Initial user weight: $initialUserWeight');
         emit(WeightState(initialUserWeight));
@@ -30,16 +34,12 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
     on<WeightIncrement>((event, emit) {
       double currentWeight = state.weight;
       double finalWeight = currentWeight + weightStep;
-
-      log.fine('New user weight (increment): $finalWeight');
       emit(WeightState(finalWeight));
     });
     on<WeightDecrement>((event, emit) {
       double currentWeight = state.weight;
       double finalWeight =
           (currentWeight - weightStep) > 0 ? currentWeight - weightStep : 0.0;
-
-      log.fine('New user weight (decrement): $finalWeight');
       emit(WeightState(finalWeight));
     });
   }

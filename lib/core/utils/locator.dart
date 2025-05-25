@@ -104,6 +104,7 @@ Future<void> initLocator() async {
       locator(),
       locator(),
       locator(),
+      locator(),
       locator()));
 
   locator.registerLazySingleton(() => DiaryBloc(locator(), locator()));

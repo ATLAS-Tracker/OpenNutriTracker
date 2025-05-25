@@ -7,13 +7,15 @@ import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
 class WeightVerticalList extends StatelessWidget {
   final DateTime day;
   final String title;
-  final UserWeightEntity? weight;
+  final UserWeightEntity? weightEntity;
+  final Function(BuildContext) onItemLongPressedCallback;
 
   const WeightVerticalList(
       {super.key,
       required this.day,
       required this.title,
-      required this.weight});
+      required this.weightEntity,
+      required this.onItemLongPressedCallback});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,7 @@ class WeightVerticalList extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           itemCount: 1,
           itemBuilder: (BuildContext context, int index) {
-            if (weight == null) {
+            if (weightEntity == null) {
               return PlaceholderCard(
                   day: day,
                   onTap: () => _onPlaceholderCardTapped(context),
@@ -65,7 +67,8 @@ class WeightVerticalList extends StatelessWidget {
                         ),
                         child: InkWell(
                           onTap: () => _onPlaceholderCardTapped(context),
-                          child: Text(weight!.weight.toStringAsFixed(1),
+                          onLongPress: () => onItemLongPressedCallback(context),
+                          child: Text(weightEntity!.weight.toStringAsFixed(1),
                               style: Theme.of(context).textTheme.titleLarge),
                         ),
                       ),
@@ -84,4 +87,6 @@ class WeightVerticalList extends StatelessWidget {
     Navigator.of(context).pushNamed(NavigationOptions.addWeightRoute,
         arguments: AddWeightScreenArguments(day: day));
   }
+
+  void onLongPressedItem(BuildContext context) {}
 }
