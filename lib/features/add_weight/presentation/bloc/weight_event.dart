@@ -5,3 +5,5 @@ class WeightEvent {}
 class WeightIncrement extends WeightEvent {}
 
 class WeightDecrement extends WeightEvent {}
+
+class WeightLoadInitialRequested extends WeightEvent {}

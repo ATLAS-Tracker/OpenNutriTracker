@@ -26,6 +26,9 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
     _weightBloc = locator<WeightBloc>();
     _addWeightUsecase = locator<AddWeightUsecase>();
     super.initState();
+
+    /* init state.weight */
+    _weightBloc.add(WeightLoadInitialRequested());
   }
 
   @override
@@ -48,8 +51,7 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
               shadows: kElevationToShadow[2],
             ),
             child: Column(
-              mainAxisSize: MainAxisSize
-                  .min, // Pour que la colonne ne prenne que la hauteur nécessaire
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,7 +100,7 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
   void _onButtonPressed(BuildContext context) {
     _addWeightUsecase.addUserWeight(UserWeightEntity(
         id: IdGenerator.getUniqueID(),
-        weight: _weightBloc.finalWeight,
+        weight: _weightBloc.state.weight,
         date: DateTime.now()));
     _homeBloc.add(const LoadItemsEvent());
   }

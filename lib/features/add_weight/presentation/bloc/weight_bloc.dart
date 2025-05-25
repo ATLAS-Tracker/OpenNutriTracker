@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
-import 'package:opennutritracker/core/domain/usecase/add_weight_usecase.dart';
 
 part 'weight_event.dart';
 
@@ -10,41 +9,38 @@ part 'weight_state.dart';
 
 class WeightBloc extends Bloc<WeightEvent, WeightState> {
   final GetUserUsecase _getUserUsecase = locator<GetUserUsecase>();
-  final AddWeightUsecase _addWeightUsecase = locator<AddWeightUsecase>();
 
   final log = Logger('WeightBloc');
 
   final double weightStep = 0.1;
 
-  double finalWeight = 0.0;
-
   WeightBloc() : super(WeightState(0.0)) {
-    _loadInitialWeight();
+    on<WeightLoadInitialRequested>((event, emit) async {
+      try {
+        final userData = await _getUserUsecase.getUserData();
+        final initialUserWeight = userData.weightKG;
+
+        log.fine('Initial user weight: $initialUserWeight');
+        emit(WeightState(initialUserWeight));
+      } catch (e, stackTrace) {
+        log.severe('Failed to load initial weight', e, stackTrace);
+      }
+    });
 
     on<WeightIncrement>((event, emit) {
-      finalWeight += weightStep;
+      double currentWeight = state.weight;
+      double finalWeight = currentWeight + weightStep;
+
+      log.fine('New user weight (increment): $finalWeight');
       emit(WeightState(finalWeight));
     });
     on<WeightDecrement>((event, emit) {
-      final newWeight = finalWeight - weightStep;
-      if (newWeight >= 0) {
-        finalWeight = newWeight;
-      } else {
-        finalWeight = 0.0;
-      }
+      double currentWeight = state.weight;
+      double finalWeight =
+          (currentWeight - weightStep) > 0 ? currentWeight - weightStep : 0.0;
+
+      log.fine('New user weight (decrement): $finalWeight');
       emit(WeightState(finalWeight));
     });
-  }
-
-  Future<void> _loadInitialWeight() async {
-    try {
-      final userData = await _getUserUsecase.getUserData();
-      final initialUserWeight = userData.weightKG;
-
-      finalWeight = initialUserWeight;
-      emit(WeightState(finalWeight));
-    } catch (e, stackTrace) {
-      log.severe('Failed to load initial weight', e, stackTrace);
-    }
   }
 }
