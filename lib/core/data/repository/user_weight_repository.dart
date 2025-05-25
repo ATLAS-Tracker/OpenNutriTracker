@@ -27,4 +27,12 @@ class UserWeightRepository {
 
     return UserWeightEntity.fromUserWeightDbo(weightDbo);
   }
+
+  Future<UserWeightEntity?> getLastUserWeight() async {
+    final lastUserWeight = await _userWeightDataSource.getLastSavedUserWeight();
+    if (lastUserWeight == null) {
+      return null;
+    }
+    return UserWeightEntity.fromUserWeightDbo(lastUserWeight);
+  }
 }

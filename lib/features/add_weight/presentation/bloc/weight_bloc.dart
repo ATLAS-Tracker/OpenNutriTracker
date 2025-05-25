@@ -1,14 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
-import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
+import 'package:opennutritracker/core/domain/usecase/get_weight_usecase.dart';
 
 part 'weight_event.dart';
 
 part 'weight_state.dart';
 
 class WeightBloc extends Bloc<WeightEvent, WeightState> {
-  final GetUserUsecase _getUserUsecase = locator<GetUserUsecase>();
+  final GetWeightUsecase _getWeightUsecase = locator<GetWeightUsecase>();
 
   final log = Logger('WeightBloc');
 
@@ -17,15 +17,14 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
   WeightBloc() : super(WeightState(0.0)) {
     on<WeightLoadInitialRequested>((event, emit) async {
       try {
-        final userData = await _getUserUsecase.getUserData();
-        double initialUserWeight = state.weight;
+        // Fetch the last known weight from the use case.
+        final fetchedLastWeight = await _getWeightUsecase.getLastUserWeight();
 
-        if (initialUserWeight == 0) {
-          initialUserWeight = userData.weightKG;
-        }
+        final double weightToEmit =
+            (state.weight == 0.0) ? fetchedLastWeight : state.weight;
 
-        log.fine('Initial user weight: $initialUserWeight');
-        emit(WeightState(initialUserWeight));
+        log.fine('Initial user weight: $weightToEmit');
+        emit(WeightState(weightToEmit));
       } catch (e, stackTrace) {
         log.severe('Failed to load initial weight', e, stackTrace);
       }

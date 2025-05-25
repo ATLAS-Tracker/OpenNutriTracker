@@ -52,28 +52,23 @@ class WeightVerticalList extends StatelessWidget {
             } else {
               return Align(
                 alignment: Alignment.topLeft,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 0, // Add leading padding
+                child: SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: Card(
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
                     ),
-                    SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: Card(
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        child: InkWell(
-                          onTap: () => _onPlaceholderCardTapped(context),
-                          onLongPress: () => onItemLongPressedCallback(context),
-                          child: Text(weightEntity!.weight.toStringAsFixed(1),
-                              style: Theme.of(context).textTheme.titleLarge),
-                        ),
+                    child: InkWell(
+                      onTap: () => _onPlaceholderCardTapped(context),
+                      onLongPress: () => onItemLongPressedCallback(context),
+                      child: Center(
+                        child: Text(weightEntity!.weight.toStringAsFixed(1),
+                            style: Theme.of(context).textTheme.headlineSmall),
                       ),
                     ),
-                  ],
+                  ),
                 ),
               );
             }

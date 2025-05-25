@@ -50,4 +50,12 @@ class UserWeightDataSource {
     }
     return null;
   }
+
+  Future<UserWeightDbo?> getLastSavedUserWeight() async {
+    if (_userWeightBox.isEmpty) {
+      return null;
+    }
+    /* return the last saved value */
+    return _userWeightBox.values.last;
+  }
 }
