@@ -1,13 +1,18 @@
 import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
 
 class GetWeightUsecase {
   final UserWeightRepository _userWeightRepository;
-  final GetUserUsecase _getUserUsecase; // Injected dependency
+  final GetUserUsecase _getUserUsecase = locator<GetUserUsecase>();
 
   // Constructor updated to accept GetUserUsecase
-  GetWeightUsecase(this._userWeightRepository, this._getUserUsecase);
+  GetWeightUsecase(this._userWeightRepository);
+
+  Future<UserWeightEntity?> getUserWeightByDate(DateTime dateTime) async {
+    return await _userWeightRepository.getUserWeightByDate(dateTime);
+  }
 
   Future<UserWeightEntity?> getTodayUserWeight() async {
     return await _userWeightRepository.getUserWeightByDate(DateTime.now());
