@@ -7,6 +7,7 @@ import 'package:opennutritracker/core/domain/usecase/add_weight_usecase.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
 import 'package:opennutritracker/core/utils/id_generator.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
+import 'package:opennutritracker/core/presentation/widgets/editable_text_widget.dart';
 
 class AddWeightScreen extends StatefulWidget {
   const AddWeightScreen({super.key});
@@ -72,10 +73,7 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                     BlocBuilder<WeightBloc, WeightState>(
                       bloc: _weightBloc,
                       builder: (context, state) {
-                        return Text(
-                          "${state.weight.toStringAsFixed(1)} kg",
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        );
+                        return EditableTextWidget(initialValue: state.weight);
                       },
                     ),
                     IconButton(
