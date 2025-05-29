@@ -82,6 +82,4 @@ class WeightVerticalList extends StatelessWidget {
     Navigator.of(context).pushNamed(NavigationOptions.addWeightRoute,
         arguments: AddWeightScreenArguments(day: day));
   }
-
-  void onLongPressedItem(BuildContext context) {}
 }

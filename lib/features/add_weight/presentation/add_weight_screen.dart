@@ -73,7 +73,8 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                     BlocBuilder<WeightBloc, WeightState>(
                       bloc: _weightBloc,
                       builder: (context, state) {
-                        return EditableTextWidget(initialValue: state.weight);
+                        return EditableTextWidget(
+                            initialValue: state.weight.toStringAsFixed(1));
                       },
                     ),
                     IconButton(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:opennutritracker/features/add_weight/presentation/bloc/weight_bloc.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
 
 class EditableTextWidget extends StatefulWidget {
-  final double initialValue;
+  final String initialValue;
 
   const EditableTextWidget({super.key, required this.initialValue});
 
@@ -10,11 +12,88 @@ class EditableTextWidget extends StatefulWidget {
 }
 
 class _EditableTextWidgetState extends State<EditableTextWidget> {
+  bool _isEditing = false;
+  late TextEditingController _textController;
+  late FocusNode _focusNode;
+  late WeightBloc _weightBloc;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _textController = TextEditingController(text: widget.initialValue);
+    _focusNode = FocusNode();
+    _weightBloc = locator<WeightBloc>();
+  }
+
+  @override
+  void didUpdateWidget(covariant EditableTextWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialValue != widget.initialValue) {
+      if (!_isEditing) {
+        _textController.text = widget.initialValue;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _saveAndSwitchToDisplayMode(String selectedWeight) {
+    if (!mounted) return;
+
+    String normalizedValue = selectedWeight.replaceAll(',', '.');
+
+    setState(() {
+      _isEditing = false;
+      _textController.text = selectedWeight;
+    });
+
+    _weightBloc.add(WeightSet(double.parse(normalizedValue)));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Text(
-      "${widget.initialValue.toStringAsFixed(1)} kg",
-      style: Theme.of(context).textTheme.headlineMedium,
-    );
+    final ThemeData theme = Theme.of(context);
+    final TextStyle effectiveTextStyle =
+        theme.textTheme.headlineMedium ?? const TextStyle();
+    final String suffixText = " kg";
+
+    return SizedBox(
+        width: 120.0,
+        child: _isEditing
+            ? TextFormField(
+                controller: _textController,
+                style: effectiveTextStyle,
+                focusNode: _focusNode,
+                keyboardType: TextInputType.numberWithOptions(
+                    decimal: true, signed: false),
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: .5, vertical: 0.0),
+                  border: InputBorder.none,
+                  isDense: true,
+                  suffixText: suffixText,
+                ),
+                onFieldSubmitted: (newValue) {
+                  _saveAndSwitchToDisplayMode(newValue);
+                })
+            : GestureDetector(
+                onTap: () {
+                  setState(() => _isEditing = true);
+                  if (mounted && _isEditing) {
+                    _focusNode
+                        .requestFocus(); // On single tap, keybaord appears
+                  }
+                },
+                child: Text(
+                  _textController.text + suffixText,
+                  textAlign: TextAlign.center,
+                  style: effectiveTextStyle,
+                )));
   }
 }

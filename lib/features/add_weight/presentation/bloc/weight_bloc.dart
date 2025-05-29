@@ -41,5 +41,10 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
           (currentWeight - weightStep) > 0 ? currentWeight - weightStep : 0.0;
       emit(WeightState(finalWeight));
     });
+    on<WeightSet>((event, emit) {
+      double weightToEmit = event.weight;
+      if (weightToEmit < 0) weightToEmit = 0.0;
+      emit(WeightState(weightToEmit));
+    });
   }
 }
