@@ -79,6 +79,8 @@ class _EditableTextWidgetState extends State<EditableTextWidget> {
                   isDense: true,
                   suffixText: suffixText,
                 ),
+                onTapOutside: (event) =>
+                    _saveAndSwitchToDisplayMode(_textController.text),
                 onFieldSubmitted: (newValue) {
                   _saveAndSwitchToDisplayMode(newValue);
                 })
