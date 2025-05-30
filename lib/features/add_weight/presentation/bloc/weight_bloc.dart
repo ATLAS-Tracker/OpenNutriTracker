@@ -13,6 +13,7 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
   final log = Logger('WeightBloc');
 
   final double weightStep = 0.1;
+  final double maxWeight = 150;
 
   WeightBloc() : super(WeightState(0.0)) {
     on<WeightLoadInitialRequested>((event, emit) async {
@@ -33,7 +34,7 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
     on<WeightIncrement>((event, emit) {
       double currentWeight = state.weight;
       double finalWeight = currentWeight + weightStep;
-      emit(WeightState(finalWeight));
+      emit(WeightState(finalWeight > maxWeight ? maxWeight : finalWeight));
     });
     on<WeightDecrement>((event, emit) {
       double currentWeight = state.weight;

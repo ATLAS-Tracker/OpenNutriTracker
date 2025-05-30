@@ -86,7 +86,7 @@ class _EditableTextWidgetState extends State<EditableTextWidget> {
                   suffixText: suffixText,
                 ),
                 inputFormatters: [
-                  OneDecimalPlaceFormatter(),
+                  OneDecimalPlaceFormatter(maxValue: _weightBloc.maxWeight),
                 ],
                 onTapOutside: (event) =>
                     _saveAndSwitchToDisplayMode(_textController.text),
