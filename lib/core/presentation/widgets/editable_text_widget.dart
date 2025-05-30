@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:opennutritracker/features/add_weight/presentation/bloc/weight_bloc.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
+import 'package:opennutritracker/core/formatters/one_decimal_place_formatter.dart';
 
 class EditableTextWidget extends StatefulWidget {
   final String initialValue;
@@ -53,6 +54,10 @@ class _EditableTextWidgetState extends State<EditableTextWidget> {
       _textController.text = selectedWeight;
     });
 
+    if (normalizedValue.isEmpty) {
+      return;
+    }
+
     _weightBloc.add(WeightSet(double.parse(normalizedValue)));
   }
 
@@ -64,11 +69,12 @@ class _EditableTextWidgetState extends State<EditableTextWidget> {
     final String suffixText = " kg";
 
     return SizedBox(
-        width: 120.0,
+        width: 135.0,
         child: _isEditing
             ? TextFormField(
                 controller: _textController,
                 style: effectiveTextStyle,
+                textAlign: TextAlign.center,
                 focusNode: _focusNode,
                 keyboardType: TextInputType.numberWithOptions(
                     decimal: true, signed: false),
@@ -79,6 +85,9 @@ class _EditableTextWidgetState extends State<EditableTextWidget> {
                   isDense: true,
                   suffixText: suffixText,
                 ),
+                inputFormatters: [
+                  OneDecimalPlaceFormatter(),
+                ],
                 onTapOutside: (event) =>
                     _saveAndSwitchToDisplayMode(_textController.text),
                 onFieldSubmitted: (newValue) {
@@ -87,10 +96,9 @@ class _EditableTextWidgetState extends State<EditableTextWidget> {
             : GestureDetector(
                 onTap: () {
                   setState(() => _isEditing = true);
-                  if (mounted && _isEditing) {
-                    _focusNode
-                        .requestFocus(); // On single tap, keybaord appears
-                  }
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) _focusNode.requestFocus();
+                  });
                 },
                 child: Text(
                   _textController.text + suffixText,
