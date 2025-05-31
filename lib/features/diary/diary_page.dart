@@ -103,6 +103,7 @@ class _DiaryPageState extends State<DiaryPage> with WidgetsBindingObserver {
                 trackedDayEntity: state.trackedDayEntity,
                 selectedDay: _selectedDate,
                 userActivities: state.userActivityList,
+                userWeightEntity: state.userWeightEntity,
                 breakfastIntake: state.breakfastIntakeList,
                 lunchIntake: state.lunchIntakeList,
                 dinnerIntake: state.dinnerIntakeList,
@@ -112,6 +113,7 @@ class _DiaryPageState extends State<DiaryPage> with WidgetsBindingObserver {
                 onCopyIntake: _onCopyIntakeItem,
                 onCopyActivity: _onCopyActivityItem,
                 usesImperialUnits: usesImperialUnits,
+                onDeleteWeight: _onDeleteWeightItem,
               );
             }
             return const SizedBox();
@@ -145,6 +147,10 @@ class _DiaryPageState extends State<DiaryPage> with WidgetsBindingObserver {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(S.of(context).itemDeletedSnackbar)));
     }
+  }
+
+  void _onDeleteWeightItem(BuildContext context) {
+    //TODO
   }
 
   void _onCopyIntakeItem(IntakeEntity intakeEntity,

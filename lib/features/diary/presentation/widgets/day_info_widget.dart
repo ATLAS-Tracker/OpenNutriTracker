@@ -3,10 +3,12 @@ import 'package:intl/intl.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/tracked_day_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/activity_vertial_list.dart';
 import 'package:opennutritracker/core/presentation/widgets/copy_or_delete_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/copy_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/delete_dialog.dart';
+import 'package:opennutritracker/core/presentation/widgets/weight_vertical_list.dart';
 import 'package:opennutritracker/core/utils/custom_icons.dart';
 import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/intake_vertical_list.dart';
@@ -16,6 +18,7 @@ class DayInfoWidget extends StatelessWidget {
   final DateTime selectedDay;
   final TrackedDayEntity? trackedDayEntity;
   final List<UserActivityEntity> userActivities;
+  final UserWeightEntity? userWeightEntity;
   final List<IntakeEntity> breakfastIntake;
   final List<IntakeEntity> lunchIntake;
   final List<IntakeEntity> dinnerIntake;
@@ -31,11 +34,14 @@ class DayInfoWidget extends StatelessWidget {
   final Function(UserActivityEntity userActivityEntity,
       TrackedDayEntity? trackedDayEntity) onCopyActivity;
 
+  final Function(BuildContext context) onDeleteWeight;
+
   const DayInfoWidget({
     super.key,
     required this.selectedDay,
     required this.trackedDayEntity,
     required this.userActivities,
+    required this.userWeightEntity,
     required this.breakfastIntake,
     required this.lunchIntake,
     required this.dinnerIntake,
@@ -45,6 +51,7 @@ class DayInfoWidget extends StatelessWidget {
     required this.onDeleteActivity,
     required this.onCopyIntake,
     required this.onCopyActivity,
+    required this.onDeleteWeight,
   });
 
   @override
@@ -116,11 +123,6 @@ class DayInfoWidget extends StatelessWidget {
                   )
                 : const SizedBox(),
             const SizedBox(height: 8.0),
-            ActivityVerticalList(
-                day: selectedDay,
-                title: S.of(context).activityLabel,
-                userActivityList: userActivities,
-                onItemLongPressedCallback: onActivityItemLongPressed),
             IntakeVerticalList(
               day: selectedDay,
               title: S.of(context).breakfastLabel,
@@ -179,6 +181,17 @@ class DayInfoWidget extends StatelessWidget {
                       ? null
                       : onCopyIntake,
               trackedDayEntity: trackedDay,
+            ),
+            ActivityVerticalList(
+                day: selectedDay,
+                title: S.of(context).activityLabel,
+                userActivityList: userActivities,
+                onItemLongPressedCallback: onActivityItemLongPressed),
+            WeightVerticalList(
+              day: selectedDay,
+              title: S.of(context).weightLabel,
+              weightEntity: userWeightEntity,
+              onItemLongPressedCallback: onDeleteWeight,
             ),
             const SizedBox(height: 16.0)
           ],

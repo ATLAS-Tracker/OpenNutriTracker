@@ -8,6 +8,7 @@ import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
 import 'package:opennutritracker/core/utils/id_generator.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/core/presentation/widgets/editable_text_widget.dart';
+import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 
 class AddWeightScreen extends StatefulWidget {
   const AddWeightScreen({super.key});
@@ -20,6 +21,7 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
   late HomeBloc _homeBloc;
   late WeightBloc _weightBloc;
   late AddWeightUsecase _addWeightUsecase;
+  late CalendarDayBloc _calendarDayBloc;
   late DateTime _day;
 
   @override
@@ -27,6 +29,7 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
     _homeBloc = locator<HomeBloc>();
     _weightBloc = locator<WeightBloc>();
     _addWeightUsecase = locator<AddWeightUsecase>();
+    _calendarDayBloc = locator<CalendarDayBloc>();
     super.initState();
 
     /* init state.weight */
@@ -111,7 +114,9 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
         id: IdGenerator.getUniqueID(),
         weight: _weightBloc.state.weight,
         date: _day));
+
     _homeBloc.add(const LoadItemsEvent());
+    _calendarDayBloc.add(const RefreshCalendarDayEvent());
   }
 }
 

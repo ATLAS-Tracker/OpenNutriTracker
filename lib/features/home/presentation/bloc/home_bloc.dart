@@ -212,6 +212,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> deleteUserWeightItem() async {
     await _deleteUserWeightUsecase.deleteTodayUserWeight();
+    _updateDiaryPage(DateTime.now());
   }
 
   Future<void> deleteUserActivityItem(UserActivityEntity activityEntity) async {
