@@ -3,6 +3,7 @@ import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/add_weight/presentation/add_weight_screen.dart';
 import 'package:opennutritracker/core/presentation/widgets/placeholder_card.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
+import 'package:opennutritracker/core/presentation/widgets/weight_card.dart';
 
 class WeightVerticalList extends StatelessWidget {
   final DateTime day;
@@ -44,32 +45,17 @@ class WeightVerticalList extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           itemCount: 1,
           itemBuilder: (BuildContext context, int index) {
+            // Checks if a weight has been saved
             if (weightEntity == null) {
               return PlaceholderCard(
                   day: day,
                   onTap: () => _onPlaceholderCardTapped(context),
                   firstListElement: false);
             } else {
-              return Align(
-                alignment: Alignment.topLeft,
-                child: SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: Card(
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: InkWell(
-                      onTap: () => _onPlaceholderCardTapped(context),
-                      onLongPress: () => onItemLongPressedCallback(context),
-                      child: Center(
-                        child: Text(weightEntity!.weight.toStringAsFixed(1),
-                            style: Theme.of(context).textTheme.headlineSmall),
-                      ),
-                    ),
-                  ),
-                ),
+              return WeightCard(
+                weight: weightEntity!.weight.toStringAsFixed(1),
+                onTap: () => _onPlaceholderCardTapped(context),
+                onLongTap: onItemLongPressedCallback,
               );
             }
           },
