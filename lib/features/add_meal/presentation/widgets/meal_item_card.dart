@@ -8,6 +8,7 @@ import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.dart';
 import 'package:opennutritracker/features/meal_detail/meal_detail_screen.dart';
+import 'package:opennutritracker/features/add_meal/domain/entity/meal_or_recipe_entity.dart';
 import 'dart:io';
 
 class MealItemCard extends StatelessWidget {
@@ -36,7 +37,7 @@ class MealItemCard extends StatelessWidget {
           height: 100,
           child: Center(
               child: ListTile(
-            leading: mealEntity.mealOrRecipe == "recipe" &&
+            leading: mealEntity.mealOrRecipe == MealOrRecipeEntity.recipe &&
                     mealEntity.thumbnailImageUrl != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(16),

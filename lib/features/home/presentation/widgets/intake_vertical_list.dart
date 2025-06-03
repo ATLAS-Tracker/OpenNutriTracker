@@ -9,6 +9,7 @@ import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/core/utils/vertical_list_popup_menu_selections.dart';
 import 'package:opennutritracker/features/add_meal/presentation/add_meal_screen.dart';
+import 'package:opennutritracker/features/add_meal/domain/entity/meal_or_recipe_entity.dart';
 import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
@@ -218,9 +219,15 @@ class _IntakeVerticalListState extends State<IntakeVerticalList> {
   }
 
   void _onPlaceholderCardTapped(BuildContext context) {
-    Navigator.pushNamed(context, NavigationOptions.addMealRoute,
-        arguments:
-            AddMealScreenArguments(widget.addMealType, widget.day, "meal"));
+    Navigator.pushNamed(
+      context,
+      NavigationOptions.addMealRoute,
+      arguments: AddMealScreenArguments(
+        widget.addMealType,
+        widget.day,
+        MealOrRecipeEntity.meal,
+      ),
+    );
   }
 
   void _onItemDropped(IntakeEntity entity) {

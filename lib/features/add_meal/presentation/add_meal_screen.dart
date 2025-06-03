@@ -4,6 +4,7 @@ import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.dart';
+import 'package:opennutritracker/features/add_meal/domain/entity/meal_or_recipe_entity.dart';
 import 'package:opennutritracker/features/add_meal/presentation/recipe_results_list.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/add_meal_bloc.dart';
 import 'package:opennutritracker/features/add_meal/presentation/bloc/food_bloc.dart';
@@ -33,7 +34,7 @@ class _AddMealScreenState extends State<AddMealScreen>
 
   late AddMealType _mealType;
   late DateTime _day;
-  late String _mealOrRecipe;
+  late MealOrRecipeEntity _mealOrRecipe;
 
   late ProductsBloc _productsBloc;
   late FoodBloc _foodBloc;
@@ -76,8 +77,8 @@ class _AddMealScreenState extends State<AddMealScreen>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-              _mealOrRecipe == "recipe" ? "" : _mealType.getTypeName(context)),
+          title:
+              Text(_mealOrRecipe == MealOrRecipeEntity.recipe ? "" : _mealType.getTypeName(context)),
           actions: [
             BlocBuilder<AddMealBloc, AddMealState>(
               bloc: locator<AddMealBloc>()..add(InitializeAddMealEvent()),
@@ -234,7 +235,7 @@ class _AddMealScreenState extends State<AddMealScreen>
                               final filteredMeals = isOnCreateMealScreen
                                   ? state.recentMeals
                                       .where((meal) =>
-                                          meal.mealOrRecipe != 'recipe')
+                                          meal.mealOrRecipe != MealOrRecipeEntity.recipe)
                                       .toList()
                                   : state.recentMeals;
 
@@ -344,7 +345,7 @@ class _AddMealScreenState extends State<AddMealScreen>
 class AddMealScreenArguments {
   final AddMealType mealType;
   final DateTime day;
-  final String mealOrRecipe;
+  final MealOrRecipeEntity mealOrRecipe;
 
   AddMealScreenArguments(this.mealType, this.day, this.mealOrRecipe);
 }

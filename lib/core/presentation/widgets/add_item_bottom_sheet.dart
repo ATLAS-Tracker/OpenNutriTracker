@@ -4,6 +4,7 @@ import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/add_activity/presentation/add_activity_screen.dart';
 import 'package:opennutritracker/features/add_meal/presentation/add_meal_screen.dart';
+import 'package:opennutritracker/features/add_meal/domain/entity/meal_or_recipe_entity.dart';
 import 'package:opennutritracker/features/add_meal/presentation/add_meal_type.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
@@ -179,12 +180,14 @@ class AddItemBottomSheet extends StatelessWidget {
 
   void _showAddItemScreen(BuildContext context, AddMealType itemType) {
     Navigator.of(context).pop(); // Close bottom sheet
-    Navigator.of(context).pushNamed(NavigationOptions.addMealRoute,
-        arguments: AddMealScreenArguments(
-          itemType,
-          day,
-          "meal",
-        ));
+    Navigator.of(context).pushNamed(
+      NavigationOptions.addMealRoute,
+      arguments: AddMealScreenArguments(
+        itemType,
+        day,
+        MealOrRecipeEntity.meal,
+      ),
+    );
   }
 
   void _showAddActivityScreen(BuildContext context) {
