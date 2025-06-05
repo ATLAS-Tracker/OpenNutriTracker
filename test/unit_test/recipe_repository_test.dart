@@ -2,11 +2,6 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import "package:flutter/material.dart";
-import "package:bloc_test/bloc_test.dart";
-import "package:opennutritracker/features/add_meal/presentation/recipe_results_list.dart";
-import "package:opennutritracker/features/add_meal/presentation/bloc/recipe_search_bloc.dart";
-import "package:opennutritracker/features/add_meal/presentation/add_meal_type.dart";
 import 'package:opennutritracker/core/data/data_source/recipe_data_source.dart';
 import 'package:opennutritracker/core/data/dbo/meal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/meal_nutriments_dbo.dart';
@@ -21,7 +16,6 @@ import 'package:opennutritracker/core/data/dbo/intake_recipe_dbo.dart';
 
 import '../fixture/recipe_entity_fixtures.dart';
 
-class MockRecipeSearchBloc extends MockBloc<RecipeSearchEvent, RecipeSearchState> implements RecipeSearchBloc {}
 
 void main() {
   group('Recipe add/replace logic', () {
@@ -98,7 +92,6 @@ void main() {
   group('Recipe deletion removes image', () {
     late Box<RecipesDBO> box;
     late Directory tempDir;
-    late MockRecipeSearchBloc bloc;
 
     setUp(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
@@ -110,7 +103,6 @@ void main() {
       final repo = RecipeRepository(dataSource);
       locator.registerSingleton<AddRecipeUsecase>(AddRecipeUsecase(repo));
       locator.registerSingleton<DeleteRecipeUsecase>(DeleteRecipeUsecase(repo));
-      bloc = MockRecipeSearchBloc();
     });
 
     tearDown(() async {
