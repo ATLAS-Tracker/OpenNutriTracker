@@ -52,7 +52,6 @@ void main() {
     expect(button.onPressed, isNull);
 
     // Add ingredient then rebuild
-    bloc.setListOfIntakeForRecipeEntity([IntakeForRecipeFixtures.chicken]);
     bloc.add(SetIntakeListFromRecipeEvent([IntakeForRecipeFixtures.chicken]));
     await tester.pumpAndSettle();
 

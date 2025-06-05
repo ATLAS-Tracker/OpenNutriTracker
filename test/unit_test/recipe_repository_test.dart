@@ -130,10 +130,6 @@ void main() {
       expect(await imageFile.exists(), true);
 
       await locator<DeleteRecipeUsecase>().deleteRecipe('to_delete');
-
-      if (await imageFile.exists()) {
-        await imageFile.delete();
-      }
       expect(box.values.isEmpty, true);
       expect(await imageFile.exists(), false);
     });
