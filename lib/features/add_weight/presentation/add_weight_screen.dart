@@ -97,7 +97,9 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.remove),
-                          onPressed: () => _weightBloc.add(WeightDecrement()),
+                          onPressed: _isButtonDisabled
+                              ? null
+                              : () => _weightBloc.add(WeightDecrement()),
                         ),
                         BlocBuilder<WeightBloc, WeightState>(
                           bloc: _weightBloc,
@@ -105,12 +107,15 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                             return Center(
                                 child: EditableTextWidget(
                                     initialValue:
-                                        state.weight.toStringAsFixed(1)));
+                                        state.weight.toStringAsFixed(1),
+                                    disabledEnter: _isButtonDisabled));
                           },
                         ),
                         IconButton(
                           icon: const Icon(Icons.add),
-                          onPressed: () => _weightBloc.add(WeightIncrement()),
+                          onPressed: _isButtonDisabled
+                              ? null
+                              : () => _weightBloc.add(WeightIncrement()),
                         ),
                       ],
                     ),

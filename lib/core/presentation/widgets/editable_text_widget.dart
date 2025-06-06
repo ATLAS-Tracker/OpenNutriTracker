@@ -5,8 +5,10 @@ import 'package:opennutritracker/core/formatters/one_decimal_place_formatter.dar
 
 class EditableTextWidget extends StatefulWidget {
   final String initialValue;
+  final bool disabledEnter;
 
-  const EditableTextWidget({super.key, required this.initialValue});
+  const EditableTextWidget(
+      {super.key, required this.initialValue, required this.disabledEnter});
 
   @override
   State<EditableTextWidget> createState() => _EditableTextWidgetState();
@@ -70,7 +72,7 @@ class _EditableTextWidgetState extends State<EditableTextWidget> {
 
     return SizedBox(
         width: 135.0,
-        child: _isEditing
+        child: _isEditing && !widget.disabledEnter
             ? TextFormField(
                 controller: _textController,
                 style: effectiveTextStyle,
