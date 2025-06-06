@@ -7,6 +7,7 @@ import 'package:opennutritracker/core/data/data_source/physical_activity_data_so
 import 'package:opennutritracker/core/data/data_source/tracked_day_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/user_activity_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/user_data_source.dart';
+import 'package:opennutritracker/core/data/data_source/sql_queue_data_source.dart';
 import 'package:opennutritracker/core/data/repository/config_repository.dart';
 import 'package:opennutritracker/core/data/repository/intake_repository.dart';
 import 'package:opennutritracker/core/data/repository/recipe_repository.dart';
@@ -14,6 +15,9 @@ import 'package:opennutritracker/core/data/repository/physical_activity_reposito
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_repository.dart';
+import 'package:opennutritracker/core/data/repository/sql_queue_repository.dart';
+import 'package:opennutritracker/core/data/sync/intake_sync_listener.dart';
+import 'package:opennutritracker/core/data/sync/sql_queue_consumer.dart';
 import 'package:opennutritracker/core/domain/usecase/add_config_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_intake_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/add_recipe_usecase.dart';
@@ -179,7 +183,7 @@ Future<void> initLocator() async {
   locator
       .registerLazySingleton<UserRepository>(() => UserRepository(locator()));
   locator.registerLazySingleton<IntakeRepository>(
-      () => IntakeRepository(locator()));
+      () => IntakeRepository(locator(), locator()));
   locator.registerLazySingleton<RecipeRepository>(
       () => RecipeRepository(locator()));
   locator.registerLazySingleton<ProductsRepository>(
@@ -190,6 +194,8 @@ Future<void> initLocator() async {
       () => PhysicalActivityRepository(locator()));
   locator.registerLazySingleton<TrackedDayRepository>(
       () => TrackedDayRepository(locator()));
+  locator.registerLazySingleton<SqlQueueRepository>(
+      () => SqlQueueRepository(locator()));
 
   // DataSources
   locator
@@ -198,6 +204,8 @@ Future<void> initLocator() async {
       () => UserDataSource(hiveDBProvider.userBox));
   locator.registerLazySingleton<IntakeDataSource>(
       () => IntakeDataSource(hiveDBProvider.intakeBox));
+  locator.registerLazySingleton<SqlQueueDataSource>(
+      () => SqlQueueDataSource(hiveDBProvider.sqlQueueBox));
   locator.registerLazySingleton<RecipesDataSource>(
       () => RecipesDataSource(hiveDBProvider.recipeBox));
   locator.registerLazySingleton<UserActivityDataSource>(
@@ -210,7 +218,13 @@ Future<void> initLocator() async {
   locator.registerLazySingleton(
       () => TrackedDayDataSource(hiveDBProvider.trackedDayBox));
 
+  locator.registerLazySingleton(() =>
+      IntakeSyncListener(locator()));
+  locator.registerLazySingleton(() =>
+      SqlQueueConsumer(locator(), locator()));
+
   await _initializeConfig(locator());
+  locator<SqlQueueConsumer>().start();
 }
 
 Future<void> _initializeConfig(ConfigDataSource configDataSource) async {

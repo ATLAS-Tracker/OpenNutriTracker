@@ -11,7 +11,12 @@ Every time a change is made to the code (feature, bug fix, refactoring…), **yo
    ```bash
    flutter pub get
    ```
-2. Run the tests:
+2. Run static analysis:
+
+   ```bash
+   flutter analyze
+   ```
+3. Run the tests:
 
    ```bash
    flutter test
