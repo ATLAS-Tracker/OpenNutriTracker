@@ -40,10 +40,11 @@ class GetWeightUsecase {
   }
 
   Future<List<UserWeightEntity>> getWeightsFromPastDays(
-      DateTime currentDay, int days) async {
+      DateTime currentDay, int days,
+      {bool includeToday = false}) async {
     final List<UserWeightEntity> weights = [];
 
-    for (int i = 0; i < days; i++) {
+    for (int i = includeToday ? 0 : 1; i < days; i++) {
       DateTime date = currentDay.subtract(Duration(days: i));
       UserWeightEntity? weight = await getUserWeightByDate(date);
 
@@ -59,8 +60,7 @@ class GetWeightUsecase {
   /// For example, if `numberOfDays` is 7, it will look for weight entries from yesterday
   /// up to 7 days ago and calculate their average.
   /// If no weights are found in that period, it falls back to the user's default weight.
-  Future<double> getAverageWeight(int numberOfDays) async {
-    DateTime date = DateTime.now();
+  Future<double> getAverageWeight(DateTime date, int numberOfDays) async {
     final List<UserWeightEntity> userWeights =
         await getWeightsFromPastDays(date, numberOfDays);
 

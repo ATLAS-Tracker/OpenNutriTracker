@@ -6,12 +6,14 @@ class WeightCard extends StatefulWidget {
   final double weight;
   final VoidCallback onTap;
   final Function(BuildContext) onLongTap;
+  final DateTime day;
 
   const WeightCard(
       {super.key,
       required this.weight,
       required this.onTap,
-      required this.onLongTap});
+      required this.onLongTap,
+      required this.day});
 
   @override
   State<WeightCard> createState() => _WeightCardState();
@@ -23,14 +25,11 @@ class _WeightCardState extends State<WeightCard> {
   IconData iconFlat = Icons.remove; /* - */
 
   final GetWeightUsecase _getWeightUsecase = locator<GetWeightUsecase>();
-
-  late Future<double> averageWeightFuture;
   double delta = 0.0;
 
   @override
   void initState() {
     super.initState();
-    averageWeightFuture = _getWeightUsecase.getAverageWeight(7);
   }
 
   IconData _getIconBasedOnAverage(
@@ -77,9 +76,11 @@ class _WeightCardState extends State<WeightCard> {
                       // compared to the N-days average. Displays an icon
                       // indicating if the current weight is higher, lower, or
                       // the same as the average, along with the numerical delta.
-                      FutureBuilder(
-                        future: averageWeightFuture,
-                        builder: (context, snapshot) {
+                      FutureBuilder<double>(
+                        future:
+                            _getWeightUsecase.getAverageWeight(widget.day, 7),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
                           if (snapshot.hasData) {
                             final avgWeight = snapshot.data!;
                             delta = widget.weight - avgWeight;

@@ -57,6 +57,7 @@ class WeightVerticalList extends StatelessWidget {
                 weight: weightEntity!.weight,
                 onTap: () => _onPlaceholderCardTapped(context),
                 onLongTap: onItemLongPressedCallback,
+                day: day,
               );
             }
           },

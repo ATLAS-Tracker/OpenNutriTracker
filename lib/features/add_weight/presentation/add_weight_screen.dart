@@ -30,8 +30,6 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
   late CalendarDayBloc _calendarDayBloc;
   late DateTime _day;
   late bool _isButtonDisabled;
-
-  late Future<List<_WeightData>> data;
   final nbDays = 7;
 
   @override
@@ -46,16 +44,16 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
     final args =
         ModalRoute.of(context)!.settings.arguments as AddWeightScreenArguments;
-    _day = args.day;
+    _day = DateTime(args.day.year, args.day.month, args.day.day);
     _isButtonDisabled = args.toSaveWeight;
-    super.didChangeDependencies();
   }
 
   Future<List<_WeightData>> getWeights() async {
-    final lastSavedWeights =
-        await _getWeightUsecase.getWeightsFromPastDays(_day, nbDays);
+    final lastSavedWeights = await _getWeightUsecase
+        .getWeightsFromPastDays(_day, nbDays, includeToday: true);
 
     return lastSavedWeights.map((e) {
       // Normalize date to midnight for proper alignment with daily axis ticks
@@ -64,12 +62,18 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
     }).toList();
   }
 
+  Future<List<dynamic>> _loadAsyncData() {
+    return Future.wait([
+      getWeights(), // Future<List<_WeightData>>
+      _getWeightUsecase.getAverageWeight(_day, nbDays), // Future<double>
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     /* init state.weight */
     _weightBloc.add(WeightLoadInitialRequested(_day));
-    /* init data List */
-    data = getWeights();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).weightLabel),
@@ -150,28 +154,42 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                     ),
                     shadows: kElevationToShadow[2],
                   ),
-                  child: FutureBuilder<List<_WeightData>>(
-                      future: data,
+                  child: FutureBuilder<List<dynamic>>(
+                      future: _loadAsyncData(),
                       builder: (BuildContext context,
-                          AsyncSnapshot<List<_WeightData>> snapshot) {
+                          AsyncSnapshot<List<dynamic>> snapshot) {
                         if (snapshot.hasData) {
+                          final List<_WeightData> weightDataList =
+                              snapshot.data![0] as List<_WeightData>;
+                          final double avgWeight = snapshot.data![1] as double;
                           return SfCartesianChart(
                               primaryXAxis: DateTimeAxis(
-                                dateFormat: DateFormat('dd/MM/yyyy'),
-                                intervalType: DateTimeIntervalType.days,
-                                interval: 1,
-                                labelRotation: -90,
-                                maximum: _day,
-                                minimum: _day.subtract(Duration(days: nbDays)),
-                              ),
-                              primaryYAxis: NumericAxis(interval: 0.5),
+                                  dateFormat: DateFormat('dd/MM/yyyy'),
+                                  intervalType: DateTimeIntervalType.days,
+                                  interval: 1,
+                                  labelRotation: -90,
+                                  maximum: _day.add(Duration(hours: 12)),
+                                  minimum: _day.subtract(
+                                    Duration(days: nbDays),
+                                  )),
+                              primaryYAxis: NumericAxis(
+                                  interval: 0.5,
+                                  plotBands: <PlotBand>[
+                                    PlotBand(
+                                      start: avgWeight,
+                                      end: avgWeight,
+                                      borderColor: Colors.red,
+                                      borderWidth: 2,
+                                      dashArray: <double>[5, 5],
+                                    )
+                                  ]),
                               series: <CartesianSeries<_WeightData, DateTime>>[
                                 ColumnSeries(
                                   xValueMapper: (_WeightData data, _) =>
                                       data.date,
                                   yValueMapper: (_WeightData data, _) =>
                                       data.weight,
-                                  dataSource: snapshot.data!,
+                                  dataSource: weightDataList,
                                   color: Theme.of(context).colorScheme.primary,
                                 )
                               ]);
