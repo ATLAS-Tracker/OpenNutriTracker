@@ -15,7 +15,7 @@ class SyncActionAdapter extends TypeAdapter<SyncAction> {
     return SyncAction(
       action: fields[0] as String,
       table: fields[1] as String,
-      data: (fields[2] as Map).cast<String, dynamic>(),
+      data: (fields[2] as Map?)?.cast<String, dynamic>(),
       id: fields[3] as String,
       attempts: fields[4] as int,
       timestamp: fields[5] as DateTime,

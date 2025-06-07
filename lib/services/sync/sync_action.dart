@@ -11,7 +11,7 @@ class SyncAction {
   String table;
 
   @HiveField(2)
-  Map<String, dynamic> data;
+  Map<String, dynamic>? data;
 
   @HiveField(3)
   String id;
@@ -25,7 +25,7 @@ class SyncAction {
   SyncAction({
     required this.action,
     required this.table,
-    required this.data,
+    this.data,
     required this.id,
     this.attempts = 0,
     DateTime? timestamp,
@@ -34,7 +34,9 @@ class SyncAction {
   factory SyncAction.fromJson(Map<String, dynamic> json) => SyncAction(
         action: json['action'] as String,
         table: json['table'] as String,
-        data: Map<String, dynamic>.from(json['data'] as Map),
+        data: json['data'] != null
+            ? Map<String, dynamic>.from(json['data'] as Map)
+            : null,
         id: json['id'] as String,
         attempts: json['attempts'] as int? ?? 0,
         timestamp: DateTime.parse(json['timestamp'] as String),

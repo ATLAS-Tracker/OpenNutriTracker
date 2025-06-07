@@ -64,10 +64,10 @@ class SyncProcessorService {
       final table = _client.from(action.table);
       switch (action.action) {
         case 'create':
-          await table.insert(action.data);
+          await table.insert(action.data!);
           break;
         case 'update':
-          await table.update(action.data).eq('id', action.id);
+          await table.update(action.data!).eq('id', action.id);
           break;
         case 'delete':
           await table.delete().eq('id', action.id);

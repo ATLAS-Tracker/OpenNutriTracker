@@ -71,7 +71,7 @@ import 'package:opennutritracker/services/sync/sync_processor_service.dart';
 
 final locator = GetIt.instance;
 
-Future<void> initLocator() async {
+Future<void> initLocator({bool isPremium = false}) async {
   // Init secure storage and Hive database;
   final secureAppStorageProvider = SecureAppStorageProvider();
   final hiveDBProvider = HiveDBProvider();
@@ -214,17 +214,17 @@ Future<void> initLocator() async {
       () => TrackedDayDataSource(hiveDBProvider.trackedDayBox));
 
   // Sync services
-  locator.registerLazySingleton<SyncQueueService>(() => SyncQueueService(
-        hiveDBProvider.intakeBox,
-        hiveDBProvider.syncActionBox,
-        () => true,
-      )..start());
-  locator
-      .registerLazySingleton<SyncProcessorService>(() => SyncProcessorService(
-            hiveDBProvider.syncActionBox,
-            locator(),
-            Connectivity(),
-          )..start());
+  if (isPremium) {
+    locator.registerLazySingleton<SyncQueueService>(() => SyncQueueService(
+          hiveDBProvider.intakeBox,
+          hiveDBProvider.syncActionBox,
+        )..start());
+    locator.registerLazySingleton<SyncProcessorService>(() => SyncProcessorService(
+              hiveDBProvider.syncActionBox,
+              locator(),
+              Connectivity(),
+            )..start());
+  }
 
   await _initializeConfig(locator());
 }
