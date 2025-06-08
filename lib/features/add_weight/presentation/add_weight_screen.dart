@@ -82,70 +82,11 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
         alignment: Alignment.topCenter,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20.0),
-                decoration: ShapeDecoration(
-                  color: Theme.of(context).cardColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  shadows: kElevationToShadow[2],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.remove),
-                          onPressed: _isButtonDisabled
-                              ? null
-                              : () => _weightBloc.add(WeightDecrement()),
-                        ),
-                        BlocBuilder<WeightBloc, WeightState>(
-                          bloc: _weightBloc,
-                          builder: (context, state) {
-                            return Center(
-                                child: EditableTextWidget(
-                                    initialValue:
-                                        state.weight.toStringAsFixed(1),
-                                    disabledEnter: _isButtonDisabled));
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: _isButtonDisabled
-                              ? null
-                              : () => _weightBloc.add(WeightIncrement()),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                          onPressed: _isButtonDisabled
-                              ? null
-                              : () => _onButtonPressed(context),
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                          ).copyWith(
-                              elevation: ButtonStyleButton.allOrNull(0.0)),
-                          icon: const Icon(Icons.add_outlined),
-                          label: Text(S.of(context).buttonSaveLabel)),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 50),
-              Container(
+          child: SingleChildScrollView(
+            // Wrap the Column with SingleChildScrollView
+            child: Column(
+              children: [
+                Container(
                   padding: const EdgeInsets.all(20.0),
                   decoration: ShapeDecoration(
                     color: Theme.of(context).cardColor,
@@ -154,27 +95,90 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                     ),
                     shadows: kElevationToShadow[2],
                   ),
-                  child: FutureBuilder<List<dynamic>>(
-                      future: _loadAsyncData(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<List<dynamic>> snapshot) {
-                        if (snapshot.hasData) {
-                          final List<_WeightData> weightDataList =
-                              snapshot.data![0] as List<_WeightData>;
-                          final double avgWeight = snapshot.data![1] as double;
-                          return SfCartesianChart(
-                              primaryXAxis: DateTimeAxis(
-                                  dateFormat: DateFormat('dd/MM/yyyy'),
-                                  intervalType: DateTimeIntervalType.days,
-                                  interval: 1,
-                                  labelRotation: -90,
-                                  maximum: _day.add(Duration(hours: 12)),
-                                  minimum: _day.subtract(
-                                    Duration(days: nbDays),
-                                  )),
-                              primaryYAxis: NumericAxis(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.remove),
+                            onPressed: _isButtonDisabled
+                                ? null
+                                : () => _weightBloc.add(WeightDecrement()),
+                          ),
+                          BlocBuilder<WeightBloc, WeightState>(
+                            bloc: _weightBloc,
+                            builder: (context, state) {
+                              return Center(
+                                  child: EditableTextWidget(
+                                      initialValue:
+                                          state.weight.toStringAsFixed(1),
+                                      disabledEnter: _isButtonDisabled));
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.add),
+                            onPressed: _isButtonDisabled
+                                ? null
+                                : () => _weightBloc.add(WeightIncrement()),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                            onPressed: _isButtonDisabled
+                                ? null
+                                : () => _onButtonPressed(context),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                            ).copyWith(
+                                elevation: ButtonStyleButton.allOrNull(0.0)),
+                            icon: const Icon(Icons.add_outlined),
+                            label: Text(S.of(context).buttonSaveLabel)),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 50),
+                Container(
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: ShapeDecoration(
+                      color: Theme.of(context).cardColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      shadows: kElevationToShadow[2],
+                    ),
+                    child: FutureBuilder<List<dynamic>>(
+                        future: _loadAsyncData(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<dynamic>> snapshot) {
+                          if (snapshot.hasData) {
+                            final List<_WeightData> weightDataList =
+                                snapshot.data![0] as List<_WeightData>;
+                            final double avgWeight =
+                                snapshot.data![1] as double;
+                            return SfCartesianChart(
+                                primaryXAxis: DateTimeAxis(
+                                    dateFormat: DateFormat('dd/MM/yyyy'),
+                                    intervalType: DateTimeIntervalType.days,
+                                    interval: 1,
+                                    labelRotation: -90,
+                                    maximum: _day.add(Duration(hours: 12)),
+                                    minimum: _day.subtract(
+                                      Duration(days: nbDays),
+                                    )),
+                                primaryYAxis: NumericAxis(
                                   interval: 0.5,
-                                  plotBands: <PlotBand>[
+                                  /*plotBands: <PlotBand>[
                                     PlotBand(
                                       start: avgWeight,
                                       end: avgWeight,
@@ -182,22 +186,26 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                                       borderWidth: 2,
                                       dashArray: <double>[5, 5],
                                     )
-                                  ]),
-                              series: <CartesianSeries<_WeightData, DateTime>>[
-                                ColumnSeries(
-                                  xValueMapper: (_WeightData data, _) =>
-                                      data.date,
-                                  yValueMapper: (_WeightData data, _) =>
-                                      data.weight,
-                                  dataSource: weightDataList,
-                                  color: Theme.of(context).colorScheme.primary,
-                                )
-                              ]);
-                        } else {
-                          return const CircularProgressIndicator();
-                        }
-                      })),
-            ],
+                                  ]*/
+                                ),
+                                series: <CartesianSeries<_WeightData,
+                                    DateTime>>[
+                                  ColumnSeries(
+                                    xValueMapper: (_WeightData data, _) =>
+                                        data.date,
+                                    yValueMapper: (_WeightData data, _) =>
+                                        data.weight,
+                                    dataSource: weightDataList,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  )
+                                ]);
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        })),
+              ],
+            ),
           ),
         ),
       ),
