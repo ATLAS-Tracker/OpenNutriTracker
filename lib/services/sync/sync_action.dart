@@ -1,8 +1,10 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'sync_action.g.dart';
 
 @HiveType(typeId: 18)
+@JsonSerializable()
 class SyncAction {
   @HiveField(0)
   String action;
@@ -31,23 +33,8 @@ class SyncAction {
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
 
-  factory SyncAction.fromJson(Map<String, dynamic> json) => SyncAction(
-        action: json['action'] as String,
-        table: json['table'] as String,
-        data: json['data'] != null
-            ? Map<String, dynamic>.from(json['data'] as Map)
-            : null,
-        id: json['id'] as String,
-        attempts: json['attempts'] as int? ?? 0,
-        timestamp: DateTime.parse(json['timestamp'] as String),
-      );
+  factory SyncAction.fromJson(Map<String, dynamic> json) =>
+      _$SyncActionFromJson(json);
 
-  Map<String, dynamic> toJson() => {
-        'action': action,
-        'table': table,
-        'data': data,
-        'id': id,
-        'attempts': attempts,
-        'timestamp': timestamp.toIso8601String(),
-      };
+  Map<String, dynamic> toJson() => _$SyncActionToJson(this);
 }

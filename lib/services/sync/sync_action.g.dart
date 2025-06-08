@@ -2,6 +2,10 @@
 
 part of 'sync_action.dart';
 
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
 class SyncActionAdapter extends TypeAdapter<SyncAction> {
   @override
   final int typeId = 18;
@@ -50,3 +54,26 @@ class SyncActionAdapter extends TypeAdapter<SyncAction> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+SyncAction _$SyncActionFromJson(Map<String, dynamic> json) => SyncAction(
+      action: json['action'] as String,
+      table: json['table'] as String,
+      data: json['data'] as Map<String, dynamic>?,
+      id: json['id'] as String,
+      attempts: (json['attempts'] as num?)?.toInt() ?? 0,
+      timestamp: DateTime.parse(json['timestamp'] as String),
+    );
+
+Map<String, dynamic> _$SyncActionToJson(SyncAction instance) =>
+    <String, dynamic>{
+      'action': instance.action,
+      'table': instance.table,
+      'data': instance.data,
+      'id': instance.id,
+      'attempts': instance.attempts,
+      'timestamp': instance.timestamp.toIso8601String(),
+    };
