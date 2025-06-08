@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:logging/logging.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:opennutritracker/services/sync/sync_action.dart';
 
 class SyncProcessorService {
+  final log = Logger('SyncProcessorService');
   final Box<SyncAction> _queueBox;
   final SupabaseClient _client;
   final Connectivity _connectivity;
@@ -64,19 +67,30 @@ class SyncProcessorService {
       final table = _client.from(action.table);
       switch (action.action) {
         case 'create':
+          if (action.data == null) {
+            log.warning('Create action missing data for id ${action.id}');
+            return false;
+          }
           await table.insert(action.data!);
           break;
         case 'update':
+          if (action.data == null) {
+            log.warning('Update action missing data for id ${action.id}');
+            return false;
+          }
           await table.update(action.data!).eq('id', action.id);
           break;
         case 'delete':
           await table.delete().eq('id', action.id);
           break;
         default:
-          return true;
+          log.warning('Unknown sync action: ${action.action}');
+          return false;
       }
       return true;
-    } catch (_) {
+    } catch (e, stack) {
+      log.severe('Error performing ${action.action} for ${action.id}: $e');
+      Sentry.captureException(e, stackTrace: stack);
       return false;
     }
   }

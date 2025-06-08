@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/data/repository/recipe_repository.dart';
 
 class DeleteRecipeUsecase {
   final RecipeRepository _recipeRepository;
+  final log = Logger('DeleteRecipeUsecase');
 
   DeleteRecipeUsecase(this._recipeRepository);
 
@@ -22,8 +24,9 @@ class DeleteRecipeUsecase {
           if (await file.exists()) {
             try {
               await file.delete();
-            } catch (_) {
-              // ignore deletion errors
+              log.fine('Deleted local file: $path');
+            } catch (e) {
+              log.warning('Failed to delete local file $path: $e');
             }
           }
         }
