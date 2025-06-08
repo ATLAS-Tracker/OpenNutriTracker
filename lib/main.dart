@@ -31,7 +31,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   LoggerConfig.intiLogger();
-  await initLocator();
+  await initLocator(isPremium: false);
   final isUserInitialized = await locator<UserDataSource>().hasUserData();
   final configRepo = locator<ConfigRepository>();
   final hasAcceptedAnonymousData =

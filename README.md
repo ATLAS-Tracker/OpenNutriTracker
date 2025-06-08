@@ -1,6 +1,6 @@
 <p align="center">
   <img alt="Logo" src="assets/icon/ont_logo_square.png" width="128" />
-  <h1 align="center">OpenNutriTracker</h1>
+  <h1 align="center">AtlasTracker</h1>
 </p>
 
 <p align="center">
