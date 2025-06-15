@@ -59,10 +59,7 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
     portionsEatenController = TextEditingController();
 
     mealPortionCountController.addListener(_validateInputs);
-    portionsEatenController.addListener(() {
-      _validatePortions();
-      _validateInputs();
-    });
+    portionsEatenController.addListener(_onPortionsEatenChanged);
   }
 
   @override
@@ -77,11 +74,18 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
     final eaten = int.tryParse(portionsEatenController.text) ?? 0;
 
     if (eaten > total && total > 0) {
-      portionsEatenController.text = total.toString();
-      portionsEatenController.selection = TextSelection.fromPosition(
-        TextPosition(offset: portionsEatenController.text.length),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        portionsEatenController.text = total.toString();
+        portionsEatenController.selection = TextSelection.fromPosition(
+          TextPosition(offset: portionsEatenController.text.length),
+        );
+      });
     }
+  }
+
+  void _onPortionsEatenChanged() {
+    _validatePortions();
+    _validateInputs();
   }
 
   bool _areInputsValid() {
@@ -140,15 +144,14 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
     final macros = locator<CreateMealBloc>().computeMacros();
 
     final nutriment = MealNutrimentsEntity(
-      energyKcalPerQuantity: macros['totalKcal']! / mealPortionCountInt,
-      carbohydratesPerQuantity: macros['totalCarbs']! / mealPortionCountInt,
-      fatPerQuantity: macros['totalFats']! / mealPortionCountInt,
-      proteinsPerQuantity: macros['totalProteins']! / mealPortionCountInt,
-      sugarsPerQuantity: null,
-      saturatedFatPerQuantity: null,
-      fiberPerQuantity: null,
-      mealOrRecipe: MealOrRecipeEntity.recipe,
-    );
+        energyKcalPerQuantity: macros['totalKcal']! / mealPortionCountInt,
+        carbohydratesPerQuantity: macros['totalCarbs']! / mealPortionCountInt,
+        fatPerQuantity: macros['totalFats']! / mealPortionCountInt,
+        proteinsPerQuantity: macros['totalProteins']! / mealPortionCountInt,
+        sugarsPerQuantity: null,
+        saturatedFatPerQuantity: null,
+        fiberPerQuantity: null,
+        mealOrRecipe: MealOrRecipeEntity.recipe);
 
     final meal = MealEntity(
       code: IdGenerator.getUniqueID(),
@@ -182,9 +185,9 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
 
     // Add the recipe to the DB to keep tracking of the mealEntity composing the recipe
     final recipe = RecipeEntity(
-      meal: meal,
-      ingredients: locator<CreateMealBloc>().getListOfIntakeForRecipeEntity(),
-    );
+        meal: meal,
+        ingredients:
+            locator<CreateMealBloc>().getListOfIntakeForRecipeEntity());
     locator<AddRecipeUsecase>().addRecipe(recipe);
 
     // Clean the list of intake
@@ -193,13 +196,13 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
     locator<HomeBloc>().add(const LoadItemsEvent());
     locator<DiaryBloc>().add(const LoadDiaryYearEvent());
     locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
-    locator<RecipeSearchBloc>().add(
-      const LoadRecipeSearchEvent(searchString: ""),
-    );
+    locator<RecipeSearchBloc>()
+        .add(const LoadRecipeSearchEvent(searchString: ""));
 
-    Navigator.of(
-      context,
-    ).pushNamedAndRemoveUntil(NavigationOptions.mainRoute, (route) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      NavigationOptions.mainRoute,
+      (route) => false,
+    );
   }
 
   @override
@@ -212,92 +215,90 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
           return SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: IntrinsicHeight(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      /// Meal type selector
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: _goToPreviousMeal,
-                            icon: const Icon(Icons.chevron_left),
-                          ),
-                          Row(
-                            children: [
-                              Icon(currentMeal.getIconData()),
-                              const SizedBox(width: 8),
-                              Text(
-                                _getMealLabel(currentMeal),
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    /// Meal type selector
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: _goToPreviousMeal,
+                          icon: const Icon(Icons.chevron_left),
+                        ),
+                        Row(
+                          children: [
+                            Icon(currentMeal.getIconData()),
+                            const SizedBox(width: 8),
+                            Text(
+                              _getMealLabel(currentMeal),
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          onPressed: _goToNextMeal,
+                          icon: const Icon(Icons.chevron_right),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    /// Portion inputs
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: mealPortionCountController,
+                            decoration: InputDecoration(
+                              labelText: S.of(context).mealPortionLabel,
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
                             ],
                           ),
-                          IconButton(
-                            onPressed: _goToNextMeal,
-                            icon: const Icon(Icons.chevron_right),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      /// Portion inputs
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: mealPortionCountController,
-                              decoration: InputDecoration(
-                                labelText: S.of(context).mealPortionLabel,
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: TextFormField(
+                            controller: portionsEatenController,
+                            decoration: const InputDecoration(
+                              labelText: "Portions eaten",
+                              border: OutlineInputBorder(),
                             ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextFormField(
-                              controller: portionsEatenController,
-                              decoration: const InputDecoration(
-                                labelText: "Portions eaten",
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
 
-                      /// Calendar
-                      DiaryTableCalendar(
-                        onDateSelected: _handleDateSelected,
-                        calendarDurationDays: const Duration(days: 30),
-                        focusedDate: _selectedDate,
-                        currentDate: DateTime.now(),
-                        selectedDate: _selectedDate,
-                        trackedDaysMap: const {},
-                      ),
-                      const SizedBox(height: 16),
+                    /// Calendar
+                    DiaryTableCalendar(
+                      onDateSelected: _handleDateSelected,
+                      calendarDurationDays: const Duration(days: 30),
+                      focusedDate: _selectedDate,
+                      currentDate: DateTime.now(),
+                      selectedDate: _selectedDate,
+                      trackedDaysMap: const {},
+                    ),
+                    const SizedBox(height: 16),
 
-                      /// Save button
-                      FilledButton(
-                        onPressed: isSaveEnabled ? _onSavePressed : null,
-                        child: Text(S.of(context).buttonSaveLabel),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
+                    /// Save button
+                    FilledButton(
+                      onPressed: isSaveEnabled ? _onSavePressed : null,
+                      child: Text(S.of(context).buttonSaveLabel),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
               ),
             ),
