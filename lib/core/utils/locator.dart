@@ -65,10 +65,13 @@ import 'package:opennutritracker/features/settings/domain/usecase/import_data_us
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:opennutritracker/services/sync/sync_queue_service.dart';
+import 'package:opennutritracker/services/sync/sync_processor_service.dart';
 
 final locator = GetIt.instance;
 
-Future<void> initLocator() async {
+Future<void> initLocator({bool isPremium = false}) async {
   // Init secure storage and Hive database;
   final secureAppStorageProvider = SecureAppStorageProvider();
   final hiveDBProvider = HiveDBProvider();
@@ -209,6 +212,19 @@ Future<void> initLocator() async {
   locator.registerLazySingleton<SpFdcDataSource>(() => SpFdcDataSource());
   locator.registerLazySingleton(
       () => TrackedDayDataSource(hiveDBProvider.trackedDayBox));
+
+  // Sync services
+  if (isPremium) {
+    locator.registerLazySingleton<SyncQueueService>(() => SyncQueueService(
+          hiveDBProvider.intakeBox,
+          hiveDBProvider.syncActionBox,
+        )..start());
+    locator.registerLazySingleton<SyncProcessorService>(() => SyncProcessorService(
+              hiveDBProvider.syncActionBox,
+              locator(),
+              Connectivity(),
+            )..start());
+  }
 
   await _initializeConfig(locator());
 }

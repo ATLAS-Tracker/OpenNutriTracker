@@ -8,6 +8,7 @@ import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/create_meal/presentation/bloc/create_meal_bloc.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
+import 'package:opennutritracker/features/add_meal/domain/entity/meal_or_recipe_entity.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/core/utils/id_generator.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_nutriments_entity.dart';
@@ -58,10 +59,7 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
     portionsEatenController = TextEditingController();
 
     mealPortionCountController.addListener(_validateInputs);
-    portionsEatenController.addListener(() {
-      _validatePortions();
-      _validateInputs();
-    });
+    portionsEatenController.addListener(_onPortionsEatenChanged);
   }
 
   @override
@@ -76,11 +74,18 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
     final eaten = int.tryParse(portionsEatenController.text) ?? 0;
 
     if (eaten > total && total > 0) {
-      portionsEatenController.text = total.toString();
-      portionsEatenController.selection = TextSelection.fromPosition(
-        TextPosition(offset: portionsEatenController.text.length),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        portionsEatenController.text = total.toString();
+        portionsEatenController.selection = TextSelection.fromPosition(
+          TextPosition(offset: portionsEatenController.text.length),
+        );
+      });
     }
+  }
+
+  void _onPortionsEatenChanged() {
+    _validatePortions();
+    _validateInputs();
   }
 
   bool _areInputsValid() {
@@ -146,7 +151,7 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
         sugarsPerQuantity: null,
         saturatedFatPerQuantity: null,
         fiberPerQuantity: null,
-        mealOrRecipe: "recipe");
+        mealOrRecipe: MealOrRecipeEntity.recipe);
 
     final meal = MealEntity(
       code: IdGenerator.getUniqueID(),
@@ -204,84 +209,101 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
   Widget build(BuildContext context) {
     final currentMeal = _mealTypes[_currentMealIndex];
 
-    return Padding(
-      padding: MediaQuery.of(context).viewInsets,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          /// Meal type selector
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: _goToPreviousMeal,
-                icon: const Icon(Icons.chevron_left),
-              ),
-              Row(
-                children: [
-                  Icon(currentMeal.getIconData()),
-                  const SizedBox(width: 8),
-                  Text(
-                    _getMealLabel(currentMeal),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ],
-              ),
-              IconButton(
-                onPressed: _goToNextMeal,
-                icon: const Icon(Icons.chevron_right),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
+    return SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    /// Meal type selector
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: _goToPreviousMeal,
+                          icon: const Icon(Icons.chevron_left),
+                        ),
+                        Row(
+                          children: [
+                            Icon(currentMeal.getIconData()),
+                            const SizedBox(width: 8),
+                            Text(
+                              _getMealLabel(currentMeal),
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          onPressed: _goToNextMeal,
+                          icon: const Icon(Icons.chevron_right),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
 
-          /// Portion inputs
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: mealPortionCountController,
-                  decoration: InputDecoration(
-                    labelText: S.of(context).mealPortionLabel,
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    /// Portion inputs
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: mealPortionCountController,
+                            decoration: InputDecoration(
+                              labelText: S.of(context).mealPortionLabel,
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: TextFormField(
+                            controller: portionsEatenController,
+                            decoration: const InputDecoration(
+                              labelText: "Portions eaten",
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    /// Calendar
+                    DiaryTableCalendar(
+                      onDateSelected: _handleDateSelected,
+                      calendarDurationDays: const Duration(days: 30),
+                      focusedDate: _selectedDate,
+                      currentDate: DateTime.now(),
+                      selectedDate: _selectedDate,
+                      trackedDaysMap: const {},
+                    ),
+                    const SizedBox(height: 16),
+
+                    /// Save button
+                    FilledButton(
+                      onPressed: isSaveEnabled ? _onSavePressed : null,
+                      child: Text(S.of(context).buttonSaveLabel),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: TextFormField(
-                  controller: portionsEatenController,
-                  decoration: const InputDecoration(
-                    labelText: "Portions eaten",
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                ),
-              ),
-            ],
-          ),
-
-          /// Calendar
-          DiaryTableCalendar(
-            onDateSelected: _handleDateSelected,
-            calendarDurationDays: const Duration(days: 30),
-            focusedDate: _selectedDate,
-            currentDate: DateTime.now(),
-            selectedDate: _selectedDate,
-            trackedDaysMap: const {},
-          ),
-          const SizedBox(height: 16),
-
-          /// Save button
-          FilledButton(
-            onPressed: isSaveEnabled ? _onSavePressed : null,
-            child: Text(S.of(context).buttonSaveLabel),
-          ),
-          const SizedBox(height: 16),
-        ],
+            ),
+          );
+        },
       ),
     );
   }
