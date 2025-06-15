@@ -42,14 +42,16 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
     _createMealBloc = locator<CreateMealBloc>();
     _createMealBloc.add(InitializeCreateMealEvent());
     log.info(
-        "InitializeCreateMealEvent added: isOnCreateMealScreen set to true");
+      "InitializeCreateMealEvent added: isOnCreateMealScreen set to true",
+    );
   }
 
   @override
   void dispose() {
     _createMealBloc.add(ExitCreateMealScreenEvent());
     log.info(
-        "ExitCreateMealScreenEvent added: isOnCreateMealScreen set to false");
+      "ExitCreateMealScreenEvent added: isOnCreateMealScreen set to false",
+    );
     super.dispose();
   }
 
@@ -69,8 +71,9 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
       _imagePath = args.imagePath;
 
       // Envoie les ingrédients au bloc de façon réactive (déclenche UI update)
-      _createMealBloc
-          .add(SetIntakeListFromRecipeEvent(args.recipe.ingredients));
+      _createMealBloc.add(
+        SetIntakeListFromRecipeEvent(args.recipe.ingredients),
+      );
     } else {
       _id = UniqueKey().toString();
       _name = "";
@@ -94,179 +97,224 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
                 builder: (context, state) {
                   final isButtonEnabled =
                       _nameTextController.text.trim().isNotEmpty &&
-                          state.intakeList.isNotEmpty;
+                      state.intakeList.isNotEmpty;
 
                   return FilledButton(
-                    onPressed:
-                        isButtonEnabled ? () => _onSavePressed(true) : null,
+                    onPressed: isButtonEnabled
+                        ? () => _onSavePressed(true)
+                        : null,
                     child: Text(S.of(context).buttonSaveLabel),
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
-        body: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                          child: TextFormField(
-                        controller: _nameTextController,
-                        decoration: InputDecoration(
-                          labelText: S.of(context).mealNameLabel,
-                          border: const OutlineInputBorder(),
-                          suffixIcon: Padding(
-                            padding: const EdgeInsets.all(
-                                6.0), // Ajuste l’espacement autour du bouton
-                            child: PhotoPickerButton(
-                              initialImagePath: _imagePath,
-                              onImagePicked: (imagePath) {
-                                setState(() {
-                                  _imagePath = imagePath;
-                                });
-                              },
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _nameTextController,
+                                      decoration: InputDecoration(
+                                        labelText: S.of(context).mealNameLabel,
+                                        border: const OutlineInputBorder(),
+                                        suffixIcon: Padding(
+                                          padding: const EdgeInsets.all(
+                                            6.0,
+                                          ), // Ajuste l’espacement autour du bouton
+                                          child: PhotoPickerButton(
+                                            initialImagePath: _imagePath,
+                                            onImagePicked: (imagePath) {
+                                              setState(() {
+                                                _imagePath = imagePath;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      keyboardType: TextInputType.text,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              BlocBuilder<CreateMealBloc, CreateMealState>(
+                                bloc: _createMealBloc,
+                                builder: (context, state) {
+                                  final intakeList = state.intakeList;
+
+                                  if (intakeList.isEmpty) {
+                                    return Text(S.of(context).noFoodAddedLabel);
+                                  }
+
+                                  final now = DateTime.now();
+                                  final convertedIntakeList = state.intakeList
+                                      .map((ingredient) {
+                                        return IntakeEntity(
+                                          id:
+                                              ingredient.code ??
+                                              ingredient.name ??
+                                              "",
+                                          unit: ingredient.unit ?? "g",
+                                          amount: ingredient.amount ?? 0,
+                                          type: IntakeTypeEntity.breakfast,
+                                          meal: ingredient.meal!,
+                                          dateTime: now,
+                                        );
+                                      })
+                                      .toList();
+
+                                  return Column(
+                                    children: [
+                                      IntakeVerticalList(
+                                        day: DateTime.now(),
+                                        title: "",
+                                        addMealType: AddMealType
+                                            .snackType, // TODO Pierre refactor
+                                        listIcon: Icons.functions,
+                                        intakeList: convertedIntakeList,
+                                        onDeleteIntakeCallback:
+                                            _onDeleteIntakeItem,
+                                        onItemDragCallback: onIntakeItemDrag,
+                                        onItemTappedCallback:
+                                            onIntakeItemTapped,
+                                        usesImperialUnits: false,
+                                      ),
+                                      const SizedBox(height: 32),
+                                      if (state.totalCarbs +
+                                              state.totalFats +
+                                              state.totalProteins >
+                                          0)
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0,
+                                          ),
+                                          child: Center(
+                                            child: PieChart(
+                                              dataMap: {
+                                                'Protéine': state.totalProteins,
+                                                'Glucide': state.totalCarbs,
+                                                'Lipide': state.totalFats,
+                                              },
+                                              animationDuration: const Duration(
+                                                milliseconds: 800,
+                                              ),
+                                              chartLegendSpacing: 32,
+                                              chartRadius:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width /
+                                                  2.5,
+                                              colorList: [
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.primaryContainer,
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .secondaryContainer,
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .onTertiaryContainer,
+                                              ],
+                                              initialAngleInDegree: 0,
+                                              chartType: ChartType.ring,
+                                              ringStrokeWidth: 32,
+                                              centerText: "",
+                                              legendOptions:
+                                                  const LegendOptions(
+                                                    showLegendsInRow: false,
+                                                    legendPosition:
+                                                        LegendPosition.bottom,
+                                                    showLegends: true,
+                                                    legendShape:
+                                                        BoxShape.circle,
+                                                    legendTextStyle: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                              chartValuesOptions:
+                                                  const ChartValuesOptions(
+                                                    showChartValueBackground:
+                                                        true,
+                                                    showChartValues: true,
+                                                    showChartValuesInPercentage:
+                                                        false,
+                                                    showChartValuesOutside:
+                                                        true,
+                                                    decimalPlaces: 1,
+                                                  ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Visibility(
+                            visible: _isDragging,
+                            child: Container(
+                              height: 70,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.error.withAlpha(80),
+                              child: DragTarget<IntakeEntity>(
+                                onAcceptWithDetails: (details) {
+                                  _confirmDelete(context, details.data);
+                                },
+                                onLeave: (data) {
+                                  setState(() {
+                                    _isDragging = false;
+                                  });
+                                },
+                                builder:
+                                    (context, candidateData, rejectedData) {
+                                      return const Center(
+                                        child: Icon(
+                                          Icons.delete_outline,
+                                          size: 36,
+                                          color: Colors.white,
+                                        ),
+                                      );
+                                    },
+                              ),
                             ),
                           ),
                         ),
-                        keyboardType: TextInputType.text,
-                      )),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  BlocBuilder<CreateMealBloc, CreateMealState>(
-                    bloc: _createMealBloc,
-                    builder: (context, state) {
-                      final intakeList = state.intakeList;
-
-                      if (intakeList.isEmpty) {
-                        return Text(S.of(context).noFoodAddedLabel);
-                      }
-
-                      final now = DateTime.now();
-                      final convertedIntakeList =
-                          state.intakeList.map((ingredient) {
-                        return IntakeEntity(
-                          id: ingredient.code ?? ingredient.name ?? "",
-                          unit: ingredient.unit ?? "g",
-                          amount: ingredient.amount ?? 0,
-                          type: IntakeTypeEntity.breakfast,
-                          meal: ingredient.meal!,
-                          dateTime: now,
-                        );
-                      }).toList();
-
-                      return Column(
-                        children: [
-                          IntakeVerticalList(
-                            day: DateTime.now(),
-                            title: "",
-                            addMealType:
-                                AddMealType.snackType, // TODO Pierre refactor
-                            listIcon: Icons.functions,
-                            intakeList: convertedIntakeList,
-                            onDeleteIntakeCallback: _onDeleteIntakeItem,
-                            onItemDragCallback: onIntakeItemDrag,
-                            onItemTappedCallback: onIntakeItemTapped,
-                            usesImperialUnits: false,
-                          ),
-                          const SizedBox(height: 32),
-                          if (state.totalCarbs +
-                                  state.totalFats +
-                                  state.totalProteins >
-                              0)
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Center(
-                                child: PieChart(
-                                  dataMap: {
-                                    'Protéine': state.totalProteins,
-                                    'Glucide': state.totalCarbs,
-                                    'Lipide': state.totalFats,
-                                  },
-                                  animationDuration:
-                                      const Duration(milliseconds: 800),
-                                  chartLegendSpacing: 32,
-                                  chartRadius:
-                                      MediaQuery.of(context).size.width / 2.5,
-                                  colorList: [
-                                    Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer,
-                                    Theme.of(context)
-                                        .colorScheme
-                                        .secondaryContainer,
-                                    Theme.of(context)
-                                        .colorScheme
-                                        .onTertiaryContainer,
-                                  ],
-                                  initialAngleInDegree: 0,
-                                  chartType: ChartType.ring,
-                                  ringStrokeWidth: 32,
-                                  centerText: "",
-                                  legendOptions: const LegendOptions(
-                                    showLegendsInRow: false,
-                                    legendPosition: LegendPosition.bottom,
-                                    showLegends: true,
-                                    legendShape: BoxShape.circle,
-                                    legendTextStyle:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  chartValuesOptions: const ChartValuesOptions(
-                                    showChartValueBackground: true,
-                                    showChartValues: true,
-                                    showChartValuesInPercentage: false,
-                                    showChartValuesOutside: true,
-                                    decimalPlaces: 1,
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Visibility(
-                visible: _isDragging,
-                child: Container(
-                  height: 70,
-                  color: Theme.of(context).colorScheme.error.withAlpha(80),
-                  child: DragTarget<IntakeEntity>(
-                    onAcceptWithDetails: (details) {
-                      _confirmDelete(context, details.data);
-                    },
-                    onLeave: (data) {
-                      setState(() {
-                        _isDragging = false;
-                      });
-                    },
-                    builder: (context, candidateData, rejectedData) {
-                      return const Center(
-                        child: Icon(Icons.delete_outline,
-                            size: 36, color: Colors.white),
-                      );
-                    },
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ],
+              );
+            },
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => _showAddItemScreen(
-              context, AddMealType.snackType, DateTime.now()),
+            context,
+            AddMealType.snackType,
+            DateTime.now(),
+          ),
           tooltip: S.of(context).addLabel,
           child: const Icon(Icons.add),
         ),
@@ -282,8 +330,11 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
     });
   }
 
-  void onIntakeItemTapped(BuildContext context, IntakeEntity intakeEntity,
-      bool usesImperialUnits) async {
+  void onIntakeItemTapped(
+    BuildContext context,
+    IntakeEntity intakeEntity,
+    bool usesImperialUnits,
+  ) async {
     final changeIntakeAmount = await showDialog<double>(
       context: context,
       builder: (context) => EditDialog(
@@ -293,13 +344,18 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
     );
 
     if (changeIntakeAmount != null) {
-      locator<CreateMealBloc>()
-          .updateIntakeAmount(intakeEntity.id, changeIntakeAmount);
+      locator<CreateMealBloc>().updateIntakeAmount(
+        intakeEntity.id,
+        changeIntakeAmount,
+      );
     }
   }
 
   void _showAddItemScreen(
-      BuildContext context, AddMealType itemType, DateTime day) {
+    BuildContext context,
+    AddMealType itemType,
+    DateTime day,
+  ) {
     Navigator.of(context).pushNamed(
       NavigationOptions.addMealRoute,
       arguments: AddMealScreenArguments(
@@ -312,7 +368,9 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
 
   void _confirmDelete(BuildContext context, IntakeEntity intake) async {
     bool? delete = await showDialog<bool>(
-        context: context, builder: (context) => const DeleteDialog());
+      context: context,
+      builder: (context) => const DeleteDialog(),
+    );
 
     if (delete == true) {
       locator<CreateMealBloc>().removeIntake(intake.id);
@@ -323,25 +381,30 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
   }
 
   void _onDeleteIntakeItem(
-      IntakeEntity intakeEntity, TrackedDayEntity? trackedDayEntity) {}
+    IntakeEntity intakeEntity,
+    TrackedDayEntity? trackedDayEntity,
+  ) {}
 
   void _onSavePressed(bool usesImperialUnits) {
     final recipeName = _nameTextController.text;
     showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16.0),
-                topRight: Radius.circular(16.0))),
-        builder: (BuildContext context) {
-          return CalendarMealTypeSelector(
-            onDateSelected: (date) {},
-            mealName: recipeName,
-            idOfRecipeToModify: _id,
-            imagePath: _imagePath,
-          );
-        });
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16.0),
+          topRight: Radius.circular(16.0),
+        ),
+      ),
+      builder: (BuildContext context) {
+        return CalendarMealTypeSelector(
+          onDateSelected: (date) {},
+          mealName: recipeName,
+          idOfRecipeToModify: _id,
+          imagePath: _imagePath,
+        );
+      },
+    );
   }
 }
 
