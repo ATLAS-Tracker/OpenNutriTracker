@@ -210,12 +210,15 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
   Widget build(BuildContext context) {
     final currentMeal = _mealTypes[_currentMealIndex];
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        /// Meal type selector
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          /// Meal type selector
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
               onPressed: _goToPreviousMeal,
@@ -286,6 +289,7 @@ class _CalendarMealTypeSelectorState extends State<CalendarMealTypeSelector> {
         ),
         const SizedBox(height: 16),
       ],
-    );
+    ),
+  );
   }
 }
