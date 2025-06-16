@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/domain/usecase/get_weight_usecase.dart';
+import 'package:opennutritracker/core/presentation/constants/app_icons.dart';
 
 class WeightCard extends StatefulWidget {
   final double weight;
@@ -20,29 +21,12 @@ class WeightCard extends StatefulWidget {
 }
 
 class _WeightCardState extends State<WeightCard> {
-  IconData iconUp = Icons.keyboard_arrow_up; /* ^ */
-  IconData iconDown = Icons.keyboard_arrow_down; /* ˅ */
-  IconData iconFlat = Icons.remove; /* - */
-
   final GetWeightUsecase _getWeightUsecase = locator<GetWeightUsecase>();
   double delta = 0.0;
 
   @override
   void initState() {
     super.initState();
-  }
-
-  IconData _getIconBasedOnAverage(
-      double currentWeight, double averageWeightValue) {
-    const double precision = 0.1;
-    final double difference = currentWeight - averageWeightValue;
-
-    if (difference > precision) {
-      return iconUp;
-    } else if (difference < -precision) {
-      return iconDown;
-    }
-    return iconFlat;
   }
 
   @override
@@ -88,7 +72,7 @@ class _WeightCardState extends State<WeightCard> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  _getIconBasedOnAverage(
+                                  AppIcons.getIconForDifference(
                                       widget.weight, avgWeight),
                                   size: 25,
                                 ),
