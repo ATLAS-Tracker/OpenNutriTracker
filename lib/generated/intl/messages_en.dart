@@ -161,6 +161,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "fatLabel": MessageLookupByLibrary.simpleMessage("fat"),
         "fiberLabel": MessageLookupByLibrary.simpleMessage("fiber"),
         "flOzUnit": MessageLookupByLibrary.simpleMessage("fl.oz"),
+        "forgotPasswordBackToLogin":
+            MessageLookupByLibrary.simpleMessage("Back to sign in"),
+        "forgotPasswordButton":
+            MessageLookupByLibrary.simpleMessage("Send password reset email"),
+        "forgotPasswordEmailLabel":
+            MessageLookupByLibrary.simpleMessage("Enter your email"),
+        "forgotPasswordEmailSent": MessageLookupByLibrary.simpleMessage(
+            "Email sent! Click the link in your email to choose a new password."),
+        "forgotPasswordSendError":
+            MessageLookupByLibrary.simpleMessage("Error sending email:"),
+        "forgotPasswordTitle":
+            MessageLookupByLibrary.simpleMessage("Forgot your password?"),
         "ftLabel": MessageLookupByLibrary.simpleMessage("ft"),
         "genderFemaleLabel": MessageLookupByLibrary.simpleMessage("♀ female"),
         "genderLabel": MessageLookupByLibrary.simpleMessage("Gender"),
@@ -187,6 +199,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "kcalLeftLabel": MessageLookupByLibrary.simpleMessage("kcal left"),
         "kgLabel": MessageLookupByLibrary.simpleMessage("kg"),
         "lbsLabel": MessageLookupByLibrary.simpleMessage("lbs"),
+        "loginButton": MessageLookupByLibrary.simpleMessage("Sign In"),
+        "loginEmailInvalid":
+            MessageLookupByLibrary.simpleMessage("Invalid email address"),
+        "loginEmailLabel": MessageLookupByLibrary.simpleMessage("Email"),
+        "loginEmailRequired":
+            MessageLookupByLibrary.simpleMessage("Email required"),
+        "loginError": MessageLookupByLibrary.simpleMessage("Sign in error"),
+        "loginForgotPassword":
+            MessageLookupByLibrary.simpleMessage("Forgot password?"),
+        "loginPasswordLabel": MessageLookupByLibrary.simpleMessage("Password"),
+        "loginTitle": MessageLookupByLibrary.simpleMessage("Sign In"),
         "lunchExample":
             MessageLookupByLibrary.simpleMessage("e.g. pizza, salad, rice ..."),
         "lunchLabel": MessageLookupByLibrary.simpleMessage("Lunch"),
@@ -607,6 +630,18 @@ class MessageLookup extends MessageLookupByLibrary {
             "Mostly walking, running or carrying weight in job and active free time activities"),
         "palVeryActiveLabel":
             MessageLookupByLibrary.simpleMessage("Very Active"),
+        "passwordDigit":
+            MessageLookupByLibrary.simpleMessage("At least 1 digit"),
+        "passwordLowercase":
+            MessageLookupByLibrary.simpleMessage("At least 1 lowercase letter"),
+        "passwordMinLength":
+            MessageLookupByLibrary.simpleMessage("At least 8 characters"),
+        "passwordRequired":
+            MessageLookupByLibrary.simpleMessage("Password required"),
+        "passwordSpecialChar": MessageLookupByLibrary.simpleMessage(
+            "At least 1 special character"),
+        "passwordUppercase":
+            MessageLookupByLibrary.simpleMessage("At least 1 uppercase letter"),
         "per100gmlLabel": MessageLookupByLibrary.simpleMessage("Per 100g/ml"),
         "perServingLabel": MessageLookupByLibrary.simpleMessage("Per Serving"),
         "portionEatLabel":
@@ -622,6 +657,20 @@ class MessageLookup extends MessageLookupByLibrary {
         "recipeLabel": MessageLookupByLibrary.simpleMessage("Recipe"),
         "reportErrorDialogText": MessageLookupByLibrary.simpleMessage(
             "Do you want to report an error to the developer?"),
+        "resetPasswordButton":
+            MessageLookupByLibrary.simpleMessage("Change password"),
+        "resetPasswordChanged": MessageLookupByLibrary.simpleMessage(
+            "Password changed! You can now sign in with your new password."),
+        "resetPasswordConfirmLabel":
+            MessageLookupByLibrary.simpleMessage("Confirm password"),
+        "resetPasswordNewLabel":
+            MessageLookupByLibrary.simpleMessage("New password"),
+        "resetPasswordNoMatch":
+            MessageLookupByLibrary.simpleMessage("Passwords do not match"),
+        "resetPasswordTips": MessageLookupByLibrary.simpleMessage(
+            "• Use at least 8 characters\n• Mix numbers & special characters\n• Uppercase + lowercase"),
+        "resetPasswordTitle":
+            MessageLookupByLibrary.simpleMessage("New password"),
         "retryLabel": MessageLookupByLibrary.simpleMessage("Retry"),
         "saturatedFatLabel":
             MessageLookupByLibrary.simpleMessage("saturated fat"),

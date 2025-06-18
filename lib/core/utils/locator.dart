@@ -75,16 +75,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final locator = GetIt.instance;
 
 Future<void> initLocator() async {
+  // Backend
+  await Supabase.initialize(
+      url: Env.supabaseProjectUrl, anonKey: Env.supabaseProjectAnonKey);
+
+  locator.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
+
   // Init secure storage and Hive database;
   final secureAppStorageProvider = SecureAppStorageProvider();
   final hiveDBProvider = HiveDBProvider();
   await hiveDBProvider
       .initHiveDB(await secureAppStorageProvider.getHiveEncryptionKey());
-
-  // Backend
-  await Supabase.initialize(
-      url: Env.supabaseProjectUrl, anonKey: Env.supabaseProjectAnonKey);
-  locator.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
 
   // Cache manager
   locator

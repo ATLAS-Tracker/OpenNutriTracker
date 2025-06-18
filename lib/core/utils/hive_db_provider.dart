@@ -19,6 +19,7 @@ import 'package:opennutritracker/core/data/dbo/user_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_gender_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
+import 'package:opennutritracker/features/sync/tracked_day_change_isolate.dart';
 
 class HiveDBProvider extends ChangeNotifier {
   static const configBoxName = 'ConfigBox';
@@ -35,7 +36,7 @@ class HiveDBProvider extends ChangeNotifier {
   late Box<UserDBO> userBox;
   late Box<TrackedDayDBO> trackedDayBox;
   late Box<RecipesDBO> recipeBox;
-
+  late TrackedDayChangeIsolate trackedDayWatcher;
   late Box<UserWeightDbo> userWeightBox;
 
   Future<void> initHiveDB(Uint8List encryptionKey) async {
@@ -75,6 +76,8 @@ class HiveDBProvider extends ChangeNotifier {
         await Hive.openBox(userBoxName, encryptionCipher: encryptionCypher);
     trackedDayBox = await Hive.openBox(trackedDayBoxName,
         encryptionCipher: encryptionCypher);
+    trackedDayWatcher = TrackedDayChangeIsolate(trackedDayBox);
+    await trackedDayWatcher.start();
     userWeightBox = await Hive.openBox(
       userWeightBoxName,
       encryptionCipher: encryptionCypher,
@@ -82,4 +85,10 @@ class HiveDBProvider extends ChangeNotifier {
   }
 
   static generateNewHiveEncryptionKey() => Hive.generateSecureKey();
+
+  @override
+  void dispose() {
+    trackedDayWatcher.stop();
+    super.dispose();
+  }
 }
