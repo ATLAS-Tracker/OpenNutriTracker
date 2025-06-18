@@ -55,3 +55,9 @@ class TrackedDayDBO extends HiveObject {
 
   Map<String, dynamic> toJson() => _$TrackedDayDBOToJson(this);
 }
+
+extension TrackedDayDBOListExt on List<TrackedDayDBO> {
+  List<Map<String, dynamic>> toJsonList() {
+    return map((e) => e.toJson()).toList();
+  }
+}

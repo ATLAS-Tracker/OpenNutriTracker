@@ -922,6 +922,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.9"
+  mock_supabase_http_client:
+    dependency: "direct main"
+    description:
+      name: mock_supabase_http_client
+      sha256: "43b9681e43aa5bec7c801722f1b5e58b1a4b1448d346f29a47af0eb05abf4599"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3+2"
   mockito:
     dependency: "direct dev"
     description:
