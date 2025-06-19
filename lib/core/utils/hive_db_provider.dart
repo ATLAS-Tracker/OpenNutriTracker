@@ -18,6 +18,7 @@ import 'package:opennutritracker/core/data/dbo/user_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_gender_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
+import 'package:opennutritracker/features/sync/tracked_day_change_isolate.dart';
 
 class HiveDBProvider extends ChangeNotifier {
   static const configBoxName = 'ConfigBox';
@@ -70,6 +71,7 @@ class HiveDBProvider extends ChangeNotifier {
         await Hive.openBox(userBoxName, encryptionCipher: encryptionCypher);
     trackedDayBox = await Hive.openBox(trackedDayBoxName,
         encryptionCipher: encryptionCypher);
+    await TrackedDayChangeIsolate.start(trackedDayBox);
   }
 
   static generateNewHiveEncryptionKey() => Hive.generateSecureKey();
