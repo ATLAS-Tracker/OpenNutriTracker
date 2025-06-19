@@ -9,6 +9,7 @@ void main() {
   group('TrackedDayChangeIsolate', () {
     late Directory tempDir;
     late Box<TrackedDayDBO> box;
+    late TrackedDayChangeIsolate watcher;
 
     setUp(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
@@ -18,11 +19,12 @@ void main() {
         Hive.registerAdapter(TrackedDayDBOAdapter());
       }
       box = await Hive.openBox<TrackedDayDBO>('tracked_day_test');
-      await TrackedDayChangeIsolate.start(box);
+      watcher = TrackedDayChangeIsolate(box);
+      await watcher.start();
     });
 
     tearDown(() async {
-      await TrackedDayChangeIsolate.stop();
+      await watcher.stop();
       await box.close();
       await Hive.deleteFromDisk();
       await tempDir.delete(recursive: true);
@@ -35,7 +37,7 @@ void main() {
       // give some time for the isolate to process the event
       await Future.delayed(const Duration(milliseconds: 100));
 
-      final modified = await TrackedDayChangeIsolate.getModifiedDays();
+      final modified = await watcher.getModifiedDays();
       expect(modified, contains(day));
     });
 
@@ -49,7 +51,7 @@ void main() {
 
       await Future.delayed(const Duration(milliseconds: 100));
 
-      final modified = await TrackedDayChangeIsolate.getModifiedDays();
+      final modified = await watcher.getModifiedDays();
       expect(modified.toSet(), {day1, day2});
     });
   });

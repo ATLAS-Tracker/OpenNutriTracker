@@ -34,6 +34,7 @@ class HiveDBProvider extends ChangeNotifier {
   late Box<UserDBO> userBox;
   late Box<TrackedDayDBO> trackedDayBox;
   late Box<RecipesDBO> recipeBox;
+  late TrackedDayChangeIsolate trackedDayWatcher;
 
   Future<void> initHiveDB(Uint8List encryptionKey) async {
     final encryptionCypher = HiveAesCipher(encryptionKey);
@@ -71,8 +72,15 @@ class HiveDBProvider extends ChangeNotifier {
         await Hive.openBox(userBoxName, encryptionCipher: encryptionCypher);
     trackedDayBox = await Hive.openBox(trackedDayBoxName,
         encryptionCipher: encryptionCypher);
-    await TrackedDayChangeIsolate.start(trackedDayBox);
+    trackedDayWatcher = TrackedDayChangeIsolate(trackedDayBox);
+    await trackedDayWatcher.start();
   }
 
   static generateNewHiveEncryptionKey() => Hive.generateSecureKey();
+
+  @override
+  void dispose() {
+    trackedDayWatcher.stop();
+    super.dispose();
+  }
 }
