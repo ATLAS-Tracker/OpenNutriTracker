@@ -15,6 +15,7 @@ import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_b
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:opennutritracker/core/presentation/constants/app_icons.dart';
 import 'package:opennutritracker/core/presentation/widgets/info_dialog.dart';
+import 'package:opennutritracker/core/presentation/widgets/weight_info.dart';
 
 class AddWeightScreen extends StatefulWidget {
   const AddWeightScreen({super.key});
@@ -147,131 +148,57 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 125,
-                      height: 75,
-                      padding: const EdgeInsets.all(20.0),
-                      decoration: ShapeDecoration(
-                        color: Theme.of(context).cardColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        shadows: kElevationToShadow[2],
-                      ),
-                      child: FutureBuilder<double>(
-                          future:
-                              _getWeightUsecase.getAverageWeight(_day, nbDays),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<dynamic> snapshot) {
-                            if (snapshot.hasData) {
-                              final avgWeight = snapshot.data!;
-                              return Stack(
-                                clipBehavior: Clip.none,
-                                children: <Widget>[
-                                  Center(
-                                    child: Text(
-                                      avgWeight.toStringAsFixed(
-                                          1), // Consistent with other weight display
+                    FutureBuilder<double>(
+                        future:
+                            _getWeightUsecase.getAverageWeight(_day, nbDays),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.hasData) {
+                            final avgWeight = snapshot.data!;
+                            return WeightInfo(
+                                widget: Text(
+                                  avgWeight.toStringAsFixed(
+                                      1), // Consistent with other weight display
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                title: S.of(context).deltaWeightLabel,
+                                body: S.of(context).deltaWeightBody);
+                          } else {
+                            return Center(
+                                child: const CircularProgressIndicator());
+                          }
+                        }),
+                    SizedBox(width: 20),
+                    FutureBuilder<double>(
+                        future:
+                            _getWeightUsecase.getAverageWeight(_day, nbDays),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.hasData) {
+                            final avgWeight = snapshot.data!;
+                            final delta = _weightBloc.state.weight - avgWeight;
+                            return WeightInfo(
+                              widget: Row(
+                                children: [
+                                  Icon(
+                                      AppIcons.getIconForDifference(
+                                          _weightBloc.state.weight, avgWeight),
+                                      size: 27),
+                                  Text(delta.abs().toStringAsFixed(1),
                                       style: Theme.of(context)
                                           .textTheme
-                                          .headlineSmall,
-                                    ),
-                                  ),
-                                  Positioned(
-                                      top: -7,
-                                      right: -9.0,
-                                      child: InkWell(
-                                        onTap: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) => InfoDialog(
-                                                    title: S
-                                                        .of(context)
-                                                        .averageWeightLabel,
-                                                    body: S
-                                                        .of(context)
-                                                        .averageWeightBody,
-                                                  ));
-                                        },
-                                        child: const Icon(
-                                          Icons.help_outline_outlined,
-                                          size: 20,
-                                        ),
-                                      ))
+                                          .headlineSmall)
                                 ],
-                              );
-                            } else {
-                              return Center(
-                                  child: const CircularProgressIndicator());
-                            }
-                          }),
-                    ),
-                    SizedBox(width: 20),
-                    Container(
-                        width: 125,
-                        height: 75,
-                        padding: const EdgeInsets.all(20.0),
-                        decoration: ShapeDecoration(
-                          color: Theme.of(context).cardColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.0),
-                          ),
-                          shadows: kElevationToShadow[2],
-                        ),
-                        child: FutureBuilder(
-                            future: _getWeightUsecase.getAverageWeight(
-                                _day, nbDays),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<dynamic> snapshot) {
-                              if (snapshot.hasData) {
-                                final avgWeight = snapshot.data!;
-                                final delta =
-                                    _weightBloc.state.weight - avgWeight;
-                                return Stack(
-                                    clipBehavior: Clip.none,
-                                    children: <Widget>[
-                                      Center(
-                                          child: Row(
-                                        children: [
-                                          Icon(
-                                              AppIcons.getIconForDifference(
-                                                  _weightBloc.state.weight,
-                                                  avgWeight),
-                                              size: 27),
-                                          Text(delta.abs().toStringAsFixed(2),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineSmall)
-                                        ],
-                                      )),
-                                      Positioned(
-                                          top: -7,
-                                          right: -9.0,
-                                          child: InkWell(
-                                            onTap: () {
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      InfoDialog(
-                                                        title: S
-                                                            .of(context)
-                                                            .deltaWeightLabel,
-                                                        body: S
-                                                            .of(context)
-                                                            .deltaWeightBody,
-                                                      ));
-                                            },
-                                            child: const Icon(
-                                              Icons.help_outline_outlined,
-                                              size: 20,
-                                            ),
-                                          ))
-                                    ]);
-                              } else {
-                                return Center(
-                                    child: const CircularProgressIndicator());
-                              }
-                            })),
+                              ),
+                              title: S.of(context).deltaWeightLabel,
+                              body: S.of(context).deltaWeightBody,
+                            );
+                          } else {
+                            return Center(
+                                child: const CircularProgressIndicator());
+                          }
+                        }),
                   ],
                 ),
 
