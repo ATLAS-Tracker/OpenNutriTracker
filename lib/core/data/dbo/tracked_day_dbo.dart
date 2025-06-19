@@ -4,7 +4,10 @@ import 'package:opennutritracker/core/domain/entity/tracked_day_entity.dart';
 
 part 'tracked_day_dbo.g.dart';
 
-@HiveType(typeId: 9)
+/// Hive type id for [TrackedDayDBO].
+const int trackedDayDBOTypeId = 9;
+
+@HiveType(typeId: trackedDayDBOTypeId)
 @JsonSerializable()
 class TrackedDayDBO extends HiveObject {
   @HiveField(0)

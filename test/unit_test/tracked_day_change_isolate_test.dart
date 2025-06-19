@@ -15,7 +15,7 @@ void main() {
       TestWidgetsFlutterBinding.ensureInitialized();
       tempDir = await Directory.systemTemp.createTemp('hive_test_isolate_');
       Hive.init(tempDir.path);
-      if (!Hive.isAdapterRegistered(9)) {
+      if (!Hive.isAdapterRegistered(trackedDayDBOTypeId)) {
         Hive.registerAdapter(TrackedDayDBOAdapter());
       }
       box = await Hive.openBox<TrackedDayDBO>('tracked_day_test');
