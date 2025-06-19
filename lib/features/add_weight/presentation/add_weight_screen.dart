@@ -14,7 +14,6 @@ import 'package:opennutritracker/core/presentation/widgets/editable_text_widget.
 import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:opennutritracker/core/presentation/constants/app_icons.dart';
-import 'package:opennutritracker/core/presentation/widgets/info_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/weight_info.dart';
 
 class AddWeightScreen extends StatefulWidget {

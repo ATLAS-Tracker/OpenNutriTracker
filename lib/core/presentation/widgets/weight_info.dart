@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/core/presentation/widgets/info_dialog.dart';
 
 class WeightInfo extends StatefulWidget {
