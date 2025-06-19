@@ -34,8 +34,6 @@ class DayInfoWidget extends StatelessWidget {
   final Function(UserActivityEntity userActivityEntity,
       TrackedDayEntity? trackedDayEntity) onCopyActivity;
 
-  final Function(BuildContext context) onDeleteWeight;
-
   const DayInfoWidget({
     super.key,
     required this.selectedDay,
@@ -51,7 +49,6 @@ class DayInfoWidget extends StatelessWidget {
     required this.onDeleteActivity,
     required this.onCopyIntake,
     required this.onCopyActivity,
-    required this.onDeleteWeight,
   });
 
   @override
@@ -191,7 +188,9 @@ class DayInfoWidget extends StatelessWidget {
               day: selectedDay,
               title: S.of(context).weightLabel,
               weightEntity: userWeightEntity,
-              onItemLongPressedCallback: onDeleteWeight,
+              onItemLongPressedCallback: (BuildContext context) {
+                // no actions
+              },
             ),
             const SizedBox(height: 16.0)
           ],

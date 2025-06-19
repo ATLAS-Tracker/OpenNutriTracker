@@ -113,7 +113,6 @@ class _DiaryPageState extends State<DiaryPage> with WidgetsBindingObserver {
                 onCopyIntake: _onCopyIntakeItem,
                 onCopyActivity: _onCopyActivityItem,
                 usesImperialUnits: usesImperialUnits,
-                onDeleteWeight: _onDeleteWeightItem,
               );
             }
             return const SizedBox();
@@ -147,10 +146,6 @@ class _DiaryPageState extends State<DiaryPage> with WidgetsBindingObserver {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(S.of(context).itemDeletedSnackbar)));
     }
-  }
-
-  void _onDeleteWeightItem(BuildContext context) {
-    //TODO
   }
 
   void _onCopyIntakeItem(IntakeEntity intakeEntity,
