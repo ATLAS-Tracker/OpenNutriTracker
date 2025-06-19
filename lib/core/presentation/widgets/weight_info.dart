@@ -19,7 +19,7 @@ class _WeightInfoState extends State<WeightInfo> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 125,
+      width: 117,
       height: 75,
       padding: const EdgeInsets.all(20.0),
       decoration: ShapeDecoration(
@@ -32,13 +32,27 @@ class _WeightInfoState extends State<WeightInfo> {
       child: Stack(
         clipBehavior: Clip.none,
         children: <Widget>[
-          Center(
-            child: widget.widget,
+          InkWell(
+            child: Center(
+              child: widget.widget,
+            ),
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) => InfoDialog(
+                        title: widget.title,
+                        body: widget.body,
+                      ));
+            },
           ),
           Positioned(
-              top: -7,
-              right: -9.0,
+              top: -10,
+              right: -13.0,
               child: InkWell(
+                child: const Icon(
+                  Icons.help_outline_outlined,
+                  size: 20,
+                ),
                 onTap: () {
                   showDialog(
                       context: context,
@@ -47,10 +61,6 @@ class _WeightInfoState extends State<WeightInfo> {
                             body: widget.body,
                           ));
                 },
-                child: const Icon(
-                  Icons.help_outline_outlined,
-                  size: 20,
-                ),
               ))
         ],
       ),

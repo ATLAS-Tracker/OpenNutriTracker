@@ -179,15 +179,22 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
                             final delta = _weightBloc.state.weight - avgWeight;
                             return WeightInfo(
                               widget: Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
                                       AppIcons.getIconForDifference(
                                           _weightBloc.state.weight, avgWeight),
-                                      size: 27),
-                                  Text(delta.abs().toStringAsFixed(1),
+                                      size: 26),
+                                  Container(
+                                    width: 50,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      delta.abs().toStringAsFixed(1),
                                       style: Theme.of(context)
                                           .textTheme
-                                          .headlineSmall)
+                                          .headlineSmall,
+                                    ),
+                                  ),
                                 ],
                               ),
                               title: S.of(context).deltaWeightLabel,
