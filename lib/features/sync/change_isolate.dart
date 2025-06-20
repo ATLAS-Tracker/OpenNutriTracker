@@ -5,6 +5,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 /// Generic isolate watcher that collects items of type [T] whenever a Hive
 /// box emits an event that can be converted to a [T].
+class _RemoveCommand {
+  final List<dynamic> items;
+  const _RemoveCommand(this.items);
+}
+
+/// Generic isolate watcher that collects items of type [T] whenever a Hive
+/// box emits an event that can be converted to a [T].
 class ChangeIsolate<T> {
   final Box box;
   final T? Function(BoxEvent event) extractor;
@@ -47,6 +54,12 @@ class ChangeIsolate<T> {
     return (result as List).cast<T>();
   }
 
+  /// Removes [items] from the internal modified set.
+  Future<void> removeItems(List<T> items) async {
+    if (_sendPort == null || items.isEmpty) return;
+    _sendPort!.send(_RemoveCommand(items));
+  }
+
   static void _entryPoint(SendPort initSendPort) {
     final port = ReceivePort();
     final modified = <dynamic>{};
@@ -55,6 +68,8 @@ class ChangeIsolate<T> {
     port.listen((message) {
       if (message is SendPort) {
         message.send(modified.toList());
+      } else if (message is _RemoveCommand) {
+        modified.removeAll(message.items);
       } else {
         modified.add(message);
       }
