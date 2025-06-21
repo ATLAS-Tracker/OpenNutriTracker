@@ -8,7 +8,7 @@ part of 'tracked_day_dbo.dart';
 
 class TrackedDayDBOAdapter extends TypeAdapter<TrackedDayDBO> {
   @override
-  final int typeId = 9;
+  final int typeId = trackedDayDBOTypeId;
 
   @override
   TrackedDayDBO read(BinaryReader reader) {
