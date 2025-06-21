@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:mock_supabase_http_client/mock_supabase_http_client.dart';
 import 'package:opennutritracker/core/data/dbo/tracked_day_dbo.dart';
+import 'package:opennutritracker/core/utils/extensions.dart';
 import 'package:opennutritracker/features/sync/tracked_day_change_isolate.dart';
 import 'package:opennutritracker/features/sync/supabase_client.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
@@ -195,48 +196,61 @@ void main() {
       expect(output.first['day'], day.toIso8601String());
     });
 
-    //   test('check values store on the remote', () async {
-    //     final day = DateTime.utc(2024, 1, 1);
+    test('check values store on the remote', () async {
+      final day = DateTime.utc(2024, 1, 1);
 
-    //     // Simulate a local update by adding a new tracked day
-    //     await repo.addNewTrackedDay(day, 2, 2, 2, 2);
+      // Simulate a local update by adding a new tracked day
+      await repo.addNewTrackedDay(day, 2, 2, 2, 2);
 
-    //     // Add tracked macro to that day
-    //     await repo.addDayMacrosTracked(
-    //       day,
-    //       carbsTracked: 2,
-    //       fatTracked: 2,
-    //       proteinTracked: 2,
-    //     );
+      // Make multiple changes while offline
+      await repo.addDayMacrosTracked(
+        day,
+        carbsTracked: 2,
+        fatTracked: 2,
+        proteinTracked: 2,
+      );
+      await repo.addDayMacrosTracked(
+        day,
+        carbsTracked: 3,
+        fatTracked: 3,
+        proteinTracked: 3,
+      );
+      await repo.addDayTrackedCalories(day, 10);
 
-    //     // Wait for the isolate to detect the modification
-    //     await waitForCondition(
-    //         () async => (await watcher.getModifiedDays()).contains(day));
+      // Wait for the isolate to detect the modification
+      await waitForCondition(
+          () async => (await watcher.getModifiedDays()).contains(day));
 
-    //     // Check that the modified day is captured
-    //     final modifiedDays = await watcher.getModifiedDays();
-    //     expect(modifiedDays, contains(day));
+      // Check that the modified day is captured
+      final modifiedDays = await watcher.getModifiedDays();
+      expect(modifiedDays, contains(day));
 
-    //     // Simulate connectivity restoration (e.g. Wi-Fi comes back)
-    //     connectivity.emit(ConnectivityResult.wifi);
+      // Simulate connectivity restoration (e.g. Wi-Fi comes back)
+      connectivity.emit(ConnectivityResult.wifi);
 
-    //     // Wait for the isolate to sync and clear the modified day set
-    //     await waitForCondition(
-    //         () async => (await watcher.getModifiedDays()).isEmpty);
-    //     expect(await watcher.getModifiedDays(), isEmpty);
+      // Wait for the isolate to sync and clear the modified day set
+      await waitForCondition(
+          () async => (await watcher.getModifiedDays()).isEmpty);
+      expect(await watcher.getModifiedDays(), isEmpty);
 
-    //     // Check that the tracked day was actually sent to the mock Supabase backend
-    //     final result = await mockSupabase.from('tracked_days').select();
-    //     expect(result.length, 1);
-    //     expect(result.first['day'], day.toIso8601String());
-    //     expect(result.first['calorieGoal'], 2);
-    //     expect(result.first['caloriesTracked'], 2);
-    //     expect(result.first['carbsGoal'], 2);
-    //     expect(result.first['carbsTracked'], 2);
-    //     expect(result.first['fatGoal'], 2);
-    //     expect(result.first['fatTracked'], 2);
-    //     expect(result.first['proteinGoal'], 2);
-    //     expect(result.first['proteinTracked'], 2);
-    //   });
+      // Check that the tracked day was actually sent to the mock Supabase backend
+      final result = await mockSupabase.from('tracked_days').select();
+      expect(result.length, 1);
+      final remote = result.first;
+      expect(remote['day'], day.toIso8601String());
+      expect(remote['calorieGoal'], 2);
+      expect(remote['caloriesTracked'], 10);
+      expect(remote['carbsGoal'], 2);
+      expect(remote['carbsTracked'], 5);
+      expect(remote['fatGoal'], 2);
+      expect(remote['fatTracked'], 5);
+      expect(remote['proteinGoal'], 2);
+      expect(remote['proteinTracked'], 5);
+
+      // Ensure the remote data matches what is stored locally
+      final dbo = box.get(day.toParsedDay()) as TrackedDayDBO?;
+      expect(dbo, isNotNull);
+      expect(remote, equals(dbo!.toJson()));
+    });
   });
 }
