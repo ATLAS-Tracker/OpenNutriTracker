@@ -248,7 +248,7 @@ void main() {
       expect(remote['proteinTracked'], 5);
 
       // Ensure the remote data matches what is stored locally
-      final dbo = box.get(day.toParsedDay()) as TrackedDayDBO?;
+      final dbo = box.get(day.toParsedDay());
       expect(dbo, isNotNull);
       expect(remote, equals(dbo!.toJson()));
     });
