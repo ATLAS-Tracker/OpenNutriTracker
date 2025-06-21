@@ -4,12 +4,14 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mock_supabase_http_client/mock_supabase_http_client.dart';
 import 'package:opennutritracker/core/data/dbo/tracked_day_dbo.dart';
 import 'package:opennutritracker/features/sync/tracked_day_change_isolate.dart';
 import 'package:opennutritracker/features/sync/supabase_client.dart';
-
-class MockTrackedDayService extends Mock implements SupabaseTrackedDayService {}
+import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
+import 'package:opennutritracker/core/data/data_source/tracked_day_data_source.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:mocktail/mocktail.dart';
 
 class FakeConnectivity extends Mock implements Connectivity {
   final _controller = StreamController<ConnectivityResult>.broadcast();
@@ -31,6 +33,7 @@ class FakeConnectivity extends Mock implements Connectivity {
   }
 }
 
+/// Utility function to wait for a condition to become true, with timeout
 Future<void> waitForCondition(
   Future<bool> Function() condition, {
   Duration timeout = const Duration(seconds: 2),
@@ -43,28 +46,47 @@ Future<void> waitForCondition(
   throw TimeoutException('Condition not met within $timeout');
 }
 
-
 void main() {
   group('TrackedDayChangeIsolate', () {
     late Directory tempDir;
     late Box<TrackedDayDBO> box;
     late TrackedDayChangeIsolate watcher;
-    late MockTrackedDayService service;
     late FakeConnectivity connectivity;
+    late SupabaseClient mockSupabase;
+    late MockSupabaseHttpClient mockHttpClient;
+    late SupabaseTrackedDayService trackedDayService;
+    late TrackedDayRepository repo;
 
     setUp(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
+
+      // Setup Hive in temporary directory
       tempDir = await Directory.systemTemp.createTemp('hive_test_isolate_');
       Hive.init(tempDir.path);
       if (!Hive.isAdapterRegistered(trackedDayDBOTypeId)) {
         Hive.registerAdapter(TrackedDayDBOAdapter());
       }
       box = await Hive.openBox<TrackedDayDBO>('tracked_day_test');
-      service = MockTrackedDayService();
+
+      // Initialize repository with the Hive box
+      repo = TrackedDayRepository(TrackedDayDataSource(box));
+
+      // Setup mock Supabase client using mock-supabase-http-client
+      mockHttpClient = MockSupabaseHttpClient();
+      mockSupabase = SupabaseClient(
+        'https://mock.supabase.co',
+        'fakeAnonKey',
+        httpClient: mockHttpClient,
+      );
+      trackedDayService = SupabaseTrackedDayService(client: mockSupabase);
+
+      // Setup fake connectivity
       connectivity = FakeConnectivity();
+
+      // Create and start the isolate watcher
       watcher = TrackedDayChangeIsolate(
         box,
-        service: service,
+        service: trackedDayService,
         connectivity: connectivity,
       );
       await watcher.start();
@@ -80,21 +102,31 @@ void main() {
 
     test('captures modified day when box updates', () async {
       final day = DateTime.utc(2024, 1, 1);
-      await box.put('d1', TrackedDayDBO(day: day, calorieGoal: 0, caloriesTracked: 0));
 
+      // Simulate a local update
+      await repo.addNewTrackedDay(day, 1, 0, 0, 0);
 
-      await waitForCondition(() async => (await watcher.getModifiedDays()).contains(day));
+      // Wait for the isolate to detect the modification
+      await waitForCondition(
+          () async => (await watcher.getModifiedDays()).contains(day));
+
+      // Check that the modified day is captured
+      final modifiedDays = await watcher.getModifiedDays();
+      expect(modifiedDays, contains(day));
     });
 
     test('stores unique days when multiple updates occur', () async {
       final day1 = DateTime.utc(2024, 1, 1);
       final day2 = DateTime.utc(2024, 1, 2);
 
-      await box.put('d1', TrackedDayDBO(day: day1, calorieGoal: 0, caloriesTracked: 0));
-      await box.put('d2', TrackedDayDBO(day: day2, calorieGoal: 0, caloriesTracked: 0));
-      await box.put('d1', TrackedDayDBO(day: day1, calorieGoal: 1, caloriesTracked: 0));
+      // Simulate two different updates and one repeated update
+      await repo.addNewTrackedDay(day1, 1, 0, 0, 0);
+      await repo.addNewTrackedDay(day2, 1, 0, 0, 0);
+      await repo.addNewTrackedDay(day1, 1, 0, 0, 0);
 
-      await waitForCondition(() async => (await watcher.getModifiedDays()).length >= 2);
+      // Ensure both days are captured and stored uniquely
+      await waitForCondition(
+          () async => (await watcher.getModifiedDays()).length >= 2);
 
       final modified = await watcher.getModifiedDays();
       expect(modified.toSet(), {day1, day2});
@@ -102,20 +134,109 @@ void main() {
 
     test('syncs modified days when connectivity is restored', () async {
       final day = DateTime.utc(2024, 1, 3);
-      final dbo =
-          TrackedDayDBO(day: day, calorieGoal: 1, caloriesTracked: 0);
 
-      when(() => service.upsertTrackedDays(any<List<Map<String, dynamic>>>()))
-          .thenAnswer((_) async {});
+      // Simulate local addition (offline mode)
+      await repo.addNewTrackedDay(day, 1, 0, 0, 0);
 
-      await box.put('d1', dbo);
+      // Wait until isolate has captured the modified day
+      await waitForCondition(
+          () async => (await watcher.getModifiedDays()).contains(day));
+      expect((await watcher.getModifiedDays()).contains(day), isTrue);
 
-      await waitForCondition(() async => (await watcher.getModifiedDays()).isNotEmpty);
-
+      // Simulate connectivity restoration (e.g. Wi-Fi comes back)
       connectivity.emit(ConnectivityResult.wifi);
 
-      await waitForCondition(() async => (await watcher.getModifiedDays()).isEmpty);
+      // Wait for the isolate to sync and clear the modified day set
+      await waitForCondition(
+          () async => (await watcher.getModifiedDays()).isEmpty);
+      expect(await watcher.getModifiedDays(), isEmpty);
 
+      // Check that the tracked day was actually sent to the mock Supabase backend
+      final result = await mockSupabase.from('tracked_days').select();
+      expect(result.length, 1);
+      expect(result.first['day'], day.toIso8601String());
     });
+
+    test('syncs without connectivity restoration', () async {
+      // Simulate connectivity restoration (e.g. Wi-Fi comes back)
+      connectivity.emit(ConnectivityResult.none);
+
+      final day = DateTime.utc(2024, 1, 3);
+
+      // Simulate local addition (offline mode)
+      await repo.addNewTrackedDay(day, 1, 2, 3, 4);
+
+      // Wait until isolate has captured the modified day
+      await waitForCondition(
+          () async => (await watcher.getModifiedDays()).contains(day));
+      expect((await watcher.getModifiedDays()).contains(day), isTrue);
+
+      // Wait 1 second
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Check that the isolate still has the modified day
+      final modifiedDays = await watcher.getModifiedDays();
+      expect(modifiedDays, contains(day));
+      // Check that supabase has not received the day yet
+      final result = await mockSupabase.from('tracked_days').select();
+      expect(result.length, 0);
+
+      // Simulate connectivity restoration (e.g. Wi-Fi comes back)
+      connectivity.emit(ConnectivityResult.wifi);
+
+      // Wait for the isolate to sync and clear the modified day set
+      await waitForCondition(
+          () async => (await watcher.getModifiedDays()).isEmpty);
+      expect(await watcher.getModifiedDays(), isEmpty);
+
+      // Check that the tracked day was actually sent to the mock Supabase backend
+      final output = await mockSupabase.from('tracked_days').select();
+      expect(output.length, 1);
+      expect(output.first['day'], day.toIso8601String());
+    });
+
+    //   test('check values store on the remote', () async {
+    //     final day = DateTime.utc(2024, 1, 1);
+
+    //     // Simulate a local update by adding a new tracked day
+    //     await repo.addNewTrackedDay(day, 2, 2, 2, 2);
+
+    //     // Add tracked macro to that day
+    //     await repo.addDayMacrosTracked(
+    //       day,
+    //       carbsTracked: 2,
+    //       fatTracked: 2,
+    //       proteinTracked: 2,
+    //     );
+
+    //     // Wait for the isolate to detect the modification
+    //     await waitForCondition(
+    //         () async => (await watcher.getModifiedDays()).contains(day));
+
+    //     // Check that the modified day is captured
+    //     final modifiedDays = await watcher.getModifiedDays();
+    //     expect(modifiedDays, contains(day));
+
+    //     // Simulate connectivity restoration (e.g. Wi-Fi comes back)
+    //     connectivity.emit(ConnectivityResult.wifi);
+
+    //     // Wait for the isolate to sync and clear the modified day set
+    //     await waitForCondition(
+    //         () async => (await watcher.getModifiedDays()).isEmpty);
+    //     expect(await watcher.getModifiedDays(), isEmpty);
+
+    //     // Check that the tracked day was actually sent to the mock Supabase backend
+    //     final result = await mockSupabase.from('tracked_days').select();
+    //     expect(result.length, 1);
+    //     expect(result.first['day'], day.toIso8601String());
+    //     expect(result.first['calorieGoal'], 2);
+    //     expect(result.first['caloriesTracked'], 2);
+    //     expect(result.first['carbsGoal'], 2);
+    //     expect(result.first['carbsTracked'], 2);
+    //     expect(result.first['fatGoal'], 2);
+    //     expect(result.first['fatTracked'], 2);
+    //     expect(result.first['proteinGoal'], 2);
+    //     expect(result.first['proteinTracked'], 2);
+    //   });
   });
 }
