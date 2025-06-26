@@ -6,7 +6,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 /// Internal command: remove a set of items from the `modified` set.
 class _RemoveCommand {
   final List<dynamic> items;
-  const _RemoveCommand(this.items);
+  final SendPort? responsePort;
+  const _RemoveCommand(this.items, {this.responsePort});
 }
 
 /// Generic isolate that collects objects of type [T] emitted by a Hive box.
@@ -85,7 +86,9 @@ class ChangeIsolate<T> {
       return;
     }
     _log.fine('Removing ${items.length} items from modified set.');
-    _sendPort!.send(_RemoveCommand(items));
+    final ack = ReceivePort();
+    _sendPort!.send(_RemoveCommand(items, responsePort: ack.sendPort));
+    await ack.first; // wait for confirmation
   }
 
   /* ---------- Secondary isolate ---------- */
@@ -100,6 +103,7 @@ class ChangeIsolate<T> {
         message.send(modified.toList()); // getItems()
       } else if (message is _RemoveCommand) {
         modified.removeAll(message.items); // removeItems()
+        message.responsePort?.send(null); // acknowledge completion
       } else {
         modified.add(message); // add new item
       }
