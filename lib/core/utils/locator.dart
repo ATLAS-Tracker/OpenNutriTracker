@@ -73,7 +73,6 @@ Future<void> initLocator() async {
   await Supabase.initialize(
       url: Env.supabaseProjectUrl, anonKey: Env.supabaseProjectAnonKey);
 
-  print('Supabase initialized with URL: ${Env.supabaseProjectUrl}');
   locator.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
 
   // Init secure storage and Hive database;
