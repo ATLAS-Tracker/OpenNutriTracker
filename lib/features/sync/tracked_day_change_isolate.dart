@@ -87,20 +87,20 @@ class TrackedDayChangeIsolate extends ChangeIsolate<DateTime> {
       _log.fine('Sync already in progress, skipping.');
       return;
     }
-    if (await _connectivity.checkConnectivity() == ConnectivityResult.none) {
-      _log.fine('No connectivity, aborting sync.');
-      return;
-    }
-
-    final days = await getModifiedDays();
-    if (days.isEmpty) {
-      _log.fine('No modified days to sync.');
-      return;
-    }
-
-    _syncing = true;
-    _log.info('Starting sync for ${days.length} days.');
+    _syncing = true; // prevent overlapping runs immediately
     try {
+      if (await _connectivity.checkConnectivity() == ConnectivityResult.none) {
+        _log.fine('No connectivity, aborting sync.');
+        return;
+      }
+
+      final days = await getModifiedDays();
+      if (days.isEmpty) {
+        _log.fine('No modified days to sync.');
+        return;
+      }
+
+      _log.info('Starting sync for ${days.length} days.');
       for (var i = 0; i < days.length; i += batchSize) {
         final batch = days.skip(i).take(batchSize).toList();
         final entries = <Map<String, dynamic>>[];
