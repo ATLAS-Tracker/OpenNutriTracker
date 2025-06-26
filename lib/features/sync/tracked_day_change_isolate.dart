@@ -6,15 +6,17 @@ import 'package:opennutritracker/core/data/dbo/tracked_day_dbo.dart';
 import 'package:opennutritracker/core/utils/extensions.dart'; // toParsedDay()
 import 'package:opennutritracker/features/sync/change_isolate.dart';
 import 'package:opennutritracker/features/sync/supabase_client.dart';
+import 'package:logging/logging.dart';
 
-/// Surveille une box de [TrackedDayDBO] et synchronise les journées modifiées
-/// avec Supabase dès qu’une connexion est disponible.
+/// Watches a [TrackedDayDBO] box and synchronizes modified days
+/// with Supabase as soon as a connection is available.
 class TrackedDayChangeIsolate extends ChangeIsolate<DateTime> {
   final SupabaseTrackedDayService _service;
   final Connectivity _connectivity;
   final int batchSize;
   StreamSubscription<ConnectivityResult>? _connectivitySub;
   bool _syncing = false;
+  final Logger _log = Logger('TrackedDayChangeIsolate');
 
   TrackedDayChangeIsolate(
     Box<TrackedDayDBO> box, {
@@ -30,86 +32,103 @@ class TrackedDayChangeIsolate extends ChangeIsolate<DateTime> {
             if (value is TrackedDayDBO) return value.day;
             return null;
           },
-          onItemCollected: null, // sera fixé dans initState ci-dessous
-        ) {
-    // Le callback doit être ajouté dans le corps, car `this` n'est
-    // pas encore disponible dans l'initialisation de super().
-    super.onItemCollected?.call(); // no-op ici
-  }
+          onItemCollected: null, // will be set in start() below
+        );
 
-  /// Proxy pratique pour récupérer les jours en attente.
+  /// Convenient proxy to get the pending days.
   Future<List<DateTime>> getModifiedDays() => getItems();
 
-  /* ---------- Cycle de vie ---------- */
+  /* ---------- Lifecycle ---------- */
 
+  @override
   Future<void> start() async {
-    print("[TrackedDayChangeIsolate] Starting isolate");
-    // 1️⃣  On branche le callback AVANT d'initialiser l'écoute de la box
+    _log.info('Starting TrackedDayChangeIsolate...');
+    // 1️⃣  Attach the callback BEFORE initializing the box watcher
     onItemCollected ??= _attemptSync;
 
-    // 2️⃣  Puis on démarre l'isolat + le watcher
+    // 2️⃣  Start the isolate and watcher
     await super.start();
+    _log.fine('ChangeIsolate started.');
 
-    // 3️⃣  Tentative immédiate (au cas où des jours étaient déjà en attente)
+    // 3️⃣  Immediate attempt (in case there are already pending days)
     await _attemptSync();
 
-    // 4️⃣  Réécoute les changements de connectivité
+    // 4️⃣  Listen to connectivity changes
     _connectivitySub =
         _connectivity.onConnectivityChanged.listen(_onConnectivityChanged);
+    _log.fine('Connectivity listener started.');
   }
 
   @override
   Future<void> stop() async {
+    _log.info('Stopping TrackedDayChangeIsolate...');
     await _connectivitySub?.cancel();
     _connectivitySub = null;
     await super.stop();
+    _log.info('TrackedDayChangeIsolate stopped.');
   }
 
-  /* ---------- Gestion de la connexion ---------- */
+  /* ---------- Connectivity management ---------- */
 
   void _onConnectivityChanged(ConnectivityResult result) {
+    _log.fine('Connectivity changed: $result');
     if (result != ConnectivityResult.none) {
+      _log.fine('Internet available, attempting sync...');
       _attemptSync();
+    } else {
+      _log.fine('No internet connection.');
     }
   }
 
-  /* ---------- Synchro Supabase ---------- */
+  /* ---------- Supabase sync ---------- */
 
   Future<void> _attemptSync() async {
-    print('[TrackedDayChangeIsolate] Attempting sync');
-
-    if (_syncing) return;
-    if (await _connectivity.checkConnectivity() == ConnectivityResult.none) {
+    if (_syncing) {
+      _log.fine('Sync already in progress, skipping.');
       return;
     }
-
-    final days = await getModifiedDays();
-    if (days.isEmpty) return;
-
-    _syncing = true;
+    _syncing = true; // prevent overlapping runs immediately
     try {
+      if (await _connectivity.checkConnectivity() == ConnectivityResult.none) {
+        _log.fine('No connectivity, aborting sync.');
+        return;
+      }
+
+      final days = await getModifiedDays();
+      if (days.isEmpty) {
+        _log.fine('No modified days to sync.');
+        return;
+      }
+
+      _log.info('Starting sync for ${days.length} days.');
       for (var i = 0; i < days.length; i += batchSize) {
         final batch = days.skip(i).take(batchSize).toList();
         final entries = <Map<String, dynamic>>[];
 
-        // Convertit chaque jour en JSON
+        // Convert each day to JSON
         for (final day in batch) {
           final dbo = box.get(day.toParsedDay()) as TrackedDayDBO?;
           if (dbo != null) entries.add(dbo.toJson());
         }
 
-        // Si on a quelque chose à envoyer…
+        // If there is something to send…
         if (entries.isNotEmpty) {
-          // Double-vérifie qu’on est toujours en ligne
+          // Double-check that we are still online
           if (await _connectivity.checkConnectivity() ==
               ConnectivityResult.none) {
-            break; // on réessaiera plus tard, sans supprimer
+            _log.warning('Lost connectivity during sync, will retry later.');
+            break; // will retry later, do not remove
           }
 
+          _log.info('Upserting ${entries.length} tracked days to Supabase.');
           await _service.upsertTrackedDays(entries);
-          await removeItems(batch); // ← on ne retire qu’après succès
+          await removeItems(batch); // ← only remove after success
+          _log.fine('Batch of ${batch.length} days synced and removed.');
         }
       }
+      _log.info('Sync completed.');
+    } catch (e, stack) {
+      _log.severe('Sync failed: $e', e, stack);
     } finally {
       _syncing = false;
     }
