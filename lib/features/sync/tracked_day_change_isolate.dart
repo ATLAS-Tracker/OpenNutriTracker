@@ -33,7 +33,7 @@ class TrackedDayChangeIsolate extends ChangeIsolate<DateTime> {
             return null;
           },
           onItemCollected: null, // will be set in start() below
-        ) {}
+        );
 
   /// Convenient proxy to get the pending days.
   Future<List<DateTime>> getModifiedDays() => getItems();
