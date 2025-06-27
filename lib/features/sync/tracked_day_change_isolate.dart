@@ -16,6 +16,7 @@ class TrackedDayChangeIsolate extends ChangeIsolate<DateTime> {
   final int batchSize;
   StreamSubscription<ConnectivityResult>? _connectivitySub;
   bool _syncing = false;
+  bool _pending = false;
   final Logger _log = Logger('TrackedDayChangeIsolate');
 
   TrackedDayChangeIsolate(
@@ -84,53 +85,55 @@ class TrackedDayChangeIsolate extends ChangeIsolate<DateTime> {
 
   Future<void> _attemptSync() async {
     if (_syncing) {
-      _log.fine('Sync already in progress, skipping.');
+      _pending = true;
+      _log.fine('Sync already in progress, new run queued.');
       return;
     }
-    _syncing = true; // prevent overlapping runs immediately
-    try {
-      if (await _connectivity.checkConnectivity() == ConnectivityResult.none) {
-        _log.fine('No connectivity, aborting sync.');
-        return;
-      }
 
-      final days = await getModifiedDays();
-      if (days.isEmpty) {
-        _log.fine('No modified days to sync.');
-        return;
-      }
-
-      _log.info('Starting sync for ${days.length} days.');
-      for (var i = 0; i < days.length; i += batchSize) {
-        final batch = days.skip(i).take(batchSize).toList();
-        final entries = <Map<String, dynamic>>[];
-
-        // Convert each day to JSON
-        for (final day in batch) {
-          final dbo = box.get(day.toParsedDay()) as TrackedDayDBO?;
-          if (dbo != null) entries.add(dbo.toJson());
+    _syncing = true;
+    do {
+      _pending = false;
+      try {
+        if (await _connectivity.checkConnectivity() == ConnectivityResult.none) {
+          _log.fine('No connectivity, aborting sync.');
+          break;
         }
 
-        // If there is something to send…
-        if (entries.isNotEmpty) {
-          // Double-check that we are still online
-          if (await _connectivity.checkConnectivity() ==
-              ConnectivityResult.none) {
-            _log.warning('Lost connectivity during sync, will retry later.');
-            break; // will retry later, do not remove
+        final days = await getModifiedDays();
+        if (days.isEmpty) {
+          _log.fine('No modified days to sync.');
+          break;
+        }
+
+        _log.info('Starting sync for ${days.length} days.');
+        for (var i = 0; i < days.length; i += batchSize) {
+          final batch = days.skip(i).take(batchSize).toList();
+          final entries = <Map<String, dynamic>>[];
+
+          // Convert each day to JSON
+          for (final day in batch) {
+            final dbo = box.get(day.toParsedDay()) as TrackedDayDBO?;
+            if (dbo != null) entries.add(dbo.toJson());
           }
 
-          _log.info('Upserting ${entries.length} tracked days to Supabase.');
-          await _service.upsertTrackedDays(entries);
-          await removeItems(batch); // ← only remove after success
-          _log.fine('Batch of ${batch.length} days synced and removed.');
+          if (entries.isNotEmpty) {
+            if (await _connectivity.checkConnectivity() ==
+                ConnectivityResult.none) {
+              _log.warning('Lost connectivity during sync, will retry later.');
+              break;
+            }
+
+            _log.info('Upserting ${entries.length} tracked days to Supabase.');
+            await _service.upsertTrackedDays(entries);
+            await removeItems(batch); // remove after success
+            _log.fine('Batch of ${batch.length} days synced and removed.');
+          }
         }
+        _log.info('Sync completed.');
+      } catch (e, stack) {
+        _log.severe('Sync failed: $e', e, stack);
       }
-      _log.info('Sync completed.');
-    } catch (e, stack) {
-      _log.severe('Sync failed: $e', e, stack);
-    } finally {
-      _syncing = false;
-    }
+    } while (_pending);
+    _syncing = false;
   }
 }
