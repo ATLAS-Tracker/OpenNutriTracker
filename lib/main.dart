@@ -25,6 +25,8 @@ import 'package:opennutritracker/features/settings/settings_screen.dart';
 import 'package:opennutritracker/features/create_meal/create_meal_screen.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/features/recipe/recipe_page.dart';
+import 'package:opennutritracker/features/auth/login_screen.dart';
+import 'package:opennutritracker/features/auth/reset_password_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -114,6 +116,9 @@ class OpenNutriTrackerApp extends StatelessWidget {
         NavigationOptions.createMealRoute: (context) =>
             const MealCreationScreen(),
         NavigationOptions.recipeRoute: (context) => const RecipePage(),
+        NavigationOptions.loginRoute: (context) => const LoginScreen(),
+        NavigationOptions.resetPasswordRoute: (context) =>
+            const ResetPasswordScreen(),
       },
     );
   }
