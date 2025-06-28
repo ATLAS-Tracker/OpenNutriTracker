@@ -27,6 +27,8 @@ import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/features/recipe/recipe_page.dart';
 import 'package:opennutritracker/features/auth/login_screen.dart';
 import 'package:opennutritracker/features/auth/reset_password_screen.dart';
+import 'package:opennutritracker/features/auth/auth_link_handler.dart';
+import 'package:opennutritracker/core/utils/app_navigator.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -51,30 +53,28 @@ Future<void> main() async {
         isUserInitialized, hasAuthSession, savedAppTheme);
   } else {
     log.info('Starting App ...');
-    runAppWithChangeNotifiers(
-        isUserInitialized, hasAuthSession, savedAppTheme);
+    runAppWithChangeNotifiers(isUserInitialized, hasAuthSession, savedAppTheme);
   }
 }
 
-void _runAppWithSentryReporting(
-    bool isUserInitialized, bool hasAuthSession, AppThemeEntity savedAppTheme) async {
+void _runAppWithSentryReporting(bool isUserInitialized, bool hasAuthSession,
+    AppThemeEntity savedAppTheme) async {
   await SentryFlutter.init((options) {
     options.dsn = Env.sentryDns;
     options.tracesSampleRate = 1.0;
   },
-      appRunner: () =>
-          runAppWithChangeNotifiers(
-              isUserInitialized, hasAuthSession, savedAppTheme));
+      appRunner: () => runAppWithChangeNotifiers(
+          isUserInitialized, hasAuthSession, savedAppTheme));
 }
 
-void runAppWithChangeNotifiers(
-        bool userInitialized, bool hasAuthSession, AppThemeEntity savedAppTheme) =>
+void runAppWithChangeNotifiers(bool userInitialized, bool hasAuthSession,
+        AppThemeEntity savedAppTheme) =>
     runApp(ChangeNotifierProvider(
         create: (_) => ThemeModeProvider(appTheme: savedAppTheme),
         child: OpenNutriTrackerApp(
             userInitialized: userInitialized, hasAuthSession: hasAuthSession)));
 
-class OpenNutriTrackerApp extends StatelessWidget {
+class OpenNutriTrackerApp extends StatefulWidget {
   final bool userInitialized;
   final bool hasAuthSession;
 
@@ -85,8 +85,28 @@ class OpenNutriTrackerApp extends StatelessWidget {
   });
 
   @override
+  State<OpenNutriTrackerApp> createState() => _OpenNutriTrackerAppState();
+}
+
+class _OpenNutriTrackerAppState extends State<OpenNutriTrackerApp> {
+  late final AuthLinkHandler _linkHandler;
+
+  @override
+  void initState() {
+    super.initState();
+    _linkHandler = AuthLinkHandler()..initialize();
+  }
+
+  @override
+  void dispose() {
+    _linkHandler.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: rootNavigatorKey,
       onGenerateTitle: (context) => S.of(context).appTitle,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -105,8 +125,8 @@ class OpenNutriTrackerApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      initialRoute: hasAuthSession
-          ? (userInitialized
+      initialRoute: widget.hasAuthSession
+          ? (widget.userInitialized
               ? NavigationOptions.mainRoute
               : NavigationOptions.onboardingRoute)
           : NavigationOptions.loginRoute,
