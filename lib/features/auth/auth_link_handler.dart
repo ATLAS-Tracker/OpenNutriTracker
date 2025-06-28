@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart';
 
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,6 +15,10 @@ class AuthLinkHandler {
   final _log = Logger('AuthLinkHandler');
 
   Future<void> initialize() async {
+    if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) {
+      _log.fine('Auth link handling is disabled on this platform');
+      return;
+    }
     // Handle cold start link
     try {
       final uri = await getInitialUri();
