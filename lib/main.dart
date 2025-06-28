@@ -27,9 +27,11 @@ import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/features/recipe/recipe_page.dart';
 import 'package:opennutritracker/features/auth/login_screen.dart';
 import 'package:opennutritracker/features/auth/reset_password_screen.dart';
+import 'package:opennutritracker/features/auth/forgot_password_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:opennutritracker/core/utils/deep_link_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,7 +76,7 @@ void runAppWithChangeNotifiers(
         child: OpenNutriTrackerApp(
             userInitialized: userInitialized, hasAuthSession: hasAuthSession)));
 
-class OpenNutriTrackerApp extends StatelessWidget {
+class OpenNutriTrackerApp extends StatefulWidget {
   final bool userInitialized;
   final bool hasAuthSession;
 
@@ -83,6 +85,25 @@ class OpenNutriTrackerApp extends StatelessWidget {
     required this.userInitialized,
     required this.hasAuthSession,
   });
+
+  @override
+  State<OpenNutriTrackerApp> createState() => _OpenNutriTrackerAppState();
+}
+
+class _OpenNutriTrackerAppState extends State<OpenNutriTrackerApp> {
+  final _deepLinkService = DeepLinkService();
+
+  @override
+  void initState() {
+    super.initState();
+    _deepLinkService.init(context);
+  }
+
+  @override
+  void dispose() {
+    _deepLinkService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +126,8 @@ class OpenNutriTrackerApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      initialRoute: hasAuthSession
-          ? (userInitialized
+      initialRoute: widget.hasAuthSession
+          ? (widget.userInitialized
               ? NavigationOptions.mainRoute
               : NavigationOptions.onboardingRoute)
           : NavigationOptions.loginRoute,
@@ -130,6 +151,8 @@ class OpenNutriTrackerApp extends StatelessWidget {
             const MealCreationScreen(),
         NavigationOptions.recipeRoute: (context) => const RecipePage(),
         NavigationOptions.loginRoute: (context) => const LoginScreen(),
+        NavigationOptions.forgotPasswordRoute: (context) =>
+            const ForgotPasswordScreen(),
         NavigationOptions.resetPasswordRoute: (context) =>
             const ResetPasswordScreen(),
       },

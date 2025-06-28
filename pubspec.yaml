@@ -51,6 +51,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   package_info_plus: ^8.1.2
   url_launcher: ^6.3.1
+  uni_links: ^0.5.1
   flutter_svg: ^2.0.16
   cached_network_image: ^3.4.1
   flutter_cache_manager: ^3.4.1

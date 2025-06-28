@@ -31,12 +31,15 @@ class LoginScreen extends StatelessWidget {
               redirectTo: kIsWeb ? null : 'io.supabase.flutter://login-callback/',
               onSignInComplete: (_) => _navigateHome(context),
               onSignUpComplete: (_) => _navigateHome(context),
-              onPasswordResetEmailSent: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Password reset email sent')),
-                );
-              },
               onError: (error) => _showError(context, error),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => Navigator.of(context)
+                    .pushNamed(NavigationOptions.forgotPasswordRoute),
+                child: const Text('Forgot password?'),
+              ),
             ),
             const SizedBox(height: 32),
             SupaMagicAuth(
