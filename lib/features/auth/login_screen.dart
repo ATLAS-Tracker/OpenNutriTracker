@@ -1,21 +1,86 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
+import 'package:app_links/app_links.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:opennutritracker/features/auth/validate_password.dart';
+import 'forgot_password_screen.dart';
+import 'reset_password_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
-  void _navigateHome(BuildContext context) {
-    Navigator.of(context).pushReplacementNamed(NavigationOptions.mainRoute);
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
+
+  bool _loading = false;
+  final supabase = Supabase.instance.client;
+
+  /// Navigate to the home screen after a successful sign‑in.
+  void _navigateHome() =>
+      Navigator.of(context).pushReplacementNamed(NavigationOptions.mainRoute);
+
+  /// Display an error message and log it.
+  void _showError(Object error) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('$error')));
+    Logger('LoginScreen').warning('Auth error', error);
   }
 
-  void _showError(BuildContext context, Object error) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$error')),
-    );
-    Logger('LoginScreen').warning('Auth error', error);
+  /// Configure deep‑link handling (password‑reset flow).
+  void _configDeepLink() {
+    final links = AppLinks();
+
+    links.uriLinkStream.listen((Uri? uri) async {
+      if (uri == null || uri.host != 'login-callback') return;
+
+      try {
+        await supabase.auth.getSessionFromUrl(uri);
+        if (!mounted) return;
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const ResetPasswordScreen()),
+        );
+      } catch (e) {
+        debugPrint('Deep‑link error: $e');
+      }
+    });
+  }
+
+  /// Attempt to authenticate with e‑mail / password.
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _loading = true);
+    final email = _emailCtrl.text.trim();
+    final pass = _passwordCtrl.text.trim();
+
+    try {
+      final res = await supabase.auth.signInWithPassword(
+        email: email,
+        password: pass,
+      );
+
+      if (res.session != null) _navigateHome();
+    } on AuthException catch (e) {
+      _showError(e.message);
+    } catch (e) {
+      _showError(e);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _configDeepLink();
   }
 
   @override
@@ -24,35 +89,52 @@ class LoginScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Sign In')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SupaEmailAuth(
-              redirectTo: kIsWeb ? null : 'io.supabase.flutter://login-callback/',
-              onSignInComplete: (_) => _navigateHome(context),
-              onSignUpComplete: (_) => _navigateHome(context),
-              onPasswordResetEmailSent: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Password reset email sent')),
-                );
-              },
-              onError: (error) => _showError(context, error),
+        child: Form(
+          key: _formKey,
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            TextFormField(
+              controller: _emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.email_outlined),
+                labelText: 'Email',
+              ),
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'Email requis'
+                  : (EmailValidator.validate(v.trim())
+                      ? null
+                      : 'Adresse e-mail invalide'),
             ),
-            const SizedBox(height: 32),
-            SupaMagicAuth(
-              redirectUrl: kIsWeb ? null : 'io.supabase.flutter://login-callback/',
-              onSuccess: (_) => _navigateHome(context),
-              onError: (error) => _showError(context, error),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _passwordCtrl,
+              obscureText: true,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.lock_outline),
+                labelText: 'Password',
+              ),
+              validator: validatePassword,
             ),
-            const SizedBox(height: 32),
-            SupaSocialsAuth(
-              colored: true,
-              socialProviders: const [OAuthProvider.google, OAuthProvider.apple],
-              redirectUrl: kIsWeb ? null : 'io.supabase.flutter://login-callback/',
-              onSuccess: (_) => _navigateHome(context),
-              onError: (error) => _showError(context, error),
+            const SizedBox(height: 24),
+            SizedBox(
+              height: 48,
+              child: ElevatedButton(
+                onPressed: _loading ? null : _submit,
+                child: _loading
+                    ? const CircularProgressIndicator()
+                    : const Text('Sign In'),
+              ),
             ),
-          ],
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+              ),
+              child: const Text('Forgot password?'),
+            ),
+          ]),
         ),
       ),
     );

@@ -51,24 +51,22 @@ Future<void> main() async {
         isUserInitialized, hasAuthSession, savedAppTheme);
   } else {
     log.info('Starting App ...');
-    runAppWithChangeNotifiers(
-        isUserInitialized, hasAuthSession, savedAppTheme);
+    runAppWithChangeNotifiers(isUserInitialized, hasAuthSession, savedAppTheme);
   }
 }
 
-void _runAppWithSentryReporting(
-    bool isUserInitialized, bool hasAuthSession, AppThemeEntity savedAppTheme) async {
+void _runAppWithSentryReporting(bool isUserInitialized, bool hasAuthSession,
+    AppThemeEntity savedAppTheme) async {
   await SentryFlutter.init((options) {
     options.dsn = Env.sentryDns;
     options.tracesSampleRate = 1.0;
   },
-      appRunner: () =>
-          runAppWithChangeNotifiers(
-              isUserInitialized, hasAuthSession, savedAppTheme));
+      appRunner: () => runAppWithChangeNotifiers(
+          isUserInitialized, hasAuthSession, savedAppTheme));
 }
 
-void runAppWithChangeNotifiers(
-        bool userInitialized, bool hasAuthSession, AppThemeEntity savedAppTheme) =>
+void runAppWithChangeNotifiers(bool userInitialized, bool hasAuthSession,
+        AppThemeEntity savedAppTheme) =>
     runApp(ChangeNotifierProvider(
         create: (_) => ThemeModeProvider(appTheme: savedAppTheme),
         child: OpenNutriTrackerApp(
@@ -131,7 +129,7 @@ class OpenNutriTrackerApp extends StatelessWidget {
         NavigationOptions.recipeRoute: (context) => const RecipePage(),
         NavigationOptions.loginRoute: (context) => const LoginScreen(),
         NavigationOptions.resetPasswordRoute: (context) =>
-            const ResetPasswordScreen(),
+            ResetPasswordScreen(),
       },
     );
   }
