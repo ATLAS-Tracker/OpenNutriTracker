@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/auth/validate_password.dart';
+import 'package:opennutritracker/generated/l10n.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -37,14 +38,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       await showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Mot de passe changé !'),
-          content: const Text(
-            'Tu peux maintenant te connecter avec ton nouveau mot de passe.',
-          ),
+          title: Text(S.of(context).resetPasswordChanged),
+          content: Text(S.of(context).resetPasswordChanged),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+              child: Text(S.of(context).dialogOKLabel),
             ),
           ],
         ),
@@ -71,7 +70,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nouveau mot de passe')),
+      appBar: AppBar(title: Text(S.of(context).resetPasswordTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -79,11 +78,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const SizedBox(height: 20),
-            Text('Créer un nouveau mot de passe',
+            Text(S.of(context).resetPasswordTitle,
                 style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 12),
             Text(
-              'Entre un nouveau mot de passe sécurisé.',
+              S.of(context).resetPasswordNewLabel,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 32),
@@ -93,11 +92,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               controller: _passwordCtrl,
               obscureText: true,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration:
-                  _decoration('Nouveau mot de passe', Icons.lock_outline),
-
-              // • Ici on veut la vérification complète, donc isSignIn = false (valeur par défaut)
-              validator: validatePassword,
+              decoration: _decoration(
+                  S.of(context).resetPasswordNewLabel, Icons.lock_outline),
+              validator: (value) => validatePassword(context, value),
             ),
             const SizedBox(height: 16),
 
@@ -106,10 +103,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               controller: _confirmCtrl,
               obscureText: true,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration:
-                  _decoration('Confirmer le mot de passe', Icons.lock_outline),
+              decoration: _decoration(
+                  S.of(context).resetPasswordConfirmLabel, Icons.lock_outline),
               validator: (v) => (v != _passwordCtrl.text)
-                  ? 'Les mots de passe ne correspondent pas'
+                  ? S.of(context).resetPasswordNoMatch
                   : null,
             ),
             const SizedBox(height: 32),
@@ -122,16 +119,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 onPressed: _loading ? null : _resetPassword,
                 child: _loading
                     ? const CircularProgressIndicator()
-                    : const Text('Changer le mot de passe'),
+                    : Text(S.of(context).resetPasswordButton),
               ),
             ),
             const SizedBox(height: 32),
 
             // --- Tips --- //
             Text(
-              '• Utilise au moins 8 caractères\n'
-              '• Mélange chiffres & caractères spéciaux\n'
-              '• Majuscules + minuscules',
+              S.of(context).resetPasswordTips,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ]),

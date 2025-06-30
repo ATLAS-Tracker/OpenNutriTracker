@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:opennutritracker/generated/l10n.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -35,10 +37,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'E-mail envoyé ! Clique sur le lien depuis ton appareil pour choisir un nouveau mot de passe.',
-          ),
+        SnackBar(
+          content: Text(S.of(context).forgotPasswordEmailSent),
         ),
       );
 
@@ -48,7 +48,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur lors de l\'envoi de l\'e-mail : $e'),
+          content: Text('${S.of(context).forgotPasswordSendError} $e'),
         ),
       );
     }
@@ -57,7 +57,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Forgot your password?')),
+      appBar: AppBar(title: Text(S.of(context).forgotPasswordTitle)),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -68,12 +68,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               TextFormField(
                 controller: _emailCtrl,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.email_outlined),
-                  labelText: 'Enter your email',
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.email_outlined),
+                  labelText: S.of(context).forgotPasswordEmailLabel,
                 ),
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? 'E-mail required' : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? S.of(context).loginEmailRequired
+                    : (EmailValidator.validate(v.trim())
+                        ? null
+                        : S.of(context).loginEmailInvalid),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -82,7 +85,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   onPressed: _loading ? null : _sendResetEmail,
                   child: _loading
                       ? const CircularProgressIndicator()
-                      : const Text('Send password reset email'),
+                      : Text(S.of(context).forgotPasswordButton),
                 ),
               ),
               const SizedBox(height: 32),
@@ -93,7 +96,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     NavigationOptions.loginRoute, // your login route
                     (route) => false, // remove everything else from the stack
                   ),
-                  child: const Text('Back to sign in'),
+                  child: Text(S.of(context).forgotPasswordBackToLogin),
                 ),
               ),
             ],

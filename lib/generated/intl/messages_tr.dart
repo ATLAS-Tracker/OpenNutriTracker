@@ -95,6 +95,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Özel bir yemek öğesi oluşturmak istiyor musunuz?"),
         "createCustomDialogTitle":
             MessageLookupByLibrary.simpleMessage("Özel yemek öğesi oluştur?"),
+        "createRecipeLabel":
+            MessageLookupByLibrary.simpleMessage("Öğün oluştur"),
         "dailyKcalAdjustmentLabel":
             MessageLookupByLibrary.simpleMessage("Günlük Kcal ayarı:"),
         "dataCollectionLabel": MessageLookupByLibrary.simpleMessage(
@@ -134,6 +136,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "E-posta uygulaması açılırken hata oluştu"),
         "errorProductNotFound":
             MessageLookupByLibrary.simpleMessage("Ürün bulunamadı"),
+        "errorRecipeLabel":
+            MessageLookupByLibrary.simpleMessage("Hiç tarif bulunamadı"),
+        "exampleOfActivityLabel":
+            MessageLookupByLibrary.simpleMessage("örn: bisiklet"),
         "exportAction": MessageLookupByLibrary.simpleMessage("Dışa Aktar"),
         "exportImportDescription": MessageLookupByLibrary.simpleMessage(
             "Uygulama verilerini bir zip dosyasına dışa aktarabilir ve daha sonra içe aktarabilirsiniz. Bu, verilerinizi yedeklemek veya başka bir cihaza aktarmak istiyorsanız kullanışlıdır.\n\nUygulama, verilerinizi saklamak için herhangi bir bulut hizmeti kullanmaz."),
@@ -146,6 +152,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "fatLabel": MessageLookupByLibrary.simpleMessage("yağ"),
         "fiberLabel": MessageLookupByLibrary.simpleMessage("lif"),
         "flOzUnit": MessageLookupByLibrary.simpleMessage("fl.oz"),
+        "forgotPasswordBackToLogin":
+            MessageLookupByLibrary.simpleMessage("Girişe geri dön"),
+        "forgotPasswordButton": MessageLookupByLibrary.simpleMessage(
+            "Şifre sıfırlama e-postası gönder"),
+        "forgotPasswordEmailLabel":
+            MessageLookupByLibrary.simpleMessage("E-postanı gir"),
+        "forgotPasswordEmailSent": MessageLookupByLibrary.simpleMessage(
+            "E-posta gönderildi! Yeni şifre seçmek için e-postandaki bağlantıya tıkla."),
+        "forgotPasswordSendError": MessageLookupByLibrary.simpleMessage(
+            "E-posta gönderilirken hata oluştu:"),
+        "forgotPasswordTitle":
+            MessageLookupByLibrary.simpleMessage("Şifreni mi unuttun?"),
         "ftLabel": MessageLookupByLibrary.simpleMessage("ft"),
         "genderFemaleLabel": MessageLookupByLibrary.simpleMessage("♀ kadın"),
         "genderLabel": MessageLookupByLibrary.simpleMessage("Cinsiyet"),
@@ -171,6 +189,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "kcalLeftLabel": MessageLookupByLibrary.simpleMessage("kalan kcal"),
         "kgLabel": MessageLookupByLibrary.simpleMessage("kg"),
         "lbsLabel": MessageLookupByLibrary.simpleMessage("lbs"),
+        "loginButton": MessageLookupByLibrary.simpleMessage("Giriş Yap"),
+        "loginEmailInvalid":
+            MessageLookupByLibrary.simpleMessage("Geçersiz e-posta adresi"),
+        "loginEmailLabel": MessageLookupByLibrary.simpleMessage("E-posta"),
+        "loginEmailRequired":
+            MessageLookupByLibrary.simpleMessage("E-posta gerekli"),
+        "loginError": MessageLookupByLibrary.simpleMessage("Giriş hatası"),
+        "loginForgotPassword":
+            MessageLookupByLibrary.simpleMessage("Şifreni mi unuttun?"),
+        "loginPasswordLabel": MessageLookupByLibrary.simpleMessage("Şifre"),
+        "loginTitle": MessageLookupByLibrary.simpleMessage("Giriş Yap"),
         "lunchExample": MessageLookupByLibrary.simpleMessage(
             "ör. pizza, salata, pirinç ..."),
         "lunchLabel": MessageLookupByLibrary.simpleMessage("Öğle Yemeği"),
@@ -508,7 +537,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "paSnowShovingModerate":
             MessageLookupByLibrary.simpleMessage("kar küreme"),
         "paSnowShovingModerateDesc":
-            MessageLookupByLibrary.simpleMessage("elle, orta derecede çaba"),
+            MessageLookupByLibrary.simpleMessage("elle, ılımlı çaba"),
         "paSoccerGeneral": MessageLookupByLibrary.simpleMessage("futbol"),
         "paSoccerGeneralDesc":
             MessageLookupByLibrary.simpleMessage("rahat, genel"),
@@ -586,10 +615,23 @@ class MessageLookup extends MessageLookupByLibrary {
         "palVeryActiveDescriptionLabel": MessageLookupByLibrary.simpleMessage(
             "iş yerinde çoğunlukla yürüme, koşma veya ağırlık taşıma ve aktif serbest zaman aktiviteleri"),
         "palVeryActiveLabel": MessageLookupByLibrary.simpleMessage("Çok Aktif"),
+        "passwordDigit": MessageLookupByLibrary.simpleMessage("En az 1 rakam"),
+        "passwordLowercase":
+            MessageLookupByLibrary.simpleMessage("En az 1 küçük harf"),
+        "passwordMinLength":
+            MessageLookupByLibrary.simpleMessage("En az 8 karakter"),
+        "passwordRequired":
+            MessageLookupByLibrary.simpleMessage("Şifre gerekli"),
+        "passwordSpecialChar":
+            MessageLookupByLibrary.simpleMessage("En az 1 özel karakter"),
+        "passwordUppercase":
+            MessageLookupByLibrary.simpleMessage("En az 1 büyük harf"),
         "per100gmlLabel":
             MessageLookupByLibrary.simpleMessage("100g/ml başına"),
         "perServingLabel":
             MessageLookupByLibrary.simpleMessage("Porsiyon Başına"),
+        "portionEatLabel":
+            MessageLookupByLibrary.simpleMessage("Yenilen porsiyon"),
         "privacyPolicyLabel":
             MessageLookupByLibrary.simpleMessage("Gizlilik politikası"),
         "profileLabel": MessageLookupByLibrary.simpleMessage("Profil"),
@@ -602,6 +644,20 @@ class MessageLookup extends MessageLookupByLibrary {
         "recipeLabel": MessageLookupByLibrary.simpleMessage("Tarif"),
         "reportErrorDialogText": MessageLookupByLibrary.simpleMessage(
             "Geliştiriciye bir hata bildirmek istiyor musunuz?"),
+        "resetPasswordButton":
+            MessageLookupByLibrary.simpleMessage("Şifreyi değiştir"),
+        "resetPasswordChanged": MessageLookupByLibrary.simpleMessage(
+            "Şifre değiştirildi! Artık yeni şifrenle giriş yapabilirsin."),
+        "resetPasswordConfirmLabel":
+            MessageLookupByLibrary.simpleMessage("Şifreyi onayla"),
+        "resetPasswordNewLabel":
+            MessageLookupByLibrary.simpleMessage("Yeni şifre"),
+        "resetPasswordNoMatch":
+            MessageLookupByLibrary.simpleMessage("Şifreler eşleşmiyor"),
+        "resetPasswordTips": MessageLookupByLibrary.simpleMessage(
+            "• En az 8 karakter kullan\n• Rakam ve özel karakterler ekle\n• Büyük ve küçük harf kullan"),
+        "resetPasswordTitle":
+            MessageLookupByLibrary.simpleMessage("Yeni şifre"),
         "retryLabel": MessageLookupByLibrary.simpleMessage("Tekrar Dene"),
         "saturatedFatLabel": MessageLookupByLibrary.simpleMessage("doymuş yağ"),
         "scanProductLabel": MessageLookupByLibrary.simpleMessage("Ürünü Tara"),

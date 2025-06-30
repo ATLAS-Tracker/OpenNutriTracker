@@ -770,6 +770,276 @@ class S {
     );
   }
 
+  /// `Password required`
+  String get passwordRequired {
+    return Intl.message(
+      'Password required',
+      name: 'passwordRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `At least 8 characters`
+  String get passwordMinLength {
+    return Intl.message(
+      'At least 8 characters',
+      name: 'passwordMinLength',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `At least 1 uppercase letter`
+  String get passwordUppercase {
+    return Intl.message(
+      'At least 1 uppercase letter',
+      name: 'passwordUppercase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `At least 1 lowercase letter`
+  String get passwordLowercase {
+    return Intl.message(
+      'At least 1 lowercase letter',
+      name: 'passwordLowercase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `At least 1 digit`
+  String get passwordDigit {
+    return Intl.message(
+      'At least 1 digit',
+      name: 'passwordDigit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `At least 1 special character`
+  String get passwordSpecialChar {
+    return Intl.message(
+      'At least 1 special character',
+      name: 'passwordSpecialChar',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign In`
+  String get loginTitle {
+    return Intl.message(
+      'Sign In',
+      name: 'loginTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email`
+  String get loginEmailLabel {
+    return Intl.message(
+      'Email',
+      name: 'loginEmailLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password`
+  String get loginPasswordLabel {
+    return Intl.message(
+      'Password',
+      name: 'loginPasswordLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign In`
+  String get loginButton {
+    return Intl.message(
+      'Sign In',
+      name: 'loginButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forgot password?`
+  String get loginForgotPassword {
+    return Intl.message(
+      'Forgot password?',
+      name: 'loginForgotPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email required`
+  String get loginEmailRequired {
+    return Intl.message(
+      'Email required',
+      name: 'loginEmailRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid email address`
+  String get loginEmailInvalid {
+    return Intl.message(
+      'Invalid email address',
+      name: 'loginEmailInvalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign in error`
+  String get loginError {
+    return Intl.message(
+      'Sign in error',
+      name: 'loginError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forgot your password?`
+  String get forgotPasswordTitle {
+    return Intl.message(
+      'Forgot your password?',
+      name: 'forgotPasswordTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your email`
+  String get forgotPasswordEmailLabel {
+    return Intl.message(
+      'Enter your email',
+      name: 'forgotPasswordEmailLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send password reset email`
+  String get forgotPasswordButton {
+    return Intl.message(
+      'Send password reset email',
+      name: 'forgotPasswordButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back to sign in`
+  String get forgotPasswordBackToLogin {
+    return Intl.message(
+      'Back to sign in',
+      name: 'forgotPasswordBackToLogin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email sent! Click the link in your email to choose a new password.`
+  String get forgotPasswordEmailSent {
+    return Intl.message(
+      'Email sent! Click the link in your email to choose a new password.',
+      name: 'forgotPasswordEmailSent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error sending email:`
+  String get forgotPasswordSendError {
+    return Intl.message(
+      'Error sending email:',
+      name: 'forgotPasswordSendError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New password`
+  String get resetPasswordTitle {
+    return Intl.message(
+      'New password',
+      name: 'resetPasswordTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New password`
+  String get resetPasswordNewLabel {
+    return Intl.message(
+      'New password',
+      name: 'resetPasswordNewLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm password`
+  String get resetPasswordConfirmLabel {
+    return Intl.message(
+      'Confirm password',
+      name: 'resetPasswordConfirmLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change password`
+  String get resetPasswordButton {
+    return Intl.message(
+      'Change password',
+      name: 'resetPasswordButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password changed! You can now sign in with your new password.`
+  String get resetPasswordChanged {
+    return Intl.message(
+      'Password changed! You can now sign in with your new password.',
+      name: 'resetPasswordChanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Passwords do not match`
+  String get resetPasswordNoMatch {
+    return Intl.message(
+      'Passwords do not match',
+      name: 'resetPasswordNoMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `• Use at least 8 characters\n• Mix numbers & special characters\n• Uppercase + lowercase`
+  String get resetPasswordTips {
+    return Intl.message(
+      '• Use at least 8 characters\n• Mix numbers & special characters\n• Uppercase + lowercase',
+      name: 'resetPasswordTips',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `TDEE equation`
   String get calculationsTDEELabel {
     return Intl.message(

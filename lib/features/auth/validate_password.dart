@@ -1,21 +1,24 @@
-String? validatePassword(String? value) {
+import 'package:flutter/material.dart';
+import 'package:opennutritracker/generated/l10n.dart';
+
+String? validatePassword(BuildContext context, String? value) {
   if (value == null || value.isEmpty) {
-    return 'Mot de passe requis';
+    return S.of(context).passwordRequired;
   }
   if (value.length < 8) {
-    return 'Au moins 8 caractères';
+    return S.of(context).passwordMinLength;
   }
   if (!RegExp(r'[A-Z]').hasMatch(value)) {
-    return 'Au moins 1 majuscule';
+    return S.of(context).passwordUppercase;
   }
   if (!RegExp(r'[a-z]').hasMatch(value)) {
-    return 'Au moins 1 minuscule';
+    return S.of(context).passwordLowercase;
   }
   if (!RegExp(r'[0-9]').hasMatch(value)) {
-    return 'Au moins 1 chiffre';
+    return S.of(context).passwordDigit;
   }
   if (!RegExp(r'[!@#\$%^&*(),.?":{}|<>]').hasMatch(value)) {
-    return 'Au moins 1 caractère spécial';
+    return S.of(context).passwordSpecialChar;
   }
   return null;
 }
