@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/auth/validate_password.dart';
+import 'package:opennutritracker/features/auth/password_rules_dialog.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -15,6 +16,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
+  bool _obscureNewPassword = true;
+  bool _obscureConfirmPassword = true;
+
+  bool _validMinLength = false;
+  bool _validUppercase = false;
+  bool _validLowercase = false;
+  bool _validDigit = false;
+  bool _validSpecial = false;
   bool _loading = false;
   final supabase = Supabase.instance.client;
 
@@ -63,6 +72,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     }
   }
 
+  void _updatePasswordRules(String value) {
+    setState(() {
+      _validMinLength = value.length >= 8;
+      _validUppercase = RegExp(r'[A-Z]').hasMatch(value);
+      _validLowercase = RegExp(r'[a-z]').hasMatch(value);
+      _validDigit = RegExp(r'[0-9]').hasMatch(value);
+      _validSpecial =
+          RegExp(r'[!@#\\$%^&*(),.?":{}|<>]').hasMatch(value);
+    });
+  }
+
   InputDecoration _decoration(String hint, IconData icon) => InputDecoration(
         hintText: hint,
         prefixIcon: Icon(icon),
@@ -91,10 +111,38 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             // --- New password --- //
             TextFormField(
               controller: _passwordCtrl,
-              obscureText: true,
+              obscureText: _obscureNewPassword,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: _decoration(
-                  S.of(context).resetPasswordNewLabel, Icons.lock_outline),
+                  S.of(context).resetPasswordNewLabel, Icons.lock_outline)
+                  .copyWith(
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(_obscureNewPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility),
+                      onPressed: () => setState(
+                          () => _obscureNewPassword = !_obscureNewPassword),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.help_outline_outlined),
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (_) => PasswordRulesDialog(
+                          validMinLength: _validMinLength,
+                          validUppercase: _validUppercase,
+                          validLowercase: _validLowercase,
+                          validDigit: _validDigit,
+                          validSpecial: _validSpecial,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onChanged: _updatePasswordRules,
               validator: (value) => validatePassword(context, value),
             ),
             const SizedBox(height: 16),
@@ -102,10 +150,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             // --- Confirm --- //
             TextFormField(
               controller: _confirmCtrl,
-              obscureText: true,
+              obscureText: _obscureConfirmPassword,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: _decoration(
-                  S.of(context).resetPasswordConfirmLabel, Icons.lock_outline),
+                  S.of(context).resetPasswordConfirmLabel, Icons.lock_outline)
+                  .copyWith(
+                suffixIcon: IconButton(
+                  icon: Icon(_obscureConfirmPassword
+                      ? Icons.visibility_off
+                      : Icons.visibility),
+                  onPressed: () => setState(
+                      () => _obscureConfirmPassword = !_obscureConfirmPassword),
+                ),
+              ),
               validator: (v) => (v != _passwordCtrl.text)
                   ? S.of(context).resetPasswordNoMatch
                   : null,
@@ -124,12 +181,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
             ),
             const SizedBox(height: 32),
-
-            // --- Tips --- //
-            Text(
-              S.of(context).resetPasswordTips,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
           ]),
         ),
       ),
