@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/auth/validate_password.dart';
 import 'package:opennutritracker/features/auth/password_rules_dialog.dart';
+import 'package:opennutritracker/features/auth/password_utils.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -74,12 +75,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   void _updatePasswordRules(String value) {
     setState(() {
-      _validMinLength = value.length >= 8;
-      _validUppercase = RegExp(r'[A-Z]').hasMatch(value);
-      _validLowercase = RegExp(r'[a-z]').hasMatch(value);
-      _validDigit = RegExp(r'[0-9]').hasMatch(value);
-      _validSpecial =
-          RegExp(r'[!@#\\$%^&*(),.?":{}|<>]').hasMatch(value);
+      _validMinLength = PasswordUtils.hasMinLength(value);
+      _validUppercase = PasswordUtils.hasUppercase(value);
+      _validLowercase = PasswordUtils.hasLowercase(value);
+      _validDigit = PasswordUtils.hasDigit(value);
+      _validSpecial = PasswordUtils.hasSpecial(value);
     });
   }
 
@@ -114,7 +114,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               obscureText: _obscureNewPassword,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: _decoration(
-                  S.of(context).resetPasswordNewLabel, Icons.lock_outline)
+                      S.of(context).resetPasswordNewLabel, Icons.lock_outline)
                   .copyWith(
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -152,8 +152,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               controller: _confirmCtrl,
               obscureText: _obscureConfirmPassword,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: _decoration(
-                  S.of(context).resetPasswordConfirmLabel, Icons.lock_outline)
+              decoration: _decoration(S.of(context).resetPasswordConfirmLabel,
+                      Icons.lock_outline)
                   .copyWith(
                 suffixIcon: IconButton(
                   icon: Icon(_obscureConfirmPassword
