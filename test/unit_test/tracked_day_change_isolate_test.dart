@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -57,6 +58,7 @@ void main() {
     late MockSupabaseHttpClient mockHttpClient;
     late SupabaseTrackedDayService trackedDayService;
     late TrackedDayRepository repo;
+    const userId = 'user123';
 
     setUp(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
@@ -79,6 +81,22 @@ void main() {
         'fakeAnonKey',
         httpClient: mockHttpClient,
       );
+      final user = User(
+        id: userId,
+        appMetadata: const {},
+        userMetadata: const {},
+        aud: 'authenticated',
+        createdAt: DateTime.now().toIso8601String(),
+      );
+      final session = Session(
+        accessToken: 'token',
+        tokenType: 'bearer',
+        user: user,
+        refreshToken: 'refresh',
+        expiresIn: 3600,
+      );
+      await mockSupabase.auth.recoverSession(jsonEncode(session.toJson()));
+
       trackedDayService = SupabaseTrackedDayService(client: mockSupabase);
 
       // Setup fake connectivity
@@ -156,6 +174,7 @@ void main() {
       final result = await mockSupabase.from('tracked_days').select();
       expect(result.length, 1);
       expect(result.first['day'], day.toIso8601String());
+      expect(result.first['user_id'], userId);
     });
 
     test('syncs without connectivity restoration', () async {
@@ -194,6 +213,7 @@ void main() {
       final output = await mockSupabase.from('tracked_days').select();
       expect(output.length, 1);
       expect(output.first['day'], day.toIso8601String());
+      expect(output.first['user_id'], userId);
     });
 
     test('check values store on the remote', () async {
@@ -246,11 +266,14 @@ void main() {
       expect(remote['fatTracked'], 5);
       expect(remote['proteinGoal'], 2);
       expect(remote['proteinTracked'], 5);
+      expect(remote['user_id'], userId);
 
       // Ensure the remote data matches what is stored locally
       final dbo = box.get(day.toParsedDay());
       expect(dbo, isNotNull);
-      expect(remote, equals(dbo!.toJson()));
+      final expectedMap = Map<String, dynamic>.from(dbo!.toJson())
+        ..['user_id'] = userId;
+      expect(remote, equals(expectedMap));
     });
   });
 }

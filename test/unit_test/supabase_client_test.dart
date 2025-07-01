@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mock_supabase_http_client/mock_supabase_http_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,7 +10,9 @@ void main() {
   late final MockSupabaseHttpClient mockHttpClient;
   late final SupabaseTrackedDayService trackedDayService;
 
-  setUpAll(() {
+  const userId = 'user123';
+
+  setUpAll(() async {
     mockHttpClient = MockSupabaseHttpClient();
 
     // Inject mockHttpClient properly
@@ -17,6 +21,24 @@ void main() {
       'fakeAnonKey',
       httpClient: mockHttpClient,
     );
+
+    final user = User(
+      id: userId,
+      appMetadata: const {},
+      userMetadata: const {},
+      aud: 'authenticated',
+      createdAt: DateTime.now().toIso8601String(),
+    );
+
+    final session = Session(
+      accessToken: 'token',
+      tokenType: 'bearer',
+      user: user,
+      refreshToken: 'refresh',
+      expiresIn: 3600,
+    );
+
+    await mockSupabase.auth.recoverSession(jsonEncode(session.toJson()));
 
     trackedDayService = SupabaseTrackedDayService(client: mockSupabase);
   });
@@ -49,6 +71,7 @@ void main() {
       'carbs': 300,
       'proteins': 100,
       'fats': 70,
+      'user_id': userId,
     });
   });
 
@@ -84,6 +107,7 @@ void main() {
             'carbs': 250,
             'proteins': 90,
             'fats': 60,
+            'user_id': userId,
           },
           {
             'day': today.toIso8601String(),
@@ -91,6 +115,7 @@ void main() {
             'carbs': 320,
             'proteins': 110,
             'fats': 80,
+            'user_id': userId,
           },
         ]));
   });

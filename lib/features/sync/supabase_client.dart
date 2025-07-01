@@ -13,7 +13,13 @@ class SupabaseTrackedDayService {
   /// Logs any exception that occurs during the operation.
   Future<void> upsertTrackedDay(Map<String, dynamic> json) async {
     try {
-      await _client.from('tracked_days').upsert(json, onConflict: 'day');
+      final uid = _client.auth.currentUser?.id;
+      if (uid != null) {
+        json['user_id'] = uid;
+      }
+      await _client
+          .from('tracked_days')
+          .upsert(json, onConflict: 'user_id, day');
     } catch (e, stackTrace) {
       _log.severe('Failed to upsert tracked day: $e', e, stackTrace);
     }
@@ -25,7 +31,15 @@ class SupabaseTrackedDayService {
   Future<void> upsertTrackedDays(List<Map<String, dynamic>> days) async {
     if (days.isEmpty) return;
     try {
-      await _client.from('tracked_days').upsert(days, onConflict: 'day');
+      final uid = _client.auth.currentUser?.id;
+      if (uid != null) {
+        for (final day in days) {
+          day['user_id'] = uid;
+        }
+      }
+      await _client
+          .from('tracked_days')
+          .upsert(days, onConflict: 'user_id, day');
     } catch (e, stackTrace) {
       _log.severe('Failed to upsert tracked days: $e', e, stackTrace);
     }
