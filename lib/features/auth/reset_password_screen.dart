@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/auth/validate_password.dart';
+import 'package:opennutritracker/features/auth/password_rules_dialog.dart';
+import 'package:opennutritracker/features/auth/password_utils.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -15,6 +17,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
+  bool _obscureNewPassword = true;
+  bool _obscureConfirmPassword = true;
+
+  bool _validMinLength = false;
+  bool _validUppercase = false;
+  bool _validLowercase = false;
+  bool _validDigit = false;
+  bool _validSpecial = false;
   bool _loading = false;
   final supabase = Supabase.instance.client;
 
@@ -39,7 +49,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         context: context,
         builder: (_) => AlertDialog(
           title: Text(S.of(context).resetPasswordChanged),
-          content: Text(S.of(context).resetPasswordChanged),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -63,6 +72,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     }
   }
 
+  void _updatePasswordRules(String value) {
+    setState(() {
+      _validMinLength = PasswordUtils.hasMinLength(value);
+      _validUppercase = PasswordUtils.hasUppercase(value);
+      _validLowercase = PasswordUtils.hasLowercase(value);
+      _validDigit = PasswordUtils.hasDigit(value);
+      _validSpecial = PasswordUtils.hasSpecial(value);
+    });
+  }
+
   InputDecoration _decoration(String hint, IconData icon) => InputDecoration(
         hintText: hint,
         prefixIcon: Icon(icon),
@@ -78,23 +97,41 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           key: _formKey,
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const SizedBox(height: 20),
-            Text(S.of(context).resetPasswordTitle,
-                style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 12),
-            Text(
-              S.of(context).resetPasswordNewLabel,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 32),
-
             // --- New password --- //
             TextFormField(
               controller: _passwordCtrl,
-              obscureText: true,
+              obscureText: _obscureNewPassword,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: _decoration(
-                  S.of(context).resetPasswordNewLabel, Icons.lock_outline),
+                      S.of(context).resetPasswordNewLabel, Icons.lock_outline)
+                  .copyWith(
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(_obscureNewPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility),
+                      onPressed: () => setState(
+                          () => _obscureNewPassword = !_obscureNewPassword),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.help_outline_outlined),
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (_) => PasswordRulesDialog(
+                          validMinLength: _validMinLength,
+                          validUppercase: _validUppercase,
+                          validLowercase: _validLowercase,
+                          validDigit: _validDigit,
+                          validSpecial: _validSpecial,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onChanged: _updatePasswordRules,
               validator: (value) => validatePassword(context, value),
             ),
             const SizedBox(height: 16),
@@ -102,10 +139,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             // --- Confirm --- //
             TextFormField(
               controller: _confirmCtrl,
-              obscureText: true,
+              obscureText: _obscureConfirmPassword,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: _decoration(
-                  S.of(context).resetPasswordConfirmLabel, Icons.lock_outline),
+              decoration: _decoration(S.of(context).resetPasswordConfirmLabel,
+                      Icons.lock_outline)
+                  .copyWith(
+                suffixIcon: IconButton(
+                  icon: Icon(_obscureConfirmPassword
+                      ? Icons.visibility_off
+                      : Icons.visibility),
+                  onPressed: () => setState(
+                      () => _obscureConfirmPassword = !_obscureConfirmPassword),
+                ),
+              ),
               validator: (v) => (v != _passwordCtrl.text)
                   ? S.of(context).resetPasswordNoMatch
                   : null,
@@ -117,6 +163,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onPrimaryContainer,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.primaryContainer,
+                ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: _loading ? null : _resetPassword,
                 child: _loading
                     ? const CircularProgressIndicator()
@@ -124,12 +176,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
             ),
             const SizedBox(height: 32),
-
-            // --- Tips --- //
-            Text(
-              S.of(context).resetPasswordTips,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
           ]),
         ),
       ),

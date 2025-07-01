@@ -21,6 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
 
+  bool _obscurePassword = true;
+
   bool _loading = false;
   final supabase = Supabase.instance.client;
 
@@ -110,10 +112,17 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _passwordCtrl,
-              obscureText: true,
+              obscureText: _obscurePassword,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.lock_outline),
                 labelText: S.of(context).loginPasswordLabel,
+                suffixIcon: IconButton(
+                  icon: Icon(_obscurePassword
+                      ? Icons.visibility_off
+                      : Icons.visibility),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
+                ),
               ),
               validator: (value) => validatePassword(context, value),
             ),
@@ -121,6 +130,12 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(
               height: 48,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onPrimaryContainer,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.primaryContainer,
+                ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: _loading ? null : _submit,
                 child: _loading
                     ? const CircularProgressIndicator()

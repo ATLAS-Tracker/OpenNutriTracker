@@ -82,6 +82,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor:
+                        Theme.of(context).colorScheme.onPrimaryContainer,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.primaryContainer,
+                  ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                   onPressed: _loading ? null : _sendResetEmail,
                   child: _loading
                       ? const CircularProgressIndicator()
