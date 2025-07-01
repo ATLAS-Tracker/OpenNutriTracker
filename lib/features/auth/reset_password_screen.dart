@@ -49,7 +49,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         context: context,
         builder: (_) => AlertDialog(
           title: Text(S.of(context).resetPasswordChanged),
-          content: Text(S.of(context).resetPasswordChanged),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -98,16 +97,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           key: _formKey,
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const SizedBox(height: 20),
-            Text(S.of(context).resetPasswordTitle,
-                style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 12),
-            Text(
-              S.of(context).resetPasswordNewLabel,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 32),
-
             // --- New password --- //
             TextFormField(
               controller: _passwordCtrl,
@@ -174,6 +163,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onPrimaryContainer,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.primaryContainer,
+                ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
                 onPressed: _loading ? null : _resetPassword,
                 child: _loading
                     ? const CircularProgressIndicator()
