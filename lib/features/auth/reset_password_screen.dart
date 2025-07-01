@@ -48,6 +48,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           ],
         ),
       );
+      if (!mounted) return;
       Navigator.of(context).pushNamedAndRemoveUntil(
         NavigationOptions.mainRoute,
         (_) => false,
