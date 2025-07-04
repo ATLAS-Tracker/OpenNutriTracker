@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/export_data_usecase.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/import_data_usecase.dart';
+import 'package:opennutritracker/features/settings/domain/usecase/export_data_supabase_usecase.dart';
 
 part 'export_import_event.dart';
 
@@ -15,8 +16,10 @@ class ExportImportBloc extends Bloc<ExportImportEvent, ExportImportState> {
 
   final ExportDataUsecase _exportDataUsecase;
   final ImportDataUsecase _importDataUsecase;
+  final ExportDataSupabaseUsecase _exportDataSupabaseUsecase;
 
-  ExportImportBloc(this._exportDataUsecase, this._importDataUsecase)
+  ExportImportBloc(this._exportDataUsecase, this._importDataUsecase,
+      this._exportDataSupabaseUsecase)
       : super(ExportImportInitial()) {
     on<ExportDataEvent>((event, emit) async {
       try {
@@ -33,6 +36,27 @@ class ExportImportBloc extends Bloc<ExportImportEvent, ExportImportState> {
           emit(ExportImportSuccess());
         } else {
           emit(ExportImportInitial());
+        }
+      } catch (e) {
+        emit(ExportImportError());
+      }
+    });
+
+    on<ExportDataSupabaseEvent>((event, emit) async {
+      try {
+        emit(ExportImportLoadingState());
+
+        final result = await _exportDataSupabaseUsecase.exportData(
+          exportZipFileName,
+          userActivityJsonFileName,
+          userIntakeJsonFileName,
+          trackedDayJsonFileName,
+        );
+
+        if (result) {
+          emit(ExportImportSuccess());
+        } else {
+          emit(ExportImportError());
         }
       } catch (e) {
         emit(ExportImportError());
