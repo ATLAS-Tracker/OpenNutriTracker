@@ -68,6 +68,7 @@ import 'package:opennutritracker/features/scanner/domain/usecase/search_product_
 import 'package:opennutritracker/features/scanner/presentation/scanner_bloc.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/export_data_usecase.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/import_data_usecase.dart';
+import 'package:opennutritracker/features/settings/domain/usecase/export_data_supabase_usecase.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -115,7 +116,8 @@ Future<void> initLocator() async {
       () => ProfileBloc(locator(), locator(), locator(), locator(), locator()));
   locator.registerLazySingleton(() =>
       SettingsBloc(locator(), locator(), locator(), locator(), locator()));
-  locator.registerFactory(() => ExportImportBloc(locator(), locator()));
+  locator.registerFactory(() =>
+      ExportImportBloc(locator(), locator(), locator()));
   locator
       .registerLazySingleton<CreateMealBloc>(() => CreateMealBloc(locator()));
 
@@ -183,6 +185,8 @@ Future<void> initLocator() async {
       () => ExportDataUsecase(locator(), locator(), locator()));
   locator.registerLazySingleton(
       () => ImportDataUsecase(locator(), locator(), locator()));
+  locator.registerLazySingleton(
+      () => ExportDataSupabaseUsecase(locator(), locator(), locator(), locator()));
   locator.registerLazySingleton<AddWeightUsecase>(
       () => AddWeightUsecase(locator()));
   locator.registerLazySingleton<GetWeightUsecase>(() => GetWeightUsecase());

@@ -120,6 +120,8 @@
   "exportImportErrorLabel": "Export / Import error",
   "exportAction": "Export",
   "importAction": "Import",
+  "exportSupabaseLabel": "Export to Supabase",
+  "exportSupabaseDescription": "Backup your data to Supabase storage as a zip file.",
   "addItemLabel": "Add new Item:",
   "activityLabel": "Activity",
   "activityExample": "e.g. running, biking, yoga ...",
