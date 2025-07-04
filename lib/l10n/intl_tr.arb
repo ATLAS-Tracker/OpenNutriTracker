@@ -113,6 +113,8 @@
   "exportImportErrorLabel": "Dışa Aktarma / İçe Aktarma hatası",
   "exportAction": "Dışa Aktar",
   "importAction": "İçe Aktar",
+  "exportSupabaseLabel": "Supabase'e Aktar",
+  "exportSupabaseDescription": "Verilerinizi zip dosyası olarak Supabase depolamasına yedekleyin.",
   "addItemLabel": "Yeni Öğe Ekle:",
   "activityLabel": "Aktivite",
   "activityExample": "ör. koşu, bisiklet, yoga ...",

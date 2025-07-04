@@ -156,6 +156,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Daten Exportieren / Importieren"),
         "exportImportSuccessLabel":
             MessageLookupByLibrary.simpleMessage("Export / Import erfolgreich"),
+        "exportSupabaseDescription": MessageLookupByLibrary.simpleMessage(
+            "Sichere deine Daten als Zip-Datei im Supabase-Speicher."),
+        "exportSupabaseLabel":
+            MessageLookupByLibrary.simpleMessage("Zu Supabase exportieren"),
         "fatLabel": MessageLookupByLibrary.simpleMessage("Fett"),
         "fiberLabel": MessageLookupByLibrary.simpleMessage("Ballaststoffe"),
         "flOzUnit": MessageLookupByLibrary.simpleMessage("fl.oz"),
