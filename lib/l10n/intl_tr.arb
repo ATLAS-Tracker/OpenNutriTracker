@@ -84,6 +84,8 @@
   "loginPasswordLabel": "Şifre",
   "loginButton": "Giriş Yap",
   "loginForgotPassword": "Şifreni mi unuttun?",
+  "loginAlreadySignedIn": "Başka bir cihazda zaten giriş yapılmış. Lütfen önce çıkış yapın.",
+  "loginUnknownError": "Bilinmeyen hata",
   "loginEmailRequired": "E-posta gerekli",
   "loginEmailInvalid": "Geçersiz e-posta adresi",
   "loginError": "Giriş hatası",

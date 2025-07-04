@@ -206,6 +206,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "kcalLeftLabel": MessageLookupByLibrary.simpleMessage("kcal restantes"),
         "kgLabel": MessageLookupByLibrary.simpleMessage("kg"),
         "lbsLabel": MessageLookupByLibrary.simpleMessage("lbs"),
+        "loginAlreadySignedIn": MessageLookupByLibrary.simpleMessage(
+            "Déjà connecté sur un autre appareil. Veuillez d\'abord vous déconnecter."),
         "loginButton": MessageLookupByLibrary.simpleMessage("Se connecter"),
         "loginEmailInvalid":
             MessageLookupByLibrary.simpleMessage("Adresse e-mail invalide"),
@@ -219,6 +221,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginPasswordLabel":
             MessageLookupByLibrary.simpleMessage("Mot de passe"),
         "loginTitle": MessageLookupByLibrary.simpleMessage("Connexion"),
+        "loginUnknownError":
+            MessageLookupByLibrary.simpleMessage("Erreur inconnue"),
         "lunchExample":
             MessageLookupByLibrary.simpleMessage("ex : pizza, salade, riz..."),
         "lunchLabel": MessageLookupByLibrary.simpleMessage("Déjeuner"),

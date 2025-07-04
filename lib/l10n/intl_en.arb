@@ -89,6 +89,8 @@
   "loginPasswordLabel": "Password",
   "loginButton": "Sign In",
   "loginForgotPassword": "Forgot password?",
+  "loginAlreadySignedIn": "Already signed in on another device. Please sign out first.",
+  "loginUnknownError": "Unknown error",
   "loginEmailRequired": "Email required",
   "loginEmailInvalid": "Invalid email address",
   "loginError": "Sign in error",

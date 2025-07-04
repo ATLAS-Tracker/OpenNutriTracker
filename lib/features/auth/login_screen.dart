@@ -61,8 +61,12 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
+
     final email = _emailCtrl.text.trim();
     final pass = _passwordCtrl.text.trim();
+
+    // Capture everything that needs context before the async gap
+    final l10n = S.of(context);
 
     try {
       final res = await supabase.auth.signInWithPassword(
@@ -70,11 +74,21 @@ class _LoginScreenState extends State<LoginScreen> {
         password: pass,
       );
 
-      if (res.session != null) _navigateHome();
+      if (res.session != null && mounted) {
+        _navigateHome();
+      }
     } on AuthException catch (e) {
-      _showError(e.message);
+      final message = e.message.toLowerCase();
+
+      if (!mounted) return; // context might be gone
+
+      if (message.contains('error granting user')) {
+        _showError(l10n.loginAlreadySignedIn);
+      } else {
+        _showError(e.message);
+      }
     } catch (e) {
-      _showError(e);
+      if (mounted) _showError(e.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
     }

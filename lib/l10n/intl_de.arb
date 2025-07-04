@@ -79,6 +79,8 @@
   "loginPasswordLabel": "Passwort",
   "loginButton": "Anmelden",
   "loginForgotPassword": "Passwort vergessen?",
+  "loginAlreadySignedIn": "Bereits auf einem anderen Gerät angemeldet. Bitte zuerst abmelden.",
+  "loginUnknownError": "Unbekannter Fehler",
   "loginEmailRequired": "E-Mail erforderlich",
   "loginEmailInvalid": "Ungültige E-Mail-Adresse",
   "loginError": "Anmeldefehler",

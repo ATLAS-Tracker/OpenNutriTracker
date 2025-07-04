@@ -199,6 +199,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "kcalLeftLabel": MessageLookupByLibrary.simpleMessage("kcal left"),
         "kgLabel": MessageLookupByLibrary.simpleMessage("kg"),
         "lbsLabel": MessageLookupByLibrary.simpleMessage("lbs"),
+        "loginAlreadySignedIn": MessageLookupByLibrary.simpleMessage(
+            "Already signed in on another device. Please sign out first."),
         "loginButton": MessageLookupByLibrary.simpleMessage("Sign In"),
         "loginEmailInvalid":
             MessageLookupByLibrary.simpleMessage("Invalid email address"),
@@ -210,6 +212,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Forgot password?"),
         "loginPasswordLabel": MessageLookupByLibrary.simpleMessage("Password"),
         "loginTitle": MessageLookupByLibrary.simpleMessage("Sign In"),
+        "loginUnknownError":
+            MessageLookupByLibrary.simpleMessage("Unknown error"),
         "lunchExample":
             MessageLookupByLibrary.simpleMessage("e.g. pizza, salad, rice ..."),
         "lunchLabel": MessageLookupByLibrary.simpleMessage("Lunch"),

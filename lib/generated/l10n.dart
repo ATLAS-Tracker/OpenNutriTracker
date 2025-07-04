@@ -921,6 +921,26 @@ class S {
     );
   }
 
+  /// `Already signed in on another device. Please sign out first.`
+  String get loginAlreadySignedIn {
+    return Intl.message(
+      'Already signed in on another device. Please sign out first.',
+      name: 'loginAlreadySignedIn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unknown error`
+  String get loginUnknownError {
+    return Intl.message(
+      'Unknown error',
+      name: 'loginUnknownError',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Email required`
   String get loginEmailRequired {
     return Intl.message(

@@ -89,6 +89,8 @@
     "loginPasswordLabel": "Mot de passe",
     "loginButton": "Se connecter",
     "loginForgotPassword": "Mot de passe oublié ?",
+    "loginAlreadySignedIn": "Déjà connecté sur un autre appareil. Veuillez d'abord vous déconnecter.",
+    "loginUnknownError": "Erreur inconnue",
     "loginEmailRequired": "E-mail requis",
     "loginEmailInvalid": "Adresse e-mail invalide",
     "loginError": "Erreur de connexion",

@@ -192,6 +192,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "kcalLeftLabel": MessageLookupByLibrary.simpleMessage("kalan kcal"),
         "kgLabel": MessageLookupByLibrary.simpleMessage("kg"),
         "lbsLabel": MessageLookupByLibrary.simpleMessage("lbs"),
+        "loginAlreadySignedIn": MessageLookupByLibrary.simpleMessage(
+            "Başka bir cihazda zaten giriş yapılmış. Lütfen önce çıkış yapın."),
         "loginButton": MessageLookupByLibrary.simpleMessage("Giriş Yap"),
         "loginEmailInvalid":
             MessageLookupByLibrary.simpleMessage("Geçersiz e-posta adresi"),
@@ -203,6 +205,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Şifreni mi unuttun?"),
         "loginPasswordLabel": MessageLookupByLibrary.simpleMessage("Şifre"),
         "loginTitle": MessageLookupByLibrary.simpleMessage("Giriş Yap"),
+        "loginUnknownError":
+            MessageLookupByLibrary.simpleMessage("Bilinmeyen hata"),
         "lunchExample": MessageLookupByLibrary.simpleMessage(
             "ör. pizza, salata, pirinç ..."),
         "lunchLabel": MessageLookupByLibrary.simpleMessage("Öğle Yemeği"),
