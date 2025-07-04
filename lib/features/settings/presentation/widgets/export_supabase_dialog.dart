@@ -7,14 +7,14 @@ import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart'
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
-class ExportImportDialog extends StatelessWidget {
+class ExportSupabaseDialog extends StatelessWidget {
   final exportImportBloc = locator<ExportImportBloc>();
 
   final _homeBloc = locator<HomeBloc>();
   final _diaryBloc = locator<DiaryBloc>();
   final _calendarDayBloc = locator<CalendarDayBloc>();
 
-  ExportImportDialog({super.key});
+  ExportSupabaseDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +23,13 @@ class ExportImportDialog extends StatelessWidget {
       listener: (context, state) {
         if (state is ExportImportSuccess) {
           refreshScreens();
+          Navigator.of(context).pop();
         }
       },
       builder: (context, state) {
         return AlertDialog(
           title: Text(
-            S.of(context).exportImportLabel,
+            S.of(context).exportSupabaseLabel,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
           ),
@@ -42,31 +43,18 @@ class ExportImportDialog extends StatelessWidget {
   Widget _buildContent(BuildContext context, ExportImportState state) {
     if (state is ExportImportInitial) {
       return Text(
-        S.of(context).exportImportDescription,
+        S.of(context).exportSupabaseDescription,
         overflow: TextOverflow.ellipsis,
         maxLines: 15,
       );
     } else if (state is ExportImportLoadingState) {
       return const LinearProgressIndicator();
-    } else if (state is ExportImportSuccess) {
-      return Row(
-        children: [
-          Icon(Icons.check_circle,
-              color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 8),
-          Text(
-            S.of(context).exportImportSuccessLabel,
-          ),
-        ],
-      );
     } else if (state is ExportImportError) {
       return Row(
         children: [
           Icon(Icons.error, color: Theme.of(context).colorScheme.error),
           const SizedBox(width: 8),
-          Text(
-            S.of(context).exportImportErrorLabel,
-          ),
+          Text(S.of(context).exportImportErrorLabel),
         ],
       );
     }
@@ -74,23 +62,18 @@ class ExportImportDialog extends StatelessWidget {
   }
 
   List<Widget> _buildActions(BuildContext context, ExportImportState state) {
-    final isBusy = state is ExportImportLoadingState;
     return [
       TextButton(
-        onPressed: isBusy
-            ? null
-            : () {
-                exportImportBloc.add(ExportDataEvent());
-              },
-        child: Text(S.of(context).exportAction),
+        onPressed: () => Navigator.of(context).pop(),
+        child: Text(S.of(context).dialogCancelLabel),
       ),
       TextButton(
-        onPressed: isBusy
+        onPressed: state is ExportImportLoadingState
             ? null
             : () {
-                exportImportBloc.add(ImportDataEvent());
+                exportImportBloc.add(ExportDataSupabaseEvent());
               },
-        child: Text(S.of(context).importAction),
+        child: Text(S.of(context).exportAction),
       ),
     ];
   }
