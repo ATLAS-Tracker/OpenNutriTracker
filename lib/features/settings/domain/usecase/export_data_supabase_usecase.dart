@@ -5,6 +5,7 @@ import 'package:archive/archive_io.dart';
 import 'package:opennutritracker/core/data/repository/intake_repository.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
+import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:logging/logging.dart';
 
@@ -13,11 +14,12 @@ class ExportDataSupabaseUsecase {
   final UserActivityRepository _userActivityRepository;
   final IntakeRepository _intakeRepository;
   final TrackedDayRepository _trackedDayRepository;
+  final UserWeightRepository _userWeightRepository;
   final SupabaseClient _client;
   final _log = Logger('ExportServiceZipSupabaseUsecase');
 
   ExportDataSupabaseUsecase(this._userActivityRepository,
-      this._intakeRepository, this._trackedDayRepository, this._client);
+      this._intakeRepository, this._trackedDayRepository, this._userWeightRepository, this._client);
 
   /// Creates a zipped backup and uploads it to Supabase storage.
   Future<bool> exportData(
@@ -25,6 +27,7 @@ class ExportDataSupabaseUsecase {
     String userActivityJsonFileName,
     String userIntakeJsonFileName,
     String trackedDayJsonFileName,
+    String userWeightJsonFileName,
   ) async {
     // Export user activity data to Json File Bytes
     final fullUserActivity =
@@ -45,6 +48,12 @@ class ExportDataSupabaseUsecase {
         fullTrackedDay.map((trackedDay) => trackedDay.toJson()).toList());
     final trackedDayJsonBytes = utf8.encode(fullTrackedDayJson);
 
+    // Export user weight data to Json File Bytes
+    final fullUserWeight = await _userWeightRepository.getAllUserWeightDBOs();
+    final fullUserWeightJson =
+        jsonEncode(fullUserWeight.map((w) => w.toJson()).toList());
+    final userWeightJsonBytes = utf8.encode(fullUserWeightJson);
+
     // Create a zip file with the exported data
     final archive = Archive()
       ..addFile(ArchiveFile(userActivityJsonFileName,
@@ -52,7 +61,9 @@ class ExportDataSupabaseUsecase {
       ..addFile(ArchiveFile(
           userIntakeJsonFileName, intakeJsonBytes.length, intakeJsonBytes))
       ..addFile(ArchiveFile(trackedDayJsonFileName, trackedDayJsonBytes.length,
-          trackedDayJsonBytes));
+          trackedDayJsonBytes))
+      ..addFile(ArchiveFile(userWeightJsonFileName, userWeightJsonBytes.length,
+          userWeightJsonBytes));
 
     final zipBytes = ZipEncoder().encode(archive);
 

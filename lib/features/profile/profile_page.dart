@@ -15,9 +15,7 @@ import 'package:opennutritracker/features/profile/presentation/widgets/set_heigh
 import 'package:opennutritracker/features/profile/presentation/widgets/set_pal_category_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_weight_dialog.dart';
 import 'package:opennutritracker/generated/l10n.dart';
-import 'package:logging/logging.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:opennutritracker/core/utils/navigation_options.dart';
+import 'package:opennutritracker/features/auth/auth_safe_sign_out.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -175,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Icon(Icons.logout),
           ),
           title: const Text('Log out'),
-          onTap: () => _signOut(context),
+          onTap: () => safeSignOut(context),
         ),
       ],
     );
@@ -266,22 +264,6 @@ class _ProfilePageState extends State<ProfilePage> {
       userEntity.gender = selectedGender;
 
       _profileBloc.updateUser(userEntity);
-    }
-  }
-
-  Future<void> _signOut(BuildContext context) async {
-    try {
-      await Supabase.instance.client.auth.signOut();
-      if (context.mounted) {
-        Navigator.of(context)
-            .pushReplacementNamed(NavigationOptions.loginRoute);
-      }
-    } catch (error, stackTrace) {
-      Logger('ProfilePage').warning('Logout error', error, stackTrace);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('$error')));
-      }
     }
   }
 }
