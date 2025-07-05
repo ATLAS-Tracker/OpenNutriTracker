@@ -98,4 +98,48 @@ class ConfigDataSource {
     final config = _configBox.get(_configKey);
     return config?.hasAcceptedSendAnonymousData ?? false;
   }
+
+  Future<void> setUserActivityLastUpdate(DateTime date) async {
+    final config = _configBox.get(_configKey);
+    config?.userActivityLastUpdate = date;
+    config?.save();
+  }
+
+  Future<DateTime?> getUserActivityLastUpdate() async {
+    final config = _configBox.get(_configKey);
+    return config?.userActivityLastUpdate;
+  }
+
+  Future<void> setUserIntakeLastUpdate(DateTime date) async {
+    final config = _configBox.get(_configKey);
+    config?.userIntakeLastUpdate = date;
+    config?.save();
+  }
+
+  Future<DateTime?> getUserIntakeLastUpdate() async {
+    final config = _configBox.get(_configKey);
+    return config?.userIntakeLastUpdate;
+  }
+
+  Future<void> setTrackedDayLastUpdate(DateTime date) async {
+    final config = _configBox.get(_configKey);
+    config?.trackedDayLastUpdate = date;
+    config?.save();
+  }
+
+  Future<DateTime?> getTrackedDayLastUpdate() async {
+    final config = _configBox.get(_configKey);
+    return config?.trackedDayLastUpdate;
+  }
+
+  Future<void> setUserWeightLastUpdate(DateTime date) async {
+    final config = _configBox.get(_configKey);
+    config?.userWeightLastUpdate = date;
+    config?.save();
+  }
+
+  Future<DateTime?> getUserWeightLastUpdate() async {
+    final config = _configBox.get(_configKey);
+    return config?.userWeightLastUpdate;
+  }
 }
