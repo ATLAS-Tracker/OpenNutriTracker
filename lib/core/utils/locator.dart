@@ -41,7 +41,6 @@ import 'package:opennutritracker/core/domain/usecase/update_intake_usecase.dart'
 import 'package:opennutritracker/core/utils/env.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:opennutritracker/core/utils/ont_image_cache_manager.dart';
-import 'package:opennutritracker/core/utils/secure_app_storage_provider.dart';
 import 'package:opennutritracker/features/activity_detail/presentation/bloc/activity_detail_bloc.dart';
 import 'package:opennutritracker/features/add_activity/presentation/bloc/activities_bloc.dart';
 import 'package:opennutritracker/features/add_activity/presentation/bloc/recent_activities_bloc.dart';
@@ -83,10 +82,12 @@ Future<void> initLocator() async {
   locator.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
 
   // Init secure storage and Hive database;
-  final secureAppStorageProvider = SecureAppStorageProvider();
   final hiveDBProvider = HiveDBProvider();
-  await hiveDBProvider
-      .initHiveDB(await secureAppStorageProvider.getHiveEncryptionKey());
+  await hiveDBProvider.initForUser(
+    Supabase.instance.client.auth.currentUser?.id,
+  );
+
+  locator.registerSingleton<HiveDBProvider>(hiveDBProvider);
 
   // Cache manager
   locator
@@ -116,8 +117,8 @@ Future<void> initLocator() async {
       () => ProfileBloc(locator(), locator(), locator(), locator(), locator()));
   locator.registerLazySingleton(() =>
       SettingsBloc(locator(), locator(), locator(), locator(), locator()));
-  locator.registerFactory(() =>
-      ExportImportBloc(locator(), locator(), locator()));
+  locator
+      .registerFactory(() => ExportImportBloc(locator(), locator(), locator()));
   locator
       .registerLazySingleton<CreateMealBloc>(() => CreateMealBloc(locator()));
 
@@ -185,9 +186,8 @@ Future<void> initLocator() async {
       () => ExportDataUsecase(locator(), locator(), locator(), locator()));
   locator.registerLazySingleton(
       () => ImportDataUsecase(locator(), locator(), locator(), locator()));
-  locator.registerLazySingleton(
-      () => ExportDataSupabaseUsecase(
-          locator(), locator(), locator(), locator(), locator()));
+  locator.registerLazySingleton(() => ExportDataSupabaseUsecase(
+      locator(), locator(), locator(), locator(), locator()));
   locator.registerLazySingleton<AddWeightUsecase>(
       () => AddWeightUsecase(locator()));
   locator.registerLazySingleton<GetWeightUsecase>(() => GetWeightUsecase());
