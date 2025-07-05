@@ -85,8 +85,10 @@ Future<void> initLocator() async {
   // Init secure storage and Hive database;
   final secureAppStorageProvider = SecureAppStorageProvider();
   final hiveDBProvider = HiveDBProvider();
-  await hiveDBProvider
-      .initHiveDB(await secureAppStorageProvider.getHiveEncryptionKey());
+  await hiveDBProvider.initHiveDB(
+    await secureAppStorageProvider.getHiveEncryptionKey(),
+    userId: Supabase.instance.client.auth.currentUser?.id,
+  );
 
   // Cache manager
   locator

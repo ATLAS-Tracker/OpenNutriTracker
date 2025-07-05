@@ -30,6 +30,9 @@ class HiveDBProvider extends ChangeNotifier {
   static const recipeBoxName = "RecipeBox";
   static const userWeightBoxName = 'UserWeightBox';
 
+  String? _userId;
+  String _boxName(String base) => _userId == null ? base : '${_userId}_$base';
+
   late Box<ConfigDBO> configBox;
   late Box<IntakeDBO> intakeBox;
   late Box<UserActivityDBO> userActivityBox;
@@ -39,8 +42,23 @@ class HiveDBProvider extends ChangeNotifier {
   late TrackedDayChangeIsolate trackedDayWatcher;
   late Box<UserWeightDbo> userWeightBox;
 
-  Future<void> initHiveDB(Uint8List encryptionKey) async {
+  Future<void> initHiveDB(Uint8List encryptionKey, {String? userId}) async {
     final encryptionCypher = HiveAesCipher(encryptionKey);
+
+    // Close previously opened boxes and watcher if any
+    if (Hive.isBoxOpen(_boxName(configBoxName))) {
+      await configBox.close();
+      await intakeBox.close();
+      await recipeBox.close();
+      await userActivityBox.close();
+      await userBox.close();
+      await trackedDayWatcher.stop();
+      await trackedDayBox.close();
+      await userWeightBox.close();
+    }
+
+    _userId = userId;
+
     await Hive.initFlutter();
     Hive.registerAdapter(ConfigDBOAdapter());
     Hive.registerAdapter(IntakeDBOAdapter());
@@ -65,21 +83,21 @@ class HiveDBProvider extends ChangeNotifier {
     Hive.registerAdapter(UserWeightDboAdapter());
 
     configBox =
-        await Hive.openBox(configBoxName, encryptionCipher: encryptionCypher);
+        await Hive.openBox(_boxName(configBoxName), encryptionCipher: encryptionCypher);
     intakeBox =
-        await Hive.openBox(intakeBoxName, encryptionCipher: encryptionCypher);
+        await Hive.openBox(_boxName(intakeBoxName), encryptionCipher: encryptionCypher);
     recipeBox =
-        await Hive.openBox(recipeBoxName, encryptionCipher: encryptionCypher);
-    userActivityBox = await Hive.openBox(userActivityBoxName,
+        await Hive.openBox(_boxName(recipeBoxName), encryptionCipher: encryptionCypher);
+    userActivityBox = await Hive.openBox(_boxName(userActivityBoxName),
         encryptionCipher: encryptionCypher);
     userBox =
-        await Hive.openBox(userBoxName, encryptionCipher: encryptionCypher);
-    trackedDayBox = await Hive.openBox(trackedDayBoxName,
+        await Hive.openBox(_boxName(userBoxName), encryptionCipher: encryptionCypher);
+    trackedDayBox = await Hive.openBox(_boxName(trackedDayBoxName),
         encryptionCipher: encryptionCypher);
     trackedDayWatcher = TrackedDayChangeIsolate(trackedDayBox);
     await trackedDayWatcher.start();
     userWeightBox = await Hive.openBox(
-      userWeightBoxName,
+      _boxName(userWeightBoxName),
       encryptionCipher: encryptionCypher,
     );
   }
