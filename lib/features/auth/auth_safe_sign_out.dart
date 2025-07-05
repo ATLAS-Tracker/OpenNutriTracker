@@ -8,7 +8,6 @@ import 'package:opennutritracker/features/settings/domain/usecase/export_data_su
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
-import 'package:opennutritracker/core/utils/secure_app_storage_provider.dart';
 
 final _log = Logger('AuthSafeSignOut');
 
@@ -53,8 +52,7 @@ Future<void> safeSignOut(BuildContext context) async {
     }
 
     final hive = locator<HiveDBProvider>();
-    final secure = SecureAppStorageProvider();
-    await hive.initHiveDB(await secure.getHiveEncryptionKey());
+    await hive.initForUser(null);
 
     // ▸ 2. Ferme le loader
     if (context.mounted) {

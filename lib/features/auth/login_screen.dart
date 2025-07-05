@@ -10,7 +10,6 @@ import 'forgot_password_screen.dart';
 import 'reset_password_screen.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
-import 'package:opennutritracker/core/utils/secure_app_storage_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -79,11 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (res.session != null && mounted) {
         final hive = locator<HiveDBProvider>();
-        final secure = SecureAppStorageProvider();
-        await hive.initHiveDB(
-          await secure.getHiveEncryptionKey(),
-          userId: res.user?.id,
-        );
+        await hive.initForUser(res.user?.id);
         _navigateHome();
       }
     } on AuthException catch (e) {

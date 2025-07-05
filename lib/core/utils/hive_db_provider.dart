@@ -20,6 +20,7 @@ import 'package:opennutritracker/core/data/dbo/user_gender_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
 import 'package:opennutritracker/features/sync/tracked_day_change_isolate.dart';
+import 'package:opennutritracker/core/utils/secure_app_storage_provider.dart';
 
 class HiveDBProvider extends ChangeNotifier {
   static const configBoxName = 'ConfigBox';
@@ -42,45 +43,55 @@ class HiveDBProvider extends ChangeNotifier {
   late TrackedDayChangeIsolate trackedDayWatcher;
   late Box<UserWeightDbo> userWeightBox;
 
+  static bool _adaptersRegistered = false;
+
   Future<void> initHiveDB(Uint8List encryptionKey, {String? userId}) async {
     final encryptionCypher = HiveAesCipher(encryptionKey);
 
     // Close previously opened boxes and watcher if any
     if (Hive.isBoxOpen(_boxName(configBoxName))) {
-      await configBox.close();
-      await intakeBox.close();
-      await recipeBox.close();
-      await userActivityBox.close();
-      await userBox.close();
+      // trackedDayWatcher must be stopped before its box is closed
       await trackedDayWatcher.stop();
-      await trackedDayBox.close();
-      await userWeightBox.close();
+
+      // To prevent resource leaks, any new box added to this provider must also be added here.
+      await Future.wait([
+        configBox.close(),
+        intakeBox.close(),
+        recipeBox.close(),
+        userActivityBox.close(),
+        userBox.close(),
+        trackedDayBox.close(),
+        userWeightBox.close(),
+      ]);
     }
 
     _userId = userId;
 
     await Hive.initFlutter();
-    Hive.registerAdapter(ConfigDBOAdapter());
-    Hive.registerAdapter(IntakeDBOAdapter());
-    Hive.registerAdapter(MealDBOAdapter());
-    Hive.registerAdapter(IntakeForRecipeDBOAdapter());
+    if (!_adaptersRegistered) {
+      Hive.registerAdapter(ConfigDBOAdapter());
+      Hive.registerAdapter(IntakeDBOAdapter());
+      Hive.registerAdapter(MealDBOAdapter());
+      Hive.registerAdapter(IntakeForRecipeDBOAdapter());
 
-    Hive.registerAdapter(MealOrRecipeDBOAdapter());
+      Hive.registerAdapter(MealOrRecipeDBOAdapter());
 
-    Hive.registerAdapter(MealNutrimentsDBOAdapter());
-    Hive.registerAdapter(MealSourceDBOAdapter());
-    Hive.registerAdapter(IntakeTypeDBOAdapter());
-    Hive.registerAdapter(RecipesDBOAdapter());
-    Hive.registerAdapter(UserDBOAdapter());
-    Hive.registerAdapter(UserGenderDBOAdapter());
-    Hive.registerAdapter(UserWeightGoalDBOAdapter());
-    Hive.registerAdapter(UserPALDBOAdapter());
-    Hive.registerAdapter(TrackedDayDBOAdapter());
-    Hive.registerAdapter(UserActivityDBOAdapter());
-    Hive.registerAdapter(PhysicalActivityDBOAdapter());
-    Hive.registerAdapter(PhysicalActivityTypeDBOAdapter());
-    Hive.registerAdapter(AppThemeDBOAdapter());
-    Hive.registerAdapter(UserWeightDboAdapter());
+      Hive.registerAdapter(MealNutrimentsDBOAdapter());
+      Hive.registerAdapter(MealSourceDBOAdapter());
+      Hive.registerAdapter(IntakeTypeDBOAdapter());
+      Hive.registerAdapter(RecipesDBOAdapter());
+      Hive.registerAdapter(UserDBOAdapter());
+      Hive.registerAdapter(UserGenderDBOAdapter());
+      Hive.registerAdapter(UserWeightGoalDBOAdapter());
+      Hive.registerAdapter(UserPALDBOAdapter());
+      Hive.registerAdapter(TrackedDayDBOAdapter());
+      Hive.registerAdapter(UserActivityDBOAdapter());
+      Hive.registerAdapter(PhysicalActivityDBOAdapter());
+      Hive.registerAdapter(PhysicalActivityTypeDBOAdapter());
+      Hive.registerAdapter(AppThemeDBOAdapter());
+      Hive.registerAdapter(UserWeightDboAdapter());
+      _adaptersRegistered = true;
+    }
 
     configBox =
         await Hive.openBox(_boxName(configBoxName), encryptionCipher: encryptionCypher);
@@ -103,6 +114,14 @@ class HiveDBProvider extends ChangeNotifier {
   }
 
   static generateNewHiveEncryptionKey() => Hive.generateSecureKey();
+
+  /// Helper to (re)initialize Hive for the provided [userId].
+  /// This fetches the encryption key from secure storage and delegates
+  /// to [initHiveDB].
+  Future<void> initForUser(String? userId) async {
+    final secure = SecureAppStorageProvider();
+    await initHiveDB(await secure.getHiveEncryptionKey(), userId: userId);
+  }
 
   @override
   void dispose() {
