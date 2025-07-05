@@ -11,6 +11,7 @@ import 'package:opennutritracker/features/sync/tracked_day_change_isolate.dart';
 import 'package:opennutritracker/features/sync/supabase_client.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/data_source/tracked_day_data_source.dart';
+import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -68,9 +69,11 @@ void main() {
         Hive.registerAdapter(TrackedDayDBOAdapter());
       }
       box = await Hive.openBox<TrackedDayDBO>('tracked_day_test');
+      final hive = HiveDBProvider();
+      hive.trackedDayBox = box;
 
       // Initialize repository with the Hive box
-      repo = TrackedDayRepository(TrackedDayDataSource(box));
+      repo = TrackedDayRepository(TrackedDayDataSource(hive));
 
       // Setup mock Supabase client using mock-supabase-http-client
       mockHttpClient = MockSupabaseHttpClient();

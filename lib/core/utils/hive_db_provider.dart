@@ -103,7 +103,7 @@ class HiveDBProvider extends ChangeNotifier {
       }
 
       // Helpers pour log la réouverture
-      Future<Box<T>> _open<T>(String baseName) async {
+      Future<Box<T>> openBox<T>(String baseName) async {
         final name = _boxName(baseName);
         _log.fine('🚪 Opening box $name …');
         final box =
@@ -112,15 +112,15 @@ class HiveDBProvider extends ChangeNotifier {
         return box;
       }
 
-      configBox = await _open(configBoxName);
-      intakeBox = await _open(intakeBoxName);
-      recipeBox = await _open(recipeBoxName);
-      userActivityBox = await _open(userActivityBoxName);
-      userBox = await _open(userBoxName);
-      trackedDayBox = await _open(trackedDayBoxName);
+      configBox = await openBox(configBoxName);
+      intakeBox = await openBox(intakeBoxName);
+      recipeBox = await openBox(recipeBoxName);
+      userActivityBox = await openBox(userActivityBoxName);
+      userBox = await openBox(userBoxName);
+      trackedDayBox = await openBox(trackedDayBoxName);
       trackedDayWatcher = TrackedDayChangeIsolate(trackedDayBox);
       await trackedDayWatcher.start();
-      userWeightBox = await _open(userWeightBoxName);
+      userWeightBox = await openBox(userWeightBoxName);
       _log.info('✅ Hive initialised for user=$_userId');
     } catch (e, s) {
       // Log the error for debugging. You'll need to add a logger to the class.

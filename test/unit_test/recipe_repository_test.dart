@@ -8,6 +8,7 @@ import 'package:opennutritracker/core/data/dbo/meal_nutriments_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/meal_or_recipe_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/recipe_dbo.dart';
 import 'package:opennutritracker/core/data/repository/recipe_repository.dart';
+import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/add_recipe_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/delete_recipe_usecase.dart';
@@ -36,8 +37,9 @@ void main() {
       Hive.registerAdapter(MealOrRecipeDBOAdapter());
 
       box = await Hive.openBox<RecipesDBO>('recipes_test');
-
-      final dataSource = RecipesDataSource(box);
+      final hive = HiveDBProvider();
+      hive.recipeBox = box;
+      final dataSource = RecipesDataSource(hive);
       final repo = RecipeRepository(dataSource);
       final addRecipeUsecase = AddRecipeUsecase(repo);
       final deleteRecipeUsecase = DeleteRecipeUsecase(repo);
@@ -99,7 +101,9 @@ void main() {
       Hive.init(tempDir.path);
 
       box = await Hive.openBox<RecipesDBO>('recipes_test');
-      final dataSource = RecipesDataSource(box);
+      final hive = HiveDBProvider();
+      hive.recipeBox = box;
+      final dataSource = RecipesDataSource(hive);
       final repo = RecipeRepository(dataSource);
       locator.registerSingleton<AddRecipeUsecase>(AddRecipeUsecase(repo));
       locator.registerSingleton<DeleteRecipeUsecase>(DeleteRecipeUsecase(repo));

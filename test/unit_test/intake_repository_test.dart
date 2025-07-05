@@ -9,6 +9,7 @@ import 'package:opennutritracker/core/data/dbo/meal_or_recipe_dbo.dart';
 import 'package:opennutritracker/core/data/repository/intake_repository.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
+import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 
 import '../fixture/meal_entity_fixtures.dart';
 
@@ -34,7 +35,9 @@ void main() {
     test('returns last added first', () async {
       final box = await Hive.openBox<IntakeDBO>('intake_test');
 
-      final repo = IntakeRepository(IntakeDataSource(box));
+      final hive = HiveDBProvider();
+      hive.intakeBox = box;
+      final repo = IntakeRepository(IntakeDataSource(hive));
 
 
       await repo.addIntake(IntakeEntity(
