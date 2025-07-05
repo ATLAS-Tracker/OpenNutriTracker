@@ -87,6 +87,8 @@ Future<void> initLocator() async {
     Supabase.instance.client.auth.currentUser?.id,
   );
 
+  locator.registerSingleton<HiveDBProvider>(hiveDBProvider);
+
   // Cache manager
   locator
       .registerLazySingleton<CacheManager>(() => OntImageCacheManager.instance);
@@ -115,8 +117,8 @@ Future<void> initLocator() async {
       () => ProfileBloc(locator(), locator(), locator(), locator(), locator()));
   locator.registerLazySingleton(() =>
       SettingsBloc(locator(), locator(), locator(), locator(), locator()));
-  locator.registerFactory(() =>
-      ExportImportBloc(locator(), locator(), locator()));
+  locator
+      .registerFactory(() => ExportImportBloc(locator(), locator(), locator()));
   locator
       .registerLazySingleton<CreateMealBloc>(() => CreateMealBloc(locator()));
 
@@ -184,9 +186,8 @@ Future<void> initLocator() async {
       () => ExportDataUsecase(locator(), locator(), locator(), locator()));
   locator.registerLazySingleton(
       () => ImportDataUsecase(locator(), locator(), locator(), locator()));
-  locator.registerLazySingleton(
-      () => ExportDataSupabaseUsecase(
-          locator(), locator(), locator(), locator(), locator()));
+  locator.registerLazySingleton(() => ExportDataSupabaseUsecase(
+      locator(), locator(), locator(), locator(), locator()));
   locator.registerLazySingleton<AddWeightUsecase>(
       () => AddWeightUsecase(locator()));
   locator.registerLazySingleton<GetWeightUsecase>(() => GetWeightUsecase());
