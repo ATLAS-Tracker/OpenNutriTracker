@@ -15,9 +15,6 @@ import 'package:opennutritracker/features/profile/presentation/widgets/set_heigh
 import 'package:opennutritracker/features/profile/presentation/widgets/set_pal_category_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_weight_dialog.dart';
 import 'package:opennutritracker/generated/l10n.dart';
-import 'package:logging/logging.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/features/auth/auth_safe_sign_out.dart';
 
 class ProfilePage extends StatefulWidget {
