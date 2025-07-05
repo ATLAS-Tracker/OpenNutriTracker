@@ -182,11 +182,12 @@ Future<void> initLocator() async {
       () => GetKcalGoalUsecase(locator(), locator(), locator()));
   locator.registerLazySingleton(() => GetMacroGoalUsecase(locator()));
   locator.registerLazySingleton(
-      () => ExportDataUsecase(locator(), locator(), locator()));
+      () => ExportDataUsecase(locator(), locator(), locator(), locator()));
   locator.registerLazySingleton(
-      () => ImportDataUsecase(locator(), locator(), locator()));
+      () => ImportDataUsecase(locator(), locator(), locator(), locator()));
   locator.registerLazySingleton(
-      () => ExportDataSupabaseUsecase(locator(), locator(), locator(), locator()));
+      () => ExportDataSupabaseUsecase(
+          locator(), locator(), locator(), locator(), locator()));
   locator.registerLazySingleton<AddWeightUsecase>(
       () => AddWeightUsecase(locator()));
   locator.registerLazySingleton<GetWeightUsecase>(() => GetWeightUsecase());
