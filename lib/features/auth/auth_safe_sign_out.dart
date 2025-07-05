@@ -42,8 +42,12 @@ Future<void> safeSignOut(BuildContext context) async {
     _log.severe('Erreur pendant export', err, stack);
   } finally {
     // ▸ 1. Déconnexion Supabase
-    _log.fine('Appel supabase.auth.signOut()');
-    await supabase.auth.signOut();
+    try {
+      _log.fine('Appel supabase.auth.signOut()');
+      await supabase.auth.signOut();
+    } catch (err, stack) {
+      _log.warning('Erreur pendant signOut', err, stack);
+    }
 
     // ▸ 2. Ferme le loader
     if (context.mounted) {
