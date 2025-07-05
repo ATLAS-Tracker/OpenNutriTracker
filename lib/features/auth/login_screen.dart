@@ -8,6 +8,8 @@ import 'package:opennutritracker/features/auth/validate_password.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'forgot_password_screen.dart';
 import 'reset_password_screen.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
+import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,8 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   /// Display an error message and log it.
   void _showError(Object error) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('$error')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$error')));
     Logger('LoginScreen').warning('Auth error', error);
   }
 
@@ -47,9 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
       try {
         await supabase.auth.getSessionFromUrl(uri);
         if (!mounted) return;
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const ResetPasswordScreen()),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const ResetPasswordScreen()));
       } catch (e) {
         debugPrint('Deep‑link error: $e');
       }
@@ -75,6 +78,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (res.session != null && mounted) {
+        final hive = locator<HiveDBProvider>();
+        await hive.initForUser(res.user?.id);
+        await registerUserScope(hive);
         _navigateHome();
       }
     } on AuthException catch (e) {
@@ -108,63 +114,71 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            TextFormField(
-              controller: _emailCtrl,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.email_outlined),
-                labelText: S.of(context).loginEmailLabel,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _emailCtrl,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.email_outlined),
+                  labelText: S.of(context).loginEmailLabel,
+                ),
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? S.of(context).loginEmailRequired
+                    : (EmailValidator.validate(v.trim())
+                        ? null
+                        : S.of(context).loginEmailInvalid),
               ),
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? S.of(context).loginEmailRequired
-                  : (EmailValidator.validate(v.trim())
-                      ? null
-                      : S.of(context).loginEmailInvalid),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _passwordCtrl,
-              obscureText: _obscurePassword,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.lock_outline),
-                labelText: S.of(context).loginPasswordLabel,
-                suffixIcon: IconButton(
-                  icon: Icon(_obscurePassword
-                      ? Icons.visibility_off
-                      : Icons.visibility),
-                  onPressed: () =>
-                      setState(() => _obscurePassword = !_obscurePassword),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordCtrl,
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  labelText: S.of(context).loginPasswordLabel,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
+                validator: (value) => validatePassword(context, value),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onPrimaryContainer,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer,
+                  ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                  onPressed: _loading ? null : _submit,
+                  child: _loading
+                      ? const CircularProgressIndicator()
+                      : Text(S.of(context).loginButton),
                 ),
               ),
-              validator: (value) => validatePassword(context, value),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor:
-                      Theme.of(context).colorScheme.onPrimaryContainer,
-                  backgroundColor:
-                      Theme.of(context).colorScheme.primaryContainer,
-                ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
-                onPressed: _loading ? null : _submit,
-                child: _loading
-                    ? const CircularProgressIndicator()
-                    : Text(S.of(context).loginButton),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ForgotPasswordScreen(),
+                  ),
+                ),
+                child: Text(S.of(context).loginForgotPassword),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
-              ),
-              child: Text(S.of(context).loginForgotPassword),
-            ),
-          ]),
+            ],
+          ),
         ),
       ),
     );
