@@ -34,4 +34,15 @@ class UserWeightDataSource {
     }
     return null;
   }
+
+  Future<List<UserWeightDbo>> getAllUserWeights() async {
+    return _userWeightBox.values.toList();
+  }
+
+  Future<void> addAllUserWeights(List<UserWeightDbo> userWeightDbos) async {
+    final Map<String, UserWeightDbo> mapped = {
+      for (var dbo in userWeightDbos) _normaliseDateToKey(dbo.date): dbo
+    };
+    await _userWeightBox.putAll(mapped);
+  }
 }

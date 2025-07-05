@@ -32,6 +32,7 @@ Future<void> safeSignOut(BuildContext context) async {
         ExportImportBloc.userActivityJsonFileName,
         ExportImportBloc.userIntakeJsonFileName,
         ExportImportBloc.trackedDayJsonFileName,
+        ExportImportBloc.userWeightJsonFileName,
       );
       _log.log(ok ? Level.FINE : Level.WARNING,
           ok ? 'Export réussi' : 'Export échoué – on continue quand même');
