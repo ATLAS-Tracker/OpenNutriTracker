@@ -156,9 +156,25 @@ class MessageLookup extends MessageLookupByLibrary {
             "Daten Exportieren / Importieren"),
         "exportImportSuccessLabel":
             MessageLookupByLibrary.simpleMessage("Export / Import erfolgreich"),
+        "exportSupabaseDescription": MessageLookupByLibrary.simpleMessage(
+            "Sichere deine Daten als Zip-Datei im Supabase-Speicher."),
+        "exportSupabaseLabel":
+            MessageLookupByLibrary.simpleMessage("Zu Supabase exportieren"),
         "fatLabel": MessageLookupByLibrary.simpleMessage("Fett"),
         "fiberLabel": MessageLookupByLibrary.simpleMessage("Ballaststoffe"),
         "flOzUnit": MessageLookupByLibrary.simpleMessage("fl.oz"),
+        "forgotPasswordBackToLogin":
+            MessageLookupByLibrary.simpleMessage("Zurück zur Anmeldung"),
+        "forgotPasswordButton": MessageLookupByLibrary.simpleMessage(
+            "Passwort-Reset-E-Mail senden"),
+        "forgotPasswordEmailLabel":
+            MessageLookupByLibrary.simpleMessage("E-Mail eingeben"),
+        "forgotPasswordEmailSent": MessageLookupByLibrary.simpleMessage(
+            "E-Mail gesendet! Klicke auf den Link in deiner E-Mail, um ein neues Passwort zu wählen."),
+        "forgotPasswordSendError": MessageLookupByLibrary.simpleMessage(
+            "Fehler beim Senden der E-Mail:"),
+        "forgotPasswordTitle":
+            MessageLookupByLibrary.simpleMessage("Passwort vergessen?"),
         "genderFemaleLabel": MessageLookupByLibrary.simpleMessage("♀ weiblich"),
         "genderLabel": MessageLookupByLibrary.simpleMessage("Geschlecht"),
         "genderMaleLabel": MessageLookupByLibrary.simpleMessage("♂ männlich"),
@@ -185,6 +201,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "kcalLabel": MessageLookupByLibrary.simpleMessage("kcal"),
         "kcalLeftLabel": MessageLookupByLibrary.simpleMessage("kcal übrig"),
         "kgLabel": MessageLookupByLibrary.simpleMessage("kg"),
+        "loginAlreadySignedIn": MessageLookupByLibrary.simpleMessage(
+            "Bereits auf einem anderen Gerät angemeldet. Bitte zuerst abmelden."),
+        "loginButton": MessageLookupByLibrary.simpleMessage("Anmelden"),
+        "loginEmailInvalid":
+            MessageLookupByLibrary.simpleMessage("Ungültige E-Mail-Adresse"),
+        "loginEmailLabel": MessageLookupByLibrary.simpleMessage("E-Mail"),
+        "loginEmailRequired":
+            MessageLookupByLibrary.simpleMessage("E-Mail erforderlich"),
+        "loginError": MessageLookupByLibrary.simpleMessage("Anmeldefehler"),
+        "loginForgotPassword":
+            MessageLookupByLibrary.simpleMessage("Passwort vergessen?"),
+        "loginPasswordLabel": MessageLookupByLibrary.simpleMessage("Passwort"),
+        "loginTitle": MessageLookupByLibrary.simpleMessage("Anmelden"),
+        "loginUnknownError":
+            MessageLookupByLibrary.simpleMessage("Unbekannter Fehler"),
         "lunchExample": MessageLookupByLibrary.simpleMessage(
             "z. B. Pizza, Salat, Reis ..."),
         "lunchLabel": MessageLookupByLibrary.simpleMessage("Mittagessen"),
@@ -616,6 +647,18 @@ class MessageLookup extends MessageLookupByLibrary {
             "Überwiegend Gehen, Laufen oder Gewichte tragen bei der Arbeit und aktive Freizeitaktivitäten"),
         "palVeryActiveLabel":
             MessageLookupByLibrary.simpleMessage("Sehr aktiv"),
+        "passwordDigit":
+            MessageLookupByLibrary.simpleMessage("Mindestens 1 Ziffer"),
+        "passwordLowercase":
+            MessageLookupByLibrary.simpleMessage("Mindestens 1 Kleinbuchstabe"),
+        "passwordMinLength":
+            MessageLookupByLibrary.simpleMessage("Mindestens 8 Zeichen"),
+        "passwordRequired":
+            MessageLookupByLibrary.simpleMessage("Passwort erforderlich"),
+        "passwordSpecialChar":
+            MessageLookupByLibrary.simpleMessage("Mindestens 1 Sonderzeichen"),
+        "passwordUppercase":
+            MessageLookupByLibrary.simpleMessage("Mindestens 1 Großbuchstabe"),
         "per100gmlLabel": MessageLookupByLibrary.simpleMessage("Pro 100 g/ml"),
         "perServingLabel": MessageLookupByLibrary.simpleMessage("Pro Portion"),
         "portionEatLabel":
@@ -631,6 +674,20 @@ class MessageLookup extends MessageLookupByLibrary {
         "recipeLabel": MessageLookupByLibrary.simpleMessage("Rezept"),
         "reportErrorDialogText": MessageLookupByLibrary.simpleMessage(
             "Möchten Sie einen Fehler an den Entwickler melden?"),
+        "resetPasswordButton":
+            MessageLookupByLibrary.simpleMessage("Passwort ändern"),
+        "resetPasswordChanged": MessageLookupByLibrary.simpleMessage(
+            "Passwort geändert! Du kannst dich jetzt mit deinem neuen Passwort anmelden."),
+        "resetPasswordConfirmLabel":
+            MessageLookupByLibrary.simpleMessage("Passwort bestätigen"),
+        "resetPasswordNewLabel":
+            MessageLookupByLibrary.simpleMessage("Neues Passwort"),
+        "resetPasswordNoMatch": MessageLookupByLibrary.simpleMessage(
+            "Passwörter stimmen nicht überein"),
+        "resetPasswordTips": MessageLookupByLibrary.simpleMessage(
+            "• Mindestens 8 Zeichen\n• Zahlen & Sonderzeichen mischen\n• Groß- und Kleinbuchstaben"),
+        "resetPasswordTitle":
+            MessageLookupByLibrary.simpleMessage("Neues Passwort"),
         "retryLabel": MessageLookupByLibrary.simpleMessage("Erneut versuchen"),
         "saturatedFatLabel":
             MessageLookupByLibrary.simpleMessage("gesättigtes Fett"),

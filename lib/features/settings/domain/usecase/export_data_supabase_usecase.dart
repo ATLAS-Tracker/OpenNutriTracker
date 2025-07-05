@@ -2,29 +2,33 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:opennutritracker/core/data/repository/intake_repository.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:logging/logging.dart';
 
-class ExportDataUsecase {
+/// Exports user data to a zip file and uploads it to Supabase storage.
+class ExportDataSupabaseUsecase {
   final UserActivityRepository _userActivityRepository;
   final IntakeRepository _intakeRepository;
   final TrackedDayRepository _trackedDayRepository;
   final UserWeightRepository _userWeightRepository;
+  final SupabaseClient _client;
+  final _log = Logger('ExportServiceZipSupabaseUsecase');
 
-  ExportDataUsecase(this._userActivityRepository, this._intakeRepository,
-      this._trackedDayRepository, this._userWeightRepository);
+  ExportDataSupabaseUsecase(this._userActivityRepository,
+      this._intakeRepository, this._trackedDayRepository, this._userWeightRepository, this._client);
 
-  /// Exports user activity, intake, and tracked day data to a zip of json
-  /// files at a user specified location.
+  /// Creates a zipped backup and uploads it to Supabase storage.
   Future<bool> exportData(
-      String exportZipFileName,
-      String userActivityJsonFileName,
-      String userIntakeJsonFileName,
-      String trackedDayJsonFileName,
-      String userWeightJsonFileName) async {
+    String exportZipFileName,
+    String userActivityJsonFileName,
+    String userIntakeJsonFileName,
+    String trackedDayJsonFileName,
+    String userWeightJsonFileName,
+  ) async {
     // Export user activity data to Json File Bytes
     final fullUserActivity =
         await _userActivityRepository.getAllUserActivityDBO();
@@ -51,33 +55,29 @@ class ExportDataUsecase {
     final userWeightJsonBytes = utf8.encode(fullUserWeightJson);
 
     // Create a zip file with the exported data
-    final archive = Archive();
-    archive.addFile(
-      ArchiveFile(userActivityJsonFileName, userActivityJsonBytes.length,
-          userActivityJsonBytes),
-    );
-    archive.addFile(
-      ArchiveFile(
-          userIntakeJsonFileName, intakeJsonBytes.length, intakeJsonBytes),
-    );
-    archive.addFile(
-      ArchiveFile(trackedDayJsonFileName, trackedDayJsonBytes.length,
-          trackedDayJsonBytes),
-    );
-    archive.addFile(
-      ArchiveFile(userWeightJsonFileName, userWeightJsonBytes.length,
-          userWeightJsonBytes),
-    );
+    final archive = Archive()
+      ..addFile(ArchiveFile(userActivityJsonFileName,
+          userActivityJsonBytes.length, userActivityJsonBytes))
+      ..addFile(ArchiveFile(
+          userIntakeJsonFileName, intakeJsonBytes.length, intakeJsonBytes))
+      ..addFile(ArchiveFile(trackedDayJsonFileName, trackedDayJsonBytes.length,
+          trackedDayJsonBytes))
+      ..addFile(ArchiveFile(userWeightJsonFileName, userWeightJsonBytes.length,
+          userWeightJsonBytes));
 
-    // Save the zip file to the user specified location
     final zipBytes = ZipEncoder().encode(archive);
-    final result = await FilePicker.platform.saveFile(
-      fileName: exportZipFileName,
-      type: FileType.custom,
-      allowedExtensions: ['zip'],
-      bytes: Uint8List.fromList(zipBytes),
-    );
 
-    return result != null && result.isNotEmpty;
+    final userId = _client.auth.currentUser?.id ?? 'unknown';
+    final filePath = '$userId/$exportZipFileName';
+    try {
+      await _client.storage.from('exports').uploadBinary(
+          filePath, Uint8List.fromList(zipBytes),
+          fileOptions:
+              const FileOptions(contentType: 'application/zip', upsert: true));
+      return true;
+    } catch (e, stack) {
+      _log.severe('Upload FAILED for “$filePath”.', e, stack);
+      return false;
+    }
   }
 }

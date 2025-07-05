@@ -68,6 +68,7 @@ import 'package:opennutritracker/features/scanner/domain/usecase/search_product_
 import 'package:opennutritracker/features/scanner/presentation/scanner_bloc.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/export_data_usecase.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/import_data_usecase.dart';
+import 'package:opennutritracker/features/settings/domain/usecase/export_data_supabase_usecase.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -75,16 +76,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final locator = GetIt.instance;
 
 Future<void> initLocator() async {
+  // Backend
+  await Supabase.initialize(
+      url: Env.supabaseProjectUrl, anonKey: Env.supabaseProjectAnonKey);
+
+  locator.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
+
   // Init secure storage and Hive database;
   final secureAppStorageProvider = SecureAppStorageProvider();
   final hiveDBProvider = HiveDBProvider();
   await hiveDBProvider
       .initHiveDB(await secureAppStorageProvider.getHiveEncryptionKey());
-
-  // Backend
-  await Supabase.initialize(
-      url: Env.supabaseProjectUrl, anonKey: Env.supabaseProjectAnonKey);
-  locator.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
 
   // Cache manager
   locator
@@ -114,7 +116,8 @@ Future<void> initLocator() async {
       () => ProfileBloc(locator(), locator(), locator(), locator(), locator()));
   locator.registerLazySingleton(() =>
       SettingsBloc(locator(), locator(), locator(), locator(), locator()));
-  locator.registerFactory(() => ExportImportBloc(locator(), locator()));
+  locator.registerFactory(() =>
+      ExportImportBloc(locator(), locator(), locator()));
   locator
       .registerLazySingleton<CreateMealBloc>(() => CreateMealBloc(locator()));
 
@@ -179,9 +182,12 @@ Future<void> initLocator() async {
       () => GetKcalGoalUsecase(locator(), locator(), locator()));
   locator.registerLazySingleton(() => GetMacroGoalUsecase(locator()));
   locator.registerLazySingleton(
-      () => ExportDataUsecase(locator(), locator(), locator()));
+      () => ExportDataUsecase(locator(), locator(), locator(), locator()));
   locator.registerLazySingleton(
-      () => ImportDataUsecase(locator(), locator(), locator()));
+      () => ImportDataUsecase(locator(), locator(), locator(), locator()));
+  locator.registerLazySingleton(
+      () => ExportDataSupabaseUsecase(
+          locator(), locator(), locator(), locator(), locator()));
   locator.registerLazySingleton<AddWeightUsecase>(
       () => AddWeightUsecase(locator()));
   locator.registerLazySingleton<GetWeightUsecase>(() => GetWeightUsecase());

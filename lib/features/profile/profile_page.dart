@@ -15,6 +15,7 @@ import 'package:opennutritracker/features/profile/presentation/widgets/set_heigh
 import 'package:opennutritracker/features/profile/presentation/widgets/set_pal_category_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_weight_dialog.dart';
 import 'package:opennutritracker/generated/l10n.dart';
+import 'package:opennutritracker/features/auth/auth_safe_sign_out.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -165,6 +166,14 @@ class _ProfilePageState extends State<ProfilePage> {
           onTap: () {
             _showSetGenderDialog(context, user);
           },
+        ),
+        ListTile(
+          leading: const SizedBox(
+            height: double.infinity,
+            child: Icon(Icons.logout),
+          ),
+          title: const Text('Log out'),
+          onTap: () => safeSignOut(context),
         ),
       ],
     );
