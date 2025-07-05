@@ -20,8 +20,13 @@ class UserActivityDBO extends HiveObject {
   @HiveField(4)
   final PhysicalActivityDBO physicalActivityDBO;
 
+  @HiveField(5)
+  final DateTime updatedAt;
+
   UserActivityDBO(this.id, this.duration, this.burnedKcal, this.date,
-      this.physicalActivityDBO);
+      this.physicalActivityDBO,
+      {DateTime? updatedAt})
+      : updatedAt = updatedAt ?? DateTime.now();
 
   factory UserActivityDBO.fromUserActivityEntity(
       UserActivityEntity userActivityEntity) {
@@ -31,7 +36,8 @@ class UserActivityDBO extends HiveObject {
         userActivityEntity.burnedKcal,
         userActivityEntity.date,
         PhysicalActivityDBO.fromPhysicalActivityEntity(
-            userActivityEntity.physicalActivityEntity));
+            userActivityEntity.physicalActivityEntity),
+        updatedAt: DateTime.now());
   }
 
   factory UserActivityDBO.fromJson(Map<String, dynamic> json) =>

@@ -29,6 +29,9 @@ class TrackedDayDBO extends HiveObject {
   @HiveField(8)
   double? proteinTracked;
 
+  @HiveField(9)
+  DateTime updatedAt;
+
   TrackedDayDBO(
       {required this.day,
       required this.calorieGoal,
@@ -38,7 +41,9 @@ class TrackedDayDBO extends HiveObject {
       this.fatGoal,
       this.fatTracked,
       this.proteinGoal,
-      this.proteinTracked});
+      this.proteinTracked,
+      DateTime? updatedAt})
+      : updatedAt = updatedAt ?? DateTime.now();
 
   factory TrackedDayDBO.fromTrackedDayEntity(TrackedDayEntity entity) {
     return TrackedDayDBO(
@@ -50,7 +55,8 @@ class TrackedDayDBO extends HiveObject {
         fatGoal: entity.fatGoal,
         fatTracked: entity.fatTracked,
         proteinGoal: entity.proteinGoal,
-        proteinTracked: entity.proteinTracked);
+        proteinTracked: entity.proteinTracked,
+        updatedAt: DateTime.now());
   }
 
   factory TrackedDayDBO.fromJson(Map<String, dynamic> json) =>

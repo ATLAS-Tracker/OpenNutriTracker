@@ -63,4 +63,36 @@ class ConfigRepository {
     _configDataSource.setConfigProteinGoalPct(protein);
     _configDataSource.setConfigFatGoalPct(fat);
   }
+
+  Future<void> setUserActivityLastUpdate(DateTime date) async {
+    _configDataSource.setUserActivityLastUpdate(date);
+  }
+
+  Future<DateTime?> getUserActivityLastUpdate() async {
+    return _configDataSource.getUserActivityLastUpdate();
+  }
+
+  Future<void> setUserIntakeLastUpdate(DateTime date) async {
+    _configDataSource.setUserIntakeLastUpdate(date);
+  }
+
+  Future<DateTime?> getUserIntakeLastUpdate() async {
+    return _configDataSource.getUserIntakeLastUpdate();
+  }
+
+  Future<void> setTrackedDayLastUpdate(DateTime date) async {
+    _configDataSource.setTrackedDayLastUpdate(date);
+  }
+
+  Future<DateTime?> getTrackedDayLastUpdate() async {
+    return _configDataSource.getTrackedDayLastUpdate();
+  }
+
+  Future<void> setUserWeightLastUpdate(DateTime date) async {
+    _configDataSource.setUserWeightLastUpdate(date);
+  }
+
+  Future<DateTime?> getUserWeightLastUpdate() async {
+    return _configDataSource.getUserWeightLastUpdate();
+  }
 }

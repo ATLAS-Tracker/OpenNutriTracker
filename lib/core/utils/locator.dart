@@ -155,13 +155,13 @@ Future<void> initLocator() async {
   locator.registerLazySingleton<GetIntakeUsecase>(
       () => GetIntakeUsecase(locator()));
   locator.registerLazySingleton<AddIntakeUsecase>(
-      () => AddIntakeUsecase(locator()));
+      () => AddIntakeUsecase(locator(), locator()));
   locator.registerLazySingleton<DeleteIntakeUsecase>(
-      () => DeleteIntakeUsecase(locator()));
+      () => DeleteIntakeUsecase(locator(), locator()));
   locator.registerLazySingleton<DeleteRecipeUsecase>(
       () => DeleteRecipeUsecase(locator()));
   locator.registerLazySingleton<UpdateIntakeUsecase>(
-      () => UpdateIntakeUsecase(locator()));
+      () => UpdateIntakeUsecase(locator(), locator()));
   locator.registerLazySingleton<AddRecipeUsecase>(
       () => AddRecipeUsecase(locator()));
   locator.registerLazySingleton<GetRecipeUsecase>(
@@ -169,15 +169,15 @@ Future<void> initLocator() async {
   locator.registerLazySingleton<GetUserActivityUsecase>(
       () => GetUserActivityUsecase(locator()));
   locator.registerLazySingleton<AddUserActivityUsecase>(
-      () => AddUserActivityUsecase(locator()));
+      () => AddUserActivityUsecase(locator(), locator()));
   locator.registerLazySingleton<DeleteUserActivityUsecase>(
-      () => DeleteUserActivityUsecase(locator()));
+      () => DeleteUserActivityUsecase(locator(), locator()));
   locator.registerLazySingleton<GetPhysicalActivityUsecase>(
       () => GetPhysicalActivityUsecase(locator()));
   locator.registerLazySingleton<GetTrackedDayUsecase>(
       () => GetTrackedDayUsecase(locator()));
   locator.registerLazySingleton<AddTrackedDayUsecase>(
-      () => AddTrackedDayUsecase(locator()));
+      () => AddTrackedDayUsecase(locator(), locator()));
   locator.registerLazySingleton(
       () => GetKcalGoalUsecase(locator(), locator(), locator()));
   locator.registerLazySingleton(() => GetMacroGoalUsecase(locator()));
@@ -189,10 +189,10 @@ Future<void> initLocator() async {
       () => ExportDataSupabaseUsecase(
           locator(), locator(), locator(), locator(), locator()));
   locator.registerLazySingleton<AddWeightUsecase>(
-      () => AddWeightUsecase(locator()));
+      () => AddWeightUsecase(locator(), locator()));
   locator.registerLazySingleton<GetWeightUsecase>(() => GetWeightUsecase());
   locator.registerLazySingleton<DeleteUserWeightUsecase>(
-      () => DeleteUserWeightUsecase(locator()));
+      () => DeleteUserWeightUsecase(locator(), locator()));
 
   // Repositories
   locator.registerLazySingleton(() => ConfigRepository(locator()));

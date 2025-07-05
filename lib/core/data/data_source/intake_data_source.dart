@@ -44,6 +44,7 @@ class IntakeDataSource {
       return null;
     }
     intakeObject.$2.amount = fields['amount'] ?? intakeObject.$2.amount;
+    intakeObject.$2.updatedAt = DateTime.now();
     _intakeBox.putAt(intakeObject.$1, intakeObject.$2);
     return _intakeBox.getAt(intakeObject.$1);
   }
