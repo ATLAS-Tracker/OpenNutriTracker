@@ -214,25 +214,24 @@ Future<void> initLocator() async {
       () => UserWeightRepository(locator()));
 
   // DataSources
-  locator
-      .registerLazySingleton(() => ConfigDataSource(hiveDBProvider.configBox));
+  locator.registerLazySingleton(() => ConfigDataSource(locator()));
   locator.registerLazySingleton<UserDataSource>(
-      () => UserDataSource(hiveDBProvider.userBox));
+      () => UserDataSource(locator()));
   locator.registerLazySingleton<IntakeDataSource>(
-      () => IntakeDataSource(hiveDBProvider.intakeBox));
+      () => IntakeDataSource(locator()));
   locator.registerLazySingleton<RecipesDataSource>(
-      () => RecipesDataSource(hiveDBProvider.recipeBox));
+      () => RecipesDataSource(locator()));
   locator.registerLazySingleton<UserActivityDataSource>(
-      () => UserActivityDataSource(hiveDBProvider.userActivityBox));
+      () => UserActivityDataSource(locator()));
   locator.registerLazySingleton<PhysicalActivityDataSource>(
       () => PhysicalActivityDataSource());
   locator.registerLazySingleton<OFFDataSource>(() => OFFDataSource());
   locator.registerLazySingleton<FDCDataSource>(() => FDCDataSource());
   locator.registerLazySingleton<SpFdcDataSource>(() => SpFdcDataSource());
   locator.registerLazySingleton(
-      () => TrackedDayDataSource(hiveDBProvider.trackedDayBox));
+      () => TrackedDayDataSource(locator()));
   locator.registerLazySingleton(
-      () => UserWeightDataSource(hiveDBProvider.userWeightBox));
+      () => UserWeightDataSource(locator()));
 
   await _initializeConfig(locator());
 }
