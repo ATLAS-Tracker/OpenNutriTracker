@@ -62,19 +62,24 @@ class ImportDataSupabaseUsecase {
       final userActivityDBOs =
           userActivityList.map((e) => UserActivityDBO.fromJson(e)).toList();
 
-      final existingActivities = await _userActivityRepository.getAllUserActivityDBO();
-      final activityMap = {
-        for (final a in existingActivities) a.id: a
-      };
+      final existingActivities =
+          await _userActivityRepository.getAllUserActivityDBO();
+      final activityMap = {for (final a in existingActivities) a.id: a};
+
+      final List<UserActivityDBO> activitiesToSave = [];
       for (final dbo in userActivityDBOs) {
         final current = activityMap[dbo.id];
         if (current == null) {
-          await _userActivityRepository.addAllUserActivityDBOs([dbo]);
+          activitiesToSave.add(dbo);
         } else if (dbo.updatedAt.isAfter(current.updatedAt)) {
           await _userActivityRepository.deleteUserActivity(
-              UserActivityEntity.fromUserActivityDBO(current));
-          await _userActivityRepository.addAllUserActivityDBOs([dbo]);
+            UserActivityEntity.fromUserActivityDBO(current),
+          );
+          activitiesToSave.add(dbo);
         }
+      }
+      if (activitiesToSave.isNotEmpty) {
+        await _userActivityRepository.addAllUserActivityDBOs(activitiesToSave);
       }
 
       // ----- INTAKES -----
@@ -89,15 +94,20 @@ class ImportDataSupabaseUsecase {
 
       final existingIntakes = await _intakeRepository.getAllIntakesDBO();
       final intakeMap = {for (final i in existingIntakes) i.id: i};
+
+      final List<IntakeDBO> intakesToSave = [];
       for (final dbo in intakeDBOs) {
         final current = intakeMap[dbo.id];
         if (current == null) {
-          await _intakeRepository.addAllIntakeDBOs([dbo]);
+          intakesToSave.add(dbo);
         } else if (dbo.updatedAt.isAfter(current.updatedAt)) {
-          await _intakeRepository.deleteIntake(
-              IntakeEntity.fromIntakeDBO(current));
-          await _intakeRepository.addAllIntakeDBOs([dbo]);
+          await _intakeRepository
+              .deleteIntake(IntakeEntity.fromIntakeDBO(current));
+          intakesToSave.add(dbo);
         }
+      }
+      if (intakesToSave.isNotEmpty) {
+        await _intakeRepository.addAllIntakeDBOs(intakesToSave);
       }
 
       // ----- TRACKED DAYS -----
@@ -145,16 +155,21 @@ class ImportDataSupabaseUsecase {
         for (final w in existingWeights)
           DateTime(w.date.year, w.date.month, w.date.day).toIso8601String(): w
       };
+
+      final List<UserWeightDbo> weightsToSave = [];
       for (final dbo in userWeightDBOs) {
         final key =
             DateTime(dbo.date.year, dbo.date.month, dbo.date.day).toIso8601String();
         final current = weightMap[key];
         if (current == null) {
-          await _userWeightRepository.addAllUserWeightDBOs([dbo]);
+          weightsToSave.add(dbo);
         } else if (dbo.updatedAt.isAfter(current.updatedAt)) {
           await _userWeightRepository.deleteUserWeightByDate(current.date);
-          await _userWeightRepository.addAllUserWeightDBOs([dbo]);
+          weightsToSave.add(dbo);
         }
+      }
+      if (weightsToSave.isNotEmpty) {
+        await _userWeightRepository.addAllUserWeightDBOs(weightsToSave);
       }
 
       return true;
