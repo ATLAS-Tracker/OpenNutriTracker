@@ -6,24 +6,29 @@ import 'package:file_picker/file_picker.dart';
 import 'package:opennutritracker/core/data/data_source/user_activity_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/intake_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/tracked_day_dbo.dart';
+import 'package:opennutritracker/core/data/data_source/user_weight_dbo.dart';
 import 'package:opennutritracker/core/data/repository/intake_repository.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
+import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
 
 class ImportDataUsecase {
   final UserActivityRepository _userActivityRepository;
   final IntakeRepository _intakeRepository;
   final TrackedDayRepository _trackedDayRepository;
+  final UserWeightRepository _userWeightRepository;
 
   ImportDataUsecase(this._userActivityRepository, this._intakeRepository,
-      this._trackedDayRepository);
+      this._trackedDayRepository, this._userWeightRepository);
 
   /// Imports user activity, intake, and tracked day data from a zip file
   /// containing JSON files.
   ///
   /// Returns true if import was successful, false otherwise.
   Future<bool> importData(String userActivityJsonFileName,
-      String userIntakeJsonFileName, String trackedDayJsonFileName) async {
+      String userIntakeJsonFileName,
+      String trackedDayJsonFileName,
+      String userWeightJsonFileName) async {
     // Allow user to pick a zip file
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
@@ -85,6 +90,22 @@ class ImportDataUsecase {
       await _trackedDayRepository.addAllTrackedDays(trackedDayDBOs);
     } else {
       throw Exception('Tracked day file not found in the archive');
+    }
+
+    // Extract and process user weight data
+    final userWeightFile = archive.findFile(userWeightJsonFileName);
+    if (userWeightFile != null) {
+      final userWeightJsonString =
+          utf8.decode(userWeightFile.content as List<int>);
+      final userWeightList = (jsonDecode(userWeightJsonString) as List)
+          .cast<Map<String, dynamic>>();
+
+      final userWeightDBOs =
+          userWeightList.map((json) => UserWeightDbo.fromJson(json)).toList();
+
+      await _userWeightRepository.addAllUserWeightDBOs(userWeightDBOs);
+    } else {
+      throw Exception('User weight file not found in the archive');
     }
 
     return true;
