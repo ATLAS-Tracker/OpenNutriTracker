@@ -190,6 +190,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "heightLabel": MessageLookupByLibrary.simpleMessage("Größe"),
         "homeLabel": MessageLookupByLibrary.simpleMessage("Startseite"),
         "importAction": MessageLookupByLibrary.simpleMessage("Importieren"),
+        "importSupabaseDescription": MessageLookupByLibrary.simpleMessage(
+            "Stelle deine Daten aus einem in Supabase gespeicherten Backup wieder her."),
+        "importSupabaseLabel":
+            MessageLookupByLibrary.simpleMessage("Von Supabase importieren"),
         "infoAddedActivityLabel":
             MessageLookupByLibrary.simpleMessage("Neue Aktivität hinzugefügt"),
         "infoAddedIntakeLabel":
