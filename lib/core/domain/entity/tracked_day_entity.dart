@@ -17,31 +17,32 @@ class TrackedDayEntity extends Equatable {
   final double? proteinTracked;
   final DateTime updatedAt;
 
-  TrackedDayEntity(
-      {required this.day,
-      required this.calorieGoal,
-      required this.caloriesTracked,
-      this.carbsGoal,
-      this.carbsTracked,
-      this.fatGoal,
-      this.fatTracked,
-      this.proteinGoal,
-      this.proteinTracked,
-      DateTime? updatedAt})
-      : updatedAt = updatedAt ?? DateTime.now();
+  TrackedDayEntity({
+    required this.day,
+    required this.calorieGoal,
+    required this.caloriesTracked,
+    this.carbsGoal,
+    this.carbsTracked,
+    this.fatGoal,
+    this.fatTracked,
+    this.proteinGoal,
+    this.proteinTracked,
+    DateTime? updatedAt,
+  }) : updatedAt = updatedAt ?? DateTime.now().toUtc();
 
   factory TrackedDayEntity.fromTrackedDayDBO(TrackedDayDBO trackedDayDBO) {
     return TrackedDayEntity(
-        day: trackedDayDBO.day,
-        calorieGoal: trackedDayDBO.calorieGoal,
-        caloriesTracked: trackedDayDBO.caloriesTracked,
-        carbsGoal: trackedDayDBO.carbsGoal,
-        carbsTracked: trackedDayDBO.carbsTracked,
-        fatGoal: trackedDayDBO.fatGoal,
-        fatTracked: trackedDayDBO.fatTracked,
-        proteinGoal: trackedDayDBO.proteinGoal,
-        proteinTracked: trackedDayDBO.proteinTracked,
-        updatedAt: trackedDayDBO.updatedAt);
+      day: trackedDayDBO.day,
+      calorieGoal: trackedDayDBO.calorieGoal,
+      caloriesTracked: trackedDayDBO.caloriesTracked,
+      carbsGoal: trackedDayDBO.carbsGoal,
+      carbsTracked: trackedDayDBO.carbsTracked,
+      fatGoal: trackedDayDBO.fatGoal,
+      fatTracked: trackedDayDBO.fatTracked,
+      proteinGoal: trackedDayDBO.proteinGoal,
+      proteinTracked: trackedDayDBO.proteinTracked,
+      updatedAt: trackedDayDBO.updatedAt,
+    );
   }
 
   // TODO: make enum class for rating
@@ -69,8 +70,7 @@ class TrackedDayEntity extends Equatable {
     }
   }
 
-  bool _hasExceededMaxKcalDifferenceGoal(
-      double calorieGoal, caloriesTracked) {
+  bool _hasExceededMaxKcalDifferenceGoal(double calorieGoal, caloriesTracked) {
     double difference = calorieGoal - caloriesTracked;
 
     if (calorieGoal < caloriesTracked) {
@@ -82,15 +82,15 @@ class TrackedDayEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        day,
-        calorieGoal,
-        caloriesTracked,
-        carbsGoal,
-        carbsTracked,
-        fatGoal,
-        fatTracked,
-        proteinGoal,
-        proteinTracked,
-        updatedAt
-      ];
+    day,
+    calorieGoal,
+    caloriesTracked,
+    carbsGoal,
+    carbsTracked,
+    fatGoal,
+    fatTracked,
+    proteinGoal,
+    proteinTracked,
+    updatedAt,
+  ];
 }

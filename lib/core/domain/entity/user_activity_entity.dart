@@ -12,20 +12,26 @@ class UserActivityEntity extends Equatable {
 
   final PhysicalActivityEntity physicalActivityEntity;
 
-  UserActivityEntity(this.id, this.duration, this.burnedKcal, this.date,
-      this.physicalActivityEntity,
-      {DateTime? updatedAt})
-      : updatedAt = updatedAt ?? DateTime.now();
+  UserActivityEntity(
+    this.id,
+    this.duration,
+    this.burnedKcal,
+    this.date,
+    this.physicalActivityEntity, {
+    DateTime? updatedAt,
+  }) : updatedAt = updatedAt ?? DateTime.now().toUtc();
 
   factory UserActivityEntity.fromUserActivityDBO(UserActivityDBO activityDBO) {
     return UserActivityEntity(
-        activityDBO.id,
-        activityDBO.duration,
-        activityDBO.burnedKcal,
-        activityDBO.date,
-        PhysicalActivityEntity.fromPhysicalActivityDBO(
-            activityDBO.physicalActivityDBO),
-        updatedAt: activityDBO.updatedAt);
+      activityDBO.id,
+      activityDBO.duration,
+      activityDBO.burnedKcal,
+      activityDBO.date,
+      PhysicalActivityEntity.fromPhysicalActivityDBO(
+        activityDBO.physicalActivityDBO,
+      ),
+      updatedAt: activityDBO.updatedAt,
+    );
   }
 
   @override
