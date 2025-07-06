@@ -1,145 +1,111 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart';
+
 import 'package:opennutritracker/core/data/dbo/app_theme_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/config_dbo.dart';
 
 class ConfigDataSource {
-  static const _configKey = "ConfigKey";
+  static const String _configKey = 'ConfigKey';
 
-  final _log = Logger('ConfigDataSource');
+  final Logger _log = Logger('ConfigDataSource');
   final Box<ConfigDBO> _configBox;
 
   ConfigDataSource(this._configBox);
 
   Future<bool> configInitialized() async => _configBox.containsKey(_configKey);
-
   Future<void> initializeConfig() async =>
       _configBox.put(_configKey, ConfigDBO.empty());
 
   Future<void> addConfig(ConfigDBO configDBO) async {
     _log.fine('Adding new config item to db');
-    _configBox.put(_configKey, configDBO);
+    await _configBox.put(_configKey, configDBO);
   }
 
   Future<void> setConfigDisclaimer(bool hasAcceptedDisclaimer) async {
-    _log.fine(
-        'Updating config hasAcceptedDisclaimer to $hasAcceptedDisclaimer');
-    final config = _configBox.get(_configKey);
-    config?.hasAcceptedDisclaimer = hasAcceptedDisclaimer;
-    config?.save();
+    _log.fine('Updating config hasAcceptedDisclaimer → $hasAcceptedDisclaimer');
+    await _mutateConfig((c) => c.hasAcceptedDisclaimer = hasAcceptedDisclaimer);
   }
 
-  Future<void> setConfigAcceptedAnonymousData(
-      bool hasAcceptedAnonymousData) async {
-    _log.fine(
-        'Updating config hasAcceptedAnonymousData to $hasAcceptedAnonymousData');
-    final config = _configBox.get(_configKey);
-    config?.hasAcceptedSendAnonymousData = hasAcceptedAnonymousData;
-    config?.save();
+  Future<void> setConfigAcceptedAnonymousData(bool accepted) async {
+    _log.fine('Updating config hasAcceptedAnonymousData → $accepted');
+    await _mutateConfig((c) => c.hasAcceptedSendAnonymousData = accepted);
   }
 
   Future<AppThemeDBO> getAppTheme() async {
-    final config = _configBox.get(_configKey);
-    return config?.selectedAppTheme ?? AppThemeDBO.defaultTheme;
+    final cfg = _configBox.get(_configKey);
+    return cfg?.selectedAppTheme ?? AppThemeDBO.defaultTheme;
   }
 
-  Future<void> setConfigAppTheme(AppThemeDBO appTheme) async {
-    _log.fine('Updating config appTheme to $appTheme');
-    final config = _configBox.get(_configKey);
-    config?.selectedAppTheme = appTheme;
-    config?.save();
+  Future<void> setConfigAppTheme(AppThemeDBO theme) async {
+    _log.fine('Updating config selectedAppTheme → $theme');
+    await _mutateConfig((c) => c.selectedAppTheme = theme);
   }
 
   Future<void> setConfigUsesImperialUnits(bool usesImperialUnits) async {
-    _log.fine('Updating config usesImperialUnits to $usesImperialUnits');
-    final config = _configBox.get(_configKey);
-    config?.usesImperialUnits = usesImperialUnits;
-    config?.save();
+    _log.fine('Updating config usesImperialUnits → $usesImperialUnits');
+    await _mutateConfig((c) => c.usesImperialUnits = usesImperialUnits);
   }
 
   Future<double> getKcalAdjustment() async {
-    final config = _configBox.get(_configKey);
-    return config?.userKcalAdjustment ?? 0;
+    final cfg = _configBox.get(_configKey);
+    return cfg?.userKcalAdjustment ?? 0;
   }
 
-  Future<void> setConfigKcalAdjustment(double kcalAdjustment) async {
-    _log.fine('Updating config kcalAdjustment to $kcalAdjustment');
-    final config = _configBox.get(_configKey);
-    config?.userKcalAdjustment = kcalAdjustment;
-    config?.save();
+  Future<void> setConfigKcalAdjustment(double kcal) async {
+    _log.fine('Updating config kcalAdjustment → $kcal');
+    await _mutateConfig((c) => c.userKcalAdjustment = kcal);
   }
 
-  Future<void> setConfigCarbGoalPct(double carbGoalPct) async {
-    _log.fine('Updating config carbGoalPct to $carbGoalPct');
-    final config = _configBox.get(_configKey);
-    config?.userCarbGoalPct = carbGoalPct;
-    config?.save();
+  Future<void> setConfigCarbGoalPct(double pct) async {
+    _log.fine('Updating config carbGoalPct → $pct');
+    await _mutateConfig((c) => c.userCarbGoalPct = pct);
   }
 
-  Future<void> setConfigProteinGoalPct(double proteinGoalPct) async {
-    _log.fine('Updating config proteinGoalPct to $proteinGoalPct');
-    final config = _configBox.get(_configKey);
-    config?.userProteinGoalPct = proteinGoalPct;
-    config?.save();
+  Future<void> setConfigProteinGoalPct(double pct) async {
+    _log.fine('Updating config proteinGoalPct → $pct');
+    await _mutateConfig((c) => c.userProteinGoalPct = pct);
   }
 
-  Future<void> setConfigFatGoalPct(double fatGoalPct) async {
-    _log.fine('Updating config fatGoalPct to $fatGoalPct');
-    final config = _configBox.get(_configKey);
-    config?.userFatGoalPct = fatGoalPct;
-    config?.save();
+  Future<void> setConfigFatGoalPct(double pct) async {
+    _log.fine('Updating config fatGoalPct → $pct');
+    await _mutateConfig((c) => c.userFatGoalPct = pct);
   }
 
-  Future<ConfigDBO> getConfig() async {
-    return _configBox.get(_configKey) ?? ConfigDBO.empty();
-  }
+  Future<ConfigDBO> getConfig() async =>
+      _configBox.get(_configKey) ?? ConfigDBO.empty();
 
   Future<bool> getHasAcceptedAnonymousData() async {
-    final config = _configBox.get(_configKey);
-    return config?.hasAcceptedSendAnonymousData ?? false;
+    final cfg = _configBox.get(_configKey);
+    return cfg?.hasAcceptedSendAnonymousData ?? false;
   }
 
-  Future<void> setUserActivityLastUpdate(DateTime date) async {
-    final config = _configBox.get(_configKey);
-    config?.userActivityLastUpdate = date;
-    config?.save();
-  }
+  Future<void> setUserActivityLastUpdate(DateTime date) async =>
+      _updateDate((c) => c.userActivityLastUpdate = date);
+  Future<DateTime?> getUserActivityLastUpdate() async =>
+      _configBox.get(_configKey)?.userActivityLastUpdate;
 
-  Future<DateTime?> getUserActivityLastUpdate() async {
-    final config = _configBox.get(_configKey);
-    return config?.userActivityLastUpdate;
-  }
+  Future<void> setUserIntakeLastUpdate(DateTime date) async =>
+      _updateDate((c) => c.userIntakeLastUpdate = date);
+  Future<DateTime?> getUserIntakeLastUpdate() async =>
+      _configBox.get(_configKey)?.userIntakeLastUpdate;
 
-  Future<void> setUserIntakeLastUpdate(DateTime date) async {
-    final config = _configBox.get(_configKey);
-    config?.userIntakeLastUpdate = date;
-    config?.save();
-  }
+  Future<void> setTrackedDayLastUpdate(DateTime date) async =>
+      _updateDate((c) => c.trackedDayLastUpdate = date);
+  Future<DateTime?> getTrackedDayLastUpdate() async =>
+      _configBox.get(_configKey)?.trackedDayLastUpdate;
 
-  Future<DateTime?> getUserIntakeLastUpdate() async {
-    final config = _configBox.get(_configKey);
-    return config?.userIntakeLastUpdate;
-  }
+  Future<void> setUserWeightLastUpdate(DateTime date) async =>
+      _updateDate((c) => c.userWeightLastUpdate = date);
+  Future<DateTime?> getUserWeightLastUpdate() async =>
+      _configBox.get(_configKey)?.userWeightLastUpdate;
 
-  Future<void> setTrackedDayLastUpdate(DateTime date) async {
-    final config = _configBox.get(_configKey);
-    config?.trackedDayLastUpdate = date;
-    config?.save();
-  }
+  Future<void> _updateDate(void Function(ConfigDBO) fn) async =>
+      _mutateConfig(fn);
 
-  Future<DateTime?> getTrackedDayLastUpdate() async {
-    final config = _configBox.get(_configKey);
-    return config?.trackedDayLastUpdate;
-  }
-
-  Future<void> setUserWeightLastUpdate(DateTime date) async {
-    final config = _configBox.get(_configKey);
-    config?.userWeightLastUpdate = date;
-    config?.save();
-  }
-
-  Future<DateTime?> getUserWeightLastUpdate() async {
-    final config = _configBox.get(_configKey);
-    return config?.userWeightLastUpdate;
+  Future<void> _mutateConfig(void Function(ConfigDBO) mutate) async {
+    final cfg = _configBox.get(_configKey);
+    if (cfg == null) return;
+    mutate(cfg);
+    await cfg.save();
   }
 }
