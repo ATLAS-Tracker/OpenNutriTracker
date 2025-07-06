@@ -202,6 +202,7 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
   );
   locator.registerLazySingleton(() => GetMacroGoalUsecase(locator()));
   locator.registerLazySingleton(
+
     () => ExportDataUsecase(locator(), locator(), locator(), locator()),
   );
   locator.registerLazySingleton(
@@ -216,6 +217,7 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
       locator(),
     ),
   );
+
   locator.registerLazySingleton<AddWeightUsecase>(
     () => AddWeightUsecase(locator()),
   );
