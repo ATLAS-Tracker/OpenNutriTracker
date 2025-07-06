@@ -1,38 +1,38 @@
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:opennutritracker/core/data/dbo/tracked_day_dbo.dart';
 import 'package:opennutritracker/core/utils/extensions.dart';
+import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 
 class TrackedDayDataSource {
   final log = Logger('TrackedDayDataSource');
-  final Box<TrackedDayDBO> _trackedDayBox;
+  final HiveDBProvider _hive;
 
-  TrackedDayDataSource(this._trackedDayBox);
+  TrackedDayDataSource(this._hive);
 
   Future<void> saveTrackedDay(TrackedDayDBO trackedDayDBO) async {
     log.fine('Updating tracked day in db');
-    _trackedDayBox.put(trackedDayDBO.day.toParsedDay(), trackedDayDBO);
+    _hive.trackedDayBox.put(trackedDayDBO.day.toParsedDay(), trackedDayDBO);
   }
 
   Future<void> saveAllTrackedDays(List<TrackedDayDBO> trackedDayDBOList) async {
     log.fine('Updating tracked days in db');
-    _trackedDayBox.putAll({
+    _hive.trackedDayBox.putAll({
       for (var trackedDayDBO in trackedDayDBOList)
         trackedDayDBO.day.toParsedDay(): trackedDayDBO
     });
   }
 
   Future<List<TrackedDayDBO>> getAllTrackedDays() async {
-    return _trackedDayBox.values.toList();
+    return _hive.trackedDayBox.values.toList();
   }
 
   Future<TrackedDayDBO?> getTrackedDay(DateTime day) async {
-    return _trackedDayBox.get(day.toParsedDay());
+    return _hive.trackedDayBox.get(day.toParsedDay());
   }
 
   Future<List<TrackedDayDBO>> getTrackedDaysInRange(
       DateTime start, DateTime end) async {
-    List<TrackedDayDBO> trackedDays = _trackedDayBox.values
+    List<TrackedDayDBO> trackedDays = _hive.trackedDayBox.values
         .where((trackedDay) =>
             (trackedDay.day.isAfter(start) && trackedDay.day.isBefore(end)))
         .toList();
@@ -40,7 +40,7 @@ class TrackedDayDataSource {
   }
 
   Future<bool> hasTrackedDay(DateTime day) async =>
-      _trackedDayBox.get(day.toParsedDay()) != null;
+      _hive.trackedDayBox.get(day.toParsedDay()) != null;
 
   Future<void> updateDayCalorieGoal(DateTime day, double calorieGoal) async {
     log.fine('Updating tracked day total calories');
@@ -49,7 +49,7 @@ class TrackedDayDataSource {
     if (updateDay != null) {
       updateDay.calorieGoal = calorieGoal;
       updateDay.updatedAt = DateTime.now();
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -60,7 +60,7 @@ class TrackedDayDataSource {
     if (updateDay != null) {
       updateDay.calorieGoal += amount;
       updateDay.updatedAt = DateTime.now();
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -71,7 +71,7 @@ class TrackedDayDataSource {
     if (updateDay != null) {
       updateDay.calorieGoal -= amount;
       updateDay.updatedAt = DateTime.now();
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -82,7 +82,7 @@ class TrackedDayDataSource {
     if (updateDay != null) {
       updateDay.caloriesTracked += addCalories;
       updateDay.updatedAt = DateTime.now();
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -94,7 +94,7 @@ class TrackedDayDataSource {
     if (updateDay != null) {
       updateDay.caloriesTracked -= addCalories;
       updateDay.updatedAt = DateTime.now();
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -115,7 +115,7 @@ class TrackedDayDataSource {
         updateDay.proteinGoal = proteinGoal;
       }
       updateDay.updatedAt = DateTime.now();
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -135,7 +135,7 @@ class TrackedDayDataSource {
         updateDay.proteinGoal = (updateDay.proteinGoal ?? 0) + proteinAmount;
       }
       updateDay.updatedAt = DateTime.now();
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -155,7 +155,7 @@ class TrackedDayDataSource {
         updateDay.proteinGoal = (updateDay.proteinGoal ?? 0) - proteinAmount;
       }
       updateDay.updatedAt = DateTime.now();
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -176,7 +176,7 @@ class TrackedDayDataSource {
             (updateDay.proteinTracked ?? 0) + proteinAmount;
       }
       updateDay.updatedAt = DateTime.now();
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -197,7 +197,7 @@ class TrackedDayDataSource {
             (updateDay.proteinTracked ?? 0) - proteinAmount;
       }
       updateDay.updatedAt = DateTime.now();
-      updateDay.save();
+      await updateDay.save();
     }
   }
 }

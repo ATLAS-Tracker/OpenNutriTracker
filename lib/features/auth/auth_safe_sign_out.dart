@@ -7,6 +7,7 @@ import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/export_data_supabase_usecase.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
+import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 
 final _log = Logger('AuthSafeSignOut');
 
@@ -34,8 +35,10 @@ Future<void> safeSignOut(BuildContext context) async {
         ExportImportBloc.trackedDayJsonFileName,
         ExportImportBloc.userWeightJsonFileName,
       );
-      _log.log(ok ? Level.FINE : Level.WARNING,
-          ok ? 'Export réussi' : 'Export échoué – on continue quand même');
+      _log.log(
+        ok ? Level.FINE : Level.WARNING,
+        ok ? 'Export réussi' : 'Export échoué – on continue quand même',
+      );
     } else {
       _log.warning('safeSignOut appelé sans session active');
     }
@@ -50,10 +53,16 @@ Future<void> safeSignOut(BuildContext context) async {
       _log.warning('Erreur pendant signOut', err, stack);
     }
 
+    final hive = locator<HiveDBProvider>();
+    await hive.initForUser(null);
+    await registerUserScope(hive);
+
     // ▸ 2. Ferme le loader
     if (context.mounted) {
-      Navigator.of(context, rootNavigator: true)
-          .popUntil((route) => route.isFirst);
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).popUntil((route) => route.isFirst);
     }
 
     // ▸ 3. Redirige vers la page login
