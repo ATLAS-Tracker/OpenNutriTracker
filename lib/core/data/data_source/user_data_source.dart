@@ -14,7 +14,7 @@ class UserDataSource {
 
   Future<void> saveUserData(UserDBO userDBO) async {
     log.fine('Updating user in db');
-    _hive.userBox.put(_userKey, userDBO);
+    await _hive.userBox.put(_userKey, userDBO);
   }
 
   Future<bool> hasUserData() async => _hive.userBox.containsKey(_userKey);
