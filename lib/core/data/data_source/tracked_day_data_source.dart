@@ -48,7 +48,7 @@ class TrackedDayDataSource {
 
     if (updateDay != null) {
       updateDay.calorieGoal = calorieGoal;
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -58,7 +58,7 @@ class TrackedDayDataSource {
 
     if (updateDay != null) {
       updateDay.calorieGoal += amount;
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -68,7 +68,7 @@ class TrackedDayDataSource {
 
     if (updateDay != null) {
       updateDay.calorieGoal -= amount;
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -78,7 +78,7 @@ class TrackedDayDataSource {
 
     if (updateDay != null) {
       updateDay.caloriesTracked += addCalories;
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -89,7 +89,7 @@ class TrackedDayDataSource {
 
     if (updateDay != null) {
       updateDay.caloriesTracked -= addCalories;
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -109,7 +109,7 @@ class TrackedDayDataSource {
       if (proteinGoal != null) {
         updateDay.proteinGoal = proteinGoal;
       }
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -128,7 +128,7 @@ class TrackedDayDataSource {
       if (proteinAmount != null) {
         updateDay.proteinGoal = (updateDay.proteinGoal ?? 0) + proteinAmount;
       }
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -147,7 +147,7 @@ class TrackedDayDataSource {
       if (proteinAmount != null) {
         updateDay.proteinGoal = (updateDay.proteinGoal ?? 0) - proteinAmount;
       }
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -167,7 +167,7 @@ class TrackedDayDataSource {
         updateDay.proteinTracked =
             (updateDay.proteinTracked ?? 0) + proteinAmount;
       }
-      updateDay.save();
+      await updateDay.save();
     }
   }
 
@@ -187,7 +187,7 @@ class TrackedDayDataSource {
         updateDay.proteinTracked =
             (updateDay.proteinTracked ?? 0) - proteinAmount;
       }
-      updateDay.save();
+      await updateDay.save();
     }
   }
 }
