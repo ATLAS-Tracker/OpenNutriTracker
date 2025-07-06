@@ -184,6 +184,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "heightLabel": MessageLookupByLibrary.simpleMessage("Boy"),
         "homeLabel": MessageLookupByLibrary.simpleMessage("Ana Sayfa"),
         "importAction": MessageLookupByLibrary.simpleMessage("İçe Aktar"),
+        "importSupabaseDescription": MessageLookupByLibrary.simpleMessage(
+            "Verilerinizi Supabase\'de saklanan bir yedekten geri yükleyin."),
+        "importSupabaseLabel":
+            MessageLookupByLibrary.simpleMessage("Supabase\'den İçe Aktar"),
         "infoAddedActivityLabel":
             MessageLookupByLibrary.simpleMessage("Yeni aktivite eklendi"),
         "infoAddedIntakeLabel":

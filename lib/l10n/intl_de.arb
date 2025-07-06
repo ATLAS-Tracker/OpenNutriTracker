@@ -112,6 +112,8 @@
   "importAction": "Importieren",
   "exportSupabaseLabel": "Zu Supabase exportieren",
   "exportSupabaseDescription": "Sichere deine Daten als Zip-Datei im Supabase-Speicher.",
+  "importSupabaseLabel": "Von Supabase importieren",
+  "importSupabaseDescription": "Stelle deine Daten aus einem in Supabase gespeicherten Backup wieder her.",
   "addItemLabel": "Neuen Eintrag hinzufügen:",
   "activityLabel": "Aktivität",
   "activityExample": "z. B. Laufen, Radfahren, Yoga ...",

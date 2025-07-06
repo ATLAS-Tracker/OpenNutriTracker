@@ -117,6 +117,8 @@
   "importAction": "İçe Aktar",
   "exportSupabaseLabel": "Supabase'e Aktar",
   "exportSupabaseDescription": "Verilerinizi zip dosyası olarak Supabase depolamasına yedekleyin.",
+  "importSupabaseLabel": "Supabase'den İçe Aktar",
+  "importSupabaseDescription": "Verilerinizi Supabase'de saklanan bir yedekten geri yükleyin.",
   "addItemLabel": "Yeni Öğe Ekle:",
   "activityLabel": "Aktivite",
   "activityExample": "ör. koşu, bisiklet, yoga ...",

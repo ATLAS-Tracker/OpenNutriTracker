@@ -14,6 +14,7 @@ import 'package:opennutritracker/features/profile/presentation/bloc/profile_bloc
 import 'package:opennutritracker/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:opennutritracker/features/settings/presentation/widgets/export_import_dialog.dart';
 import 'package:opennutritracker/features/settings/presentation/widgets/export_supabase_dialog.dart';
+import 'package:opennutritracker/features/settings/presentation/widgets/import_supabase_dialog.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -87,6 +88,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leading: const Icon(Icons.cloud_upload_outlined),
                   title: Text(S.of(context).exportSupabaseLabel),
                   onTap: () => _showExportSupabaseDialog(context),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.cloud_download_outlined),
+                  title: Text(S.of(context).importSupabaseLabel),
+                  onTap: () => _showImportSupabaseDialog(context),
                 ),
                 ListTile(
                   leading: const Icon(Icons.description_outlined),
@@ -198,6 +204,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => ExportSupabaseDialog(),
+    );
+  }
+
+  void _showImportSupabaseDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => ImportSupabaseDialog(),
     );
   }
 
