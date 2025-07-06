@@ -119,6 +119,8 @@
   "exportSupabaseDescription": "Verilerinizi zip dosyası olarak Supabase depolamasına yedekleyin.",
   "importSupabaseLabel": "Supabase'den İçe Aktar",
   "importSupabaseDescription": "Verilerinizi Supabase'de saklanan bir yedekten geri yükleyin.",
+  "exportImportSupabaseLabel": "Supabase ile Dışa Aktar / İçe Aktar",
+  "exportImportSupabaseDescription": "Verilerinizi Supabase depolamasına yedekleyin veya oradan geri yükleyin.",
   "addItemLabel": "Yeni Öğe Ekle:",
   "activityLabel": "Aktivite",
   "activityExample": "ör. koşu, bisiklet, yoga ...",

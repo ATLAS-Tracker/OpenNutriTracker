@@ -7,29 +7,33 @@ import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart'
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
-class ImportSupabaseDialog extends StatelessWidget {
+class ExportImportSupabaseDialog extends StatelessWidget {
   final exportImportBloc = locator<ExportImportBloc>();
 
   final _homeBloc = locator<HomeBloc>();
   final _diaryBloc = locator<DiaryBloc>();
   final _calendarDayBloc = locator<CalendarDayBloc>();
 
-  ImportSupabaseDialog({super.key});
+  ExportImportSupabaseDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(S.of(context).importSupabaseLabel,
-          overflow: TextOverflow.ellipsis, maxLines: 2),
-      content: Wrap(children: [
-        Column(
-          children: [
-            BlocBuilder<ExportImportBloc, ExportImportState>(
+      title: Text(
+        S.of(context).exportImportSupabaseLabel,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 2,
+      ),
+      content: Wrap(
+        children: [
+          Column(
+            children: [
+              BlocBuilder<ExportImportBloc, ExportImportState>(
                 bloc: exportImportBloc,
                 builder: (context, state) {
                   if (state is ExportImportInitial) {
                     return Text(
-                      S.of(context).importSupabaseDescription,
+                      S.of(context).exportImportSupabaseDescription,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 15,
                     );
@@ -39,40 +43,40 @@ class ImportSupabaseDialog extends StatelessWidget {
                     refreshScreens();
                     return Row(
                       children: [
-                        Icon(Icons.check_circle,
-                            color: Theme.of(context).colorScheme.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          S.of(context).exportImportSuccessLabel,
+                        Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
+                        const SizedBox(width: 8),
+                        Text(S.of(context).exportImportSuccessLabel),
                       ],
                     );
                   } else if (state is ExportImportError) {
                     return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
                           Icons.error,
                           color: Theme.of(context).colorScheme.error,
                         ),
                         const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            S.of(context).exportImportErrorLabel,
-                            softWrap: true,
-                            overflow: TextOverflow.visible,
-                          ),
-                        ),
+                        Text(S.of(context).exportImportErrorLabel),
                       ],
                     );
                   }
-
                   return const SizedBox.shrink();
-                }),
-          ],
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            exportImportBloc.add(ExportDataSupabaseEvent());
+          },
+          child: Text(S.of(context).exportAction),
         ),
-      ]),
-      actions: <Widget>[
         TextButton(
           onPressed: () {
             exportImportBloc.add(ImportDataSupabaseEvent());

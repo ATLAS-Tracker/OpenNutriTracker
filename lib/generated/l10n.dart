@@ -1272,6 +1272,26 @@ class S {
     );
   }
 
+  /// `Export / Import with Supabase`
+  String get exportImportSupabaseLabel {
+    return Intl.message(
+      'Export / Import with Supabase',
+      name: 'exportImportSupabaseLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Backup your data to Supabase storage as a zip file or restore it from there.`
+  String get exportImportSupabaseDescription {
+    return Intl.message(
+      'Backup your data to Supabase storage as a zip file or restore it from there.',
+      name: 'exportImportSupabaseDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Add new Item:`
   String get addItemLabel {
     return Intl.message(

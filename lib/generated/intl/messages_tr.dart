@@ -152,6 +152,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Verileri Dışa Aktar / İçe Aktar"),
         "exportImportSuccessLabel": MessageLookupByLibrary.simpleMessage(
             "Dışa Aktarma / İçe Aktarma başarılı"),
+        "exportImportSupabaseDescription": MessageLookupByLibrary.simpleMessage(
+            "Verilerinizi Supabase depolamasına yedekleyin veya oradan geri yükleyin."),
+        "exportImportSupabaseLabel": MessageLookupByLibrary.simpleMessage(
+            "Supabase ile Dışa Aktar / İçe Aktar"),
         "exportSupabaseDescription": MessageLookupByLibrary.simpleMessage(
             "Verilerinizi zip dosyası olarak Supabase depolamasına yedekleyin."),
         "exportSupabaseLabel":
