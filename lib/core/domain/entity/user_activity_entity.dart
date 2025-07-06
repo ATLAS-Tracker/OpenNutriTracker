@@ -8,11 +8,14 @@ class UserActivityEntity extends Equatable {
   final double duration;
   final double burnedKcal;
   final DateTime date;
+  final DateTime updatedAt;
 
   final PhysicalActivityEntity physicalActivityEntity;
 
-  const UserActivityEntity(this.id, this.duration, this.burnedKcal, this.date,
-      this.physicalActivityEntity);
+  UserActivityEntity(this.id, this.duration, this.burnedKcal, this.date,
+      this.physicalActivityEntity,
+      {DateTime? updatedAt})
+      : updatedAt = updatedAt ?? DateTime.now();
 
   factory UserActivityEntity.fromUserActivityDBO(UserActivityDBO activityDBO) {
     return UserActivityEntity(
@@ -21,11 +24,12 @@ class UserActivityEntity extends Equatable {
         activityDBO.burnedKcal,
         activityDBO.date,
         PhysicalActivityEntity.fromPhysicalActivityDBO(
-            activityDBO.physicalActivityDBO));
+            activityDBO.physicalActivityDBO),
+        updatedAt: activityDBO.updatedAt);
   }
 
   @override
-  List<Object?> get props => [id, duration, burnedKcal, date];
+  List<Object?> get props => [id, duration, burnedKcal, date, updatedAt];
 
   static getIconData() => Icons.directions_run_outlined;
 }

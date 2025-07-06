@@ -169,6 +169,7 @@ class _MealCreationScreenState extends State<MealCreationScreen> {
                                     type: IntakeTypeEntity.breakfast,
                                     meal: ingredient.meal!,
                                     dateTime: now,
+                                    updatedAt: DateTime.now(),
                                   );
                                 }).toList();
 

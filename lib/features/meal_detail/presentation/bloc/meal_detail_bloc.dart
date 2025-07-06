@@ -84,7 +84,8 @@ class MealDetailBloc extends Bloc<MealDetailEvent, MealDetailState> {
         amount: quantity,
         type: type,
         meal: meal,
-        dateTime: day);
+        dateTime: day,
+        updatedAt: DateTime.now());
     await _addIntakeUseCase.addIntake(intakeEntity);
     _updateTrackedDay(intakeEntity, day);
   }

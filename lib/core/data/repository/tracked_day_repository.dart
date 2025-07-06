@@ -67,7 +67,8 @@ class TrackedDayRepository {
         fatGoal: totalFatGoal,
         fatTracked: 0,
         proteinGoal: totalProteinGoal,
-        proteinTracked: 0));
+        proteinTracked: 0,
+        updatedAt: DateTime.now()));
   }
 
   Future<void> addAllTrackedDays(List<TrackedDayDBO> trackedDaysDBO) async {

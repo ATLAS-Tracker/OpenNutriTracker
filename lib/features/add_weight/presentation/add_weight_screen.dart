@@ -278,7 +278,10 @@ class _AddWeightScreenState extends State<AddWeightScreen> {
     double roundedWeight = roundDecimal(_weightBloc.state.weight);
 
     _addWeightUsecase.addUserWeight(UserWeightEntity(
-        id: IdGenerator.getUniqueID(), weight: roundedWeight, date: _day));
+        id: IdGenerator.getUniqueID(),
+        weight: roundedWeight,
+        date: _day,
+        updatedAt: DateTime.now()));
 
     _homeBloc.add(const LoadItemsEvent());
     _calendarDayBloc.add(const RefreshCalendarDayEvent());

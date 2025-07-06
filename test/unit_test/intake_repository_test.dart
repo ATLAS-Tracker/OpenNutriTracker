@@ -46,21 +46,24 @@ void main() {
           amount: 1,
           type: IntakeTypeEntity.breakfast,
           meal: MealEntityFixtures.mealOne,
-          dateTime: DateTime.utc(2024, 1, 1, 0, 0, 0)));
+          dateTime: DateTime.utc(2024, 1, 1, 0, 0, 0),
+          updatedAt: DateTime.now()));
       await repo.addIntake(IntakeEntity(
           id: "2",
           unit: "g",
           amount: 1,
           type: IntakeTypeEntity.breakfast,
           meal: MealEntityFixtures.mealTwo,
-          dateTime: DateTime.utc(2024, 1, 2, 0, 0, 0)));
+          dateTime: DateTime.utc(2024, 1, 2, 0, 0, 0),
+          updatedAt: DateTime.now()));
       await repo.addIntake(IntakeEntity(
           id: "3",
           unit: "g",
           amount: 1,
           type: IntakeTypeEntity.breakfast,
           meal: MealEntityFixtures.mealThree,
-          dateTime: DateTime.utc(2024, 1, 3, 0, 0, 0)));
+          dateTime: DateTime.utc(2024, 1, 3, 0, 0, 0),
+          updatedAt: DateTime.now()));
 
       final recents = (await repo.getRecentIntake()).map((e) => e.id).toList();
       expect(recents, List.from(["3", "2", "1"]));

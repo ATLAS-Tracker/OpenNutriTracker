@@ -58,7 +58,8 @@ class ActivityDetailBloc
     final duration = double.parse(durationText);
 
     final userActivityEntity = UserActivityEntity(IdGenerator.getUniqueID(),
-        duration, totalKcalBurned, day, activityEntity);
+        duration, totalKcalBurned, day, activityEntity,
+        updatedAt: DateTime.now());
 
     await _addUserActivityUsecase.addUserActivity(userActivityEntity);
     _updateTrackedDay(day, totalKcalBurned);
