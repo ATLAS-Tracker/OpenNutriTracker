@@ -37,4 +37,20 @@ class AddConfigUsecase {
       double carbGoalPct, double proteinGoalPct, double fatPctGoal) async {
     _configRepository.setUserMacroPct(carbGoalPct, proteinGoalPct, fatPctGoal);
   }
+
+  Future<void> setUserActivityLastUpdate(DateTime date) async {
+    await _configRepository.setUserActivityLastUpdate(date);
+  }
+
+  Future<void> setUserIntakeLastUpdate(DateTime date) async {
+    await _configRepository.setUserIntakeLastUpdate(date);
+  }
+
+  Future<void> setTrackedDayLastUpdate(DateTime date) async {
+    await _configRepository.setTrackedDayLastUpdate(date);
+  }
+
+  Future<void> setUserWeightLastUpdate(DateTime date) async {
+    await _configRepository.setUserWeightLastUpdate(date);
+  }
 }

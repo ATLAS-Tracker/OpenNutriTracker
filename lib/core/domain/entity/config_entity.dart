@@ -12,6 +12,10 @@ class ConfigEntity extends Equatable {
   final double? userCarbGoalPct;
   final double? userProteinGoalPct;
   final double? userFatGoalPct;
+  final DateTime? userActivityLastUpdate;
+  final DateTime? userIntakeLastUpdate;
+  final DateTime? trackedDayLastUpdate;
+  final DateTime? userWeightLastUpdate;
 
   const ConfigEntity(this.hasAcceptedDisclaimer, this.hasAcceptedPolicy,
       this.hasAcceptedSendAnonymousData, this.appTheme,
@@ -19,7 +23,11 @@ class ConfigEntity extends Equatable {
       this.userKcalAdjustment,
       this.userCarbGoalPct,
       this.userProteinGoalPct,
-      this.userFatGoalPct});
+      this.userFatGoalPct,
+      this.userActivityLastUpdate,
+      this.userIntakeLastUpdate,
+      this.trackedDayLastUpdate,
+      this.userWeightLastUpdate});
 
   factory ConfigEntity.fromConfigDBO(ConfigDBO dbo) => ConfigEntity(
         dbo.hasAcceptedDisclaimer,
@@ -31,6 +39,10 @@ class ConfigEntity extends Equatable {
         userCarbGoalPct: dbo.userCarbGoalPct,
         userProteinGoalPct: dbo.userProteinGoalPct,
         userFatGoalPct: dbo.userFatGoalPct,
+        userActivityLastUpdate: dbo.userActivityLastUpdate,
+        userIntakeLastUpdate: dbo.userIntakeLastUpdate,
+        trackedDayLastUpdate: dbo.trackedDayLastUpdate,
+        userWeightLastUpdate: dbo.userWeightLastUpdate,
       );
 
   @override
@@ -43,5 +55,9 @@ class ConfigEntity extends Equatable {
         userCarbGoalPct,
         userProteinGoalPct,
         userFatGoalPct,
+        userActivityLastUpdate,
+        userIntakeLastUpdate,
+        trackedDayLastUpdate,
+        userWeightLastUpdate,
       ];
 }
