@@ -53,12 +53,19 @@ class ExportImportSupabaseDialog extends StatelessWidget {
                     );
                   } else if (state is ExportImportError) {
                     return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
                           Icons.error,
                           color: Theme.of(context).colorScheme.error,
                         ),
-                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            S.of(context).exportImportErrorLabel,
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                          ),
+                        ),
                         Text(S.of(context).exportImportErrorLabel),
                       ],
                     );
