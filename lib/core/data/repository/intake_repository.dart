@@ -23,8 +23,14 @@ class IntakeRepository {
     await _intakeDataSource.deleteIntakeFromId(intakeEntity.id);
   }
 
+  Future<void> deleteIntakesByIds(List<String> intakeIds) async {
+    await _intakeDataSource.deleteIntakesFromIds(intakeIds);
+  }
+
   Future<IntakeEntity?> updateIntake(
-      String intakeId, Map<String, dynamic> fields) async {
+    String intakeId,
+    Map<String, dynamic> fields,
+  ) async {
     var result = await _intakeDataSource.updateIntake(intakeId, fields);
     return result == null ? null : IntakeEntity.fromIntakeDBO(result);
   }
@@ -34,9 +40,13 @@ class IntakeRepository {
   }
 
   Future<List<IntakeEntity>> getIntakeByDateAndType(
-      IntakeTypeEntity intakeType, DateTime date) async {
+    IntakeTypeEntity intakeType,
+    DateTime date,
+  ) async {
     final intakeDBOList = await _intakeDataSource.getAllIntakesByDate(
-        IntakeTypeDBO.fromIntakeTypeEntity(intakeType), date);
+      IntakeTypeDBO.fromIntakeTypeEntity(intakeType),
+      date,
+    );
 
     return intakeDBOList
         .map((intakeDBO) => IntakeEntity.fromIntakeDBO(intakeDBO))

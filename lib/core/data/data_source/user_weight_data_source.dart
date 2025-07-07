@@ -14,11 +14,18 @@ class UserWeightDataSource {
   Future<void> addUserWeight(UserWeightDbo userWeightDbo) async {
     /* Use the date at midnight as the key to ensure one entry per day */
     await _hive.userWeightBox.put(
-        _normaliseDateToKey(userWeightDbo.date), userWeightDbo);
+      _normaliseDateToKey(userWeightDbo.date),
+      userWeightDbo,
+    );
   }
 
   Future<void> deleteUserWeightByDate(DateTime dateTime) async {
     await _hive.userWeightBox.delete(_normaliseDateToKey(dateTime));
+  }
+
+  Future<void> deleteUserWeightsByDates(List<DateTime> dates) async {
+    final keys = dates.map(_normaliseDateToKey).toList();
+    await _hive.userWeightBox.deleteAll(keys);
   }
 
   Future<UserWeightDbo?> getUserWeightByDate(DateTime dateTime) async {
@@ -41,7 +48,7 @@ class UserWeightDataSource {
 
   Future<void> addAllUserWeights(List<UserWeightDbo> userWeightDbos) async {
     final Map<String, UserWeightDbo> mapped = {
-      for (var dbo in userWeightDbos) _normaliseDateToKey(dbo.date): dbo
+      for (var dbo in userWeightDbos) _normaliseDateToKey(dbo.date): dbo,
     };
     await _hive.userWeightBox.putAll(mapped);
   }

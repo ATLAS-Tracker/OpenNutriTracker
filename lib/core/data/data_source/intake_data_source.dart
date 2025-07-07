@@ -24,18 +24,30 @@ class IntakeDataSource {
 
   Future<void> deleteIntakeFromId(String intakeId) async {
     log.fine('Deleting intake item from db');
-    _hive.intakeBox.values
-        .where((dbo) => dbo.id == intakeId)
-        .toList()
-        .forEach((element) {
+    _hive.intakeBox.values.where((dbo) => dbo.id == intakeId).toList().forEach((
+      element,
+    ) {
       element.delete();
     });
   }
 
+  Future<void> deleteIntakesFromIds(List<String> intakeIds) async {
+    log.fine('Deleting multiple intake items from db');
+    final keys = _hive.intakeBox.values
+        .where((dbo) => intakeIds.contains(dbo.id))
+        .map((dbo) => dbo.key)
+        .whereType<int>()
+        .toList();
+    await _hive.intakeBox.deleteAll(keys);
+  }
+
   Future<IntakeDBO?> updateIntake(
-      String intakeId, Map<String, dynamic> fields) async {
+    String intakeId,
+    Map<String, dynamic> fields,
+  ) async {
     log.fine(
-        'Updating intake $intakeId with fields ${fields.toString()} in db');
+      'Updating intake $intakeId with fields ${fields.toString()} in db',
+    );
     var intakeObject = _hive.intakeBox.values.indexed
         .where((indexedDbo) => indexedDbo.$2.id == intakeId)
         .firstOrNull;
@@ -49,13 +61,17 @@ class IntakeDataSource {
   }
 
   Future<IntakeDBO?> getIntakeById(String intakeId) async {
-    return _hive.intakeBox.values
-        .firstWhereOrNull((intake) => intake.id == intakeId);
+    return _hive.intakeBox.values.firstWhereOrNull(
+      (intake) => intake.id == intakeId,
+    );
   }
 
   Future<List<IntakeDBO>> getIntakeRecipe() async {
     return _hive.intakeBox.values
-        .where((intake) => intake.meal.nutriments.mealOrRecipe == MealOrRecipeDBO.recipe)
+        .where(
+          (intake) =>
+              intake.meal.nutriments.mealOrRecipe == MealOrRecipeDBO.recipe,
+        )
         .toList();
   }
 
@@ -64,11 +80,15 @@ class IntakeDataSource {
   }
 
   Future<List<IntakeDBO>> getAllIntakesByDate(
-      IntakeTypeDBO intakeType, DateTime dateTime) async {
+    IntakeTypeDBO intakeType,
+    DateTime dateTime,
+  ) async {
     return _hive.intakeBox.values
-        .where((intake) =>
-            DateUtils.isSameDay(dateTime, intake.dateTime) &&
-            intake.type == intakeType)
+        .where(
+          (intake) =>
+              DateUtils.isSameDay(dateTime, intake.dateTime) &&
+              intake.type == intakeType,
+        )
         .toList();
   }
 
@@ -80,8 +100,10 @@ class IntakeDataSource {
 
     final filterCodes = <String>{};
     final uniqueIntake = intakeList
-        .where((intake) =>
-            filterCodes.add(intake.meal.code ?? intake.meal.name ?? ""))
+        .where(
+          (intake) =>
+              filterCodes.add(intake.meal.code ?? intake.meal.name ?? ""),
+        )
         .toList();
 
     return uniqueIntake.take(number).toList();

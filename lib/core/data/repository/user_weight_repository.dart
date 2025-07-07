@@ -17,9 +17,13 @@ class UserWeightRepository {
     await _userWeightDataSource.deleteUserWeightByDate(dateTime);
   }
 
+  Future<void> deleteUserWeightsByDates(List<DateTime> dates) async {
+    await _userWeightDataSource.deleteUserWeightsByDates(dates);
+  }
+
   Future<UserWeightEntity?> getUserWeightByDate(DateTime dateTime) async {
-    final UserWeightDbo? weightDbo =
-        await _userWeightDataSource.getUserWeightByDate(dateTime);
+    final UserWeightDbo? weightDbo = await _userWeightDataSource
+        .getUserWeightByDate(dateTime);
 
     if (weightDbo == null) {
       return null;
@@ -29,8 +33,9 @@ class UserWeightRepository {
   }
 
   Future<UserWeightEntity?> getLastUserWeight(DateTime date) async {
-    final lastUserWeight =
-        await _userWeightDataSource.getLastSavedUserWeight(date);
+    final lastUserWeight = await _userWeightDataSource.getLastSavedUserWeight(
+      date,
+    );
     if (lastUserWeight == null) {
       return null;
     }

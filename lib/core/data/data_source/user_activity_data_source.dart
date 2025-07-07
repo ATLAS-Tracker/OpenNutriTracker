@@ -15,9 +15,20 @@ class UserActivityDataSource {
   }
 
   Future<void> addAllUserActivities(
-      List<UserActivityDBO> userActivityDBOList) async {
+    List<UserActivityDBO> userActivityDBOList,
+  ) async {
     log.fine('Adding new user activities to db');
     _hive.userActivityBox.addAll(userActivityDBOList);
+  }
+
+  Future<void> deleteActivitiesByIds(List<String> ids) async {
+    log.fine('Deleting multiple activity items from db');
+    final keys = _hive.userActivityBox.values
+        .where((dbo) => ids.contains(dbo.id))
+        .map((dbo) => dbo.key)
+        .whereType<int>()
+        .toList();
+    await _hive.userActivityBox.deleteAll(keys);
   }
 
   Future<void> deleteIntakeFromId(String activityId) async {
@@ -26,33 +37,38 @@ class UserActivityDataSource {
         .where((dbo) => dbo.id == activityId)
         .toList()
         .forEach((element) {
-      element.delete();
-    });
+          element.delete();
+        });
   }
 
   Future<List<UserActivityDBO>> getAllUserActivities() async {
     return _hive.userActivityBox.values.toList();
   }
+
   Future<List<UserActivityDBO>> getAllUserActivitiesByDate(
-      DateTime dateTime) async {
+    DateTime dateTime,
+  ) async {
     return _hive.userActivityBox.values
         .where((activity) => DateUtils.isSameDay(dateTime, activity.date))
         .toList();
   }
 
-  Future<List<UserActivityDBO>> getRecentlyAddedUserActivity(
-      {int number = 20}) async {
+  Future<List<UserActivityDBO>> getRecentlyAddedUserActivity({
+    int number = 20,
+  }) async {
     final userActivities = _hive.userActivityBox.values.toList().reversed;
 
     //  sort list by date and filter unique activities
-    userActivities
-        .toList()
-        .sort((a, b) => a.date.toString().compareTo(b.date.toString()));
+    userActivities.toList().sort(
+      (a, b) => a.date.toString().compareTo(b.date.toString()),
+    );
 
     final filterActivityCodes = <String>{};
     final uniqueUserActivities = userActivities
-        .where((activity) =>
-            filterActivityCodes.add(activity.physicalActivityDBO.code))
+        .where(
+          (activity) =>
+              filterActivityCodes.add(activity.physicalActivityDBO.code),
+        )
         .toList();
 
     // return range or full list

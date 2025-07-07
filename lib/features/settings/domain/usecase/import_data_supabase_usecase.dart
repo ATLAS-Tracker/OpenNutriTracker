@@ -10,8 +10,6 @@ import 'package:opennutritracker/core/data/repository/intake_repository.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
-import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
-import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 
 /// Imports user data from a zip stored on Supabase storage.
 /// Existing entries are replaced if the incoming entry has a more recent
@@ -55,8 +53,9 @@ class ImportDataSupabaseUsecase {
       if (userActivityFile == null) {
         throw Exception('User activity file not found');
       }
-      final userActivityJsonString =
-          utf8.decode(userActivityFile.content as List<int>);
+      final userActivityJsonString = utf8.decode(
+        userActivityFile.content as List<int>,
+      );
       final userActivityList = (jsonDecode(userActivityJsonString) as List)
           .cast<Map<String, dynamic>>();
       final userActivityDBOs =
@@ -67,19 +66,23 @@ class ImportDataSupabaseUsecase {
       final activityMap = {for (final a in existingActivities) a.id: a};
 
       final List<UserActivityDBO> activitiesToSave = [];
+      final List<String> activityIdsToDelete = [];
       for (final dbo in userActivityDBOs) {
         final current = activityMap[dbo.id];
         if (current == null) {
           activitiesToSave.add(dbo);
         } else if (dbo.updatedAt.isAfter(current.updatedAt)) {
-          await _userActivityRepository.deleteUserActivity(
-            UserActivityEntity.fromUserActivityDBO(current),
-          );
+          activityIdsToDelete.add(current.id);
           activitiesToSave.add(dbo);
         }
       }
       if (activitiesToSave.isNotEmpty) {
         await _userActivityRepository.addAllUserActivityDBOs(activitiesToSave);
+      }
+      if (activityIdsToDelete.isNotEmpty) {
+        await _userActivityRepository.deleteUserActivitiesByIds(
+          activityIdsToDelete,
+        );
       }
 
       // ----- INTAKES -----
@@ -96,18 +99,21 @@ class ImportDataSupabaseUsecase {
       final intakeMap = {for (final i in existingIntakes) i.id: i};
 
       final List<IntakeDBO> intakesToSave = [];
+      final List<String> intakeIdsToDelete = [];
       for (final dbo in intakeDBOs) {
         final current = intakeMap[dbo.id];
         if (current == null) {
           intakesToSave.add(dbo);
         } else if (dbo.updatedAt.isAfter(current.updatedAt)) {
-          await _intakeRepository
-              .deleteIntake(IntakeEntity.fromIntakeDBO(current));
+          intakeIdsToDelete.add(current.id);
           intakesToSave.add(dbo);
         }
       }
       if (intakesToSave.isNotEmpty) {
         await _intakeRepository.addAllIntakeDBOs(intakesToSave);
+      }
+      if (intakeIdsToDelete.isNotEmpty) {
+        await _intakeRepository.deleteIntakesByIds(intakeIdsToDelete);
       }
 
       // ----- TRACKED DAYS -----
@@ -115,17 +121,16 @@ class ImportDataSupabaseUsecase {
       if (trackedDayFile == null) {
         throw Exception('Tracked day file not found');
       }
-      final trackedDayJsonString =
-          utf8.decode(trackedDayFile.content as List<int>);
+      final trackedDayJsonString = utf8.decode(
+        trackedDayFile.content as List<int>,
+      );
       final trackedDayList = (jsonDecode(trackedDayJsonString) as List)
           .cast<Map<String, dynamic>>();
       final trackedDayDBOs =
           trackedDayList.map((e) => TrackedDayDBO.fromJson(e)).toList();
 
       final existingDays = await _trackedDayRepository.getAllTrackedDaysDBO();
-      final dayMap = {
-        for (final d in existingDays) d.day.toIso8601String(): d
-      };
+      final dayMap = {for (final d in existingDays) d.day.toIso8601String(): d};
       final List<TrackedDayDBO> daysToSave = [];
       for (final dbo in trackedDayDBOs) {
         final key = dbo.day.toIso8601String();
@@ -143,33 +148,44 @@ class ImportDataSupabaseUsecase {
       if (userWeightFile == null) {
         throw Exception('User weight file not found');
       }
-      final userWeightJsonString =
-          utf8.decode(userWeightFile.content as List<int>);
+      final userWeightJsonString = utf8.decode(
+        userWeightFile.content as List<int>,
+      );
       final userWeightList = (jsonDecode(userWeightJsonString) as List)
           .cast<Map<String, dynamic>>();
       final userWeightDBOs =
           userWeightList.map((e) => UserWeightDbo.fromJson(e)).toList();
 
-      final existingWeights = await _userWeightRepository.getAllUserWeightDBOs();
+      final existingWeights =
+          await _userWeightRepository.getAllUserWeightDBOs();
       final weightMap = {
         for (final w in existingWeights)
-          DateTime(w.date.year, w.date.month, w.date.day).toIso8601String(): w
+          DateTime(w.date.year, w.date.month, w.date.day).toIso8601String(): w,
       };
 
       final List<UserWeightDbo> weightsToSave = [];
+      final List<DateTime> weightDatesToDelete = [];
       for (final dbo in userWeightDBOs) {
-        final key =
-            DateTime(dbo.date.year, dbo.date.month, dbo.date.day).toIso8601String();
+        final key = DateTime(
+          dbo.date.year,
+          dbo.date.month,
+          dbo.date.day,
+        ).toIso8601String();
         final current = weightMap[key];
         if (current == null) {
           weightsToSave.add(dbo);
         } else if (dbo.updatedAt.isAfter(current.updatedAt)) {
-          await _userWeightRepository.deleteUserWeightByDate(current.date);
+          weightDatesToDelete.add(current.date);
           weightsToSave.add(dbo);
         }
       }
       if (weightsToSave.isNotEmpty) {
         await _userWeightRepository.addAllUserWeightDBOs(weightsToSave);
+      }
+      if (weightDatesToDelete.isNotEmpty) {
+        await _userWeightRepository.deleteUserWeightsByDates(
+          weightDatesToDelete,
+        );
       }
 
       return true;
