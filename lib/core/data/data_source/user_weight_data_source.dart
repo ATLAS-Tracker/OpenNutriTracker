@@ -8,7 +8,7 @@ class UserWeightDataSource {
 
   String _normaliseDateToKey(DateTime date) {
     /* Normalizes the given date to midnight for use as a unique daily key*/
-    return DateTime(date.year, date.month, date.day).toString();
+    return DateTime(date.year, date.month, date.day).toIso8601String();
   }
 
   Future<void> addUserWeight(UserWeightDbo userWeightDbo) async {
