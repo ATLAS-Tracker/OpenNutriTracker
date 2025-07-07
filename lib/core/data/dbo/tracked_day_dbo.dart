@@ -30,6 +30,7 @@ class TrackedDayDBO extends HiveObject {
   double? proteinTracked;
 
   @HiveField(9)
+  @JsonKey(name: 'updated_at')
   DateTime updatedAt;
 
   TrackedDayDBO(

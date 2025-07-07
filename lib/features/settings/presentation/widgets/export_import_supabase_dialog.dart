@@ -66,7 +66,6 @@ class ExportImportSupabaseDialog extends StatelessWidget {
                             overflow: TextOverflow.visible,
                           ),
                         ),
-                        Text(S.of(context).exportImportErrorLabel),
                       ],
                     );
                   }
