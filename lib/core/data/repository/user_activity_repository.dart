@@ -20,7 +20,7 @@ class UserActivityRepository {
   }
 
   Future<void> deleteUserActivity(UserActivityEntity userActivityEntity) async {
-    await _userActivityDataSource.deleteIntakeFromId(userActivityEntity.id);
+    await _userActivityDataSource.deleteActivityFromId(userActivityEntity.id);
   }
 
   Future<void> deleteUserActivitiesByIds(List<String> ids) async {
@@ -34,8 +34,8 @@ class UserActivityRepository {
   Future<List<UserActivityEntity>> getAllUserActivityByDate(
     DateTime dateTime,
   ) async {
-    final userActivityDBOList = await _userActivityDataSource
-        .getAllUserActivitiesByDate(dateTime);
+    final userActivityDBOList =
+        await _userActivityDataSource.getAllUserActivitiesByDate(dateTime);
 
     return userActivityDBOList
         .map(
@@ -46,8 +46,8 @@ class UserActivityRepository {
   }
 
   Future<List<UserActivityEntity>> getRecentUserActivity() async {
-    final userActivityDBOList = await _userActivityDataSource
-        .getRecentlyAddedUserActivity();
+    final userActivityDBOList =
+        await _userActivityDataSource.getRecentlyAddedUserActivity();
     return userActivityDBOList
         .map(
           (userActivityDBO) =>

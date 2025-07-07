@@ -33,8 +33,9 @@ class IntakeDataSource {
 
   Future<void> deleteIntakesFromIds(List<String> intakeIds) async {
     log.fine('Deleting multiple intake items from db');
+    final intakeIdSet = intakeIds.toSet();
     final keys = _hive.intakeBox.values
-        .where((dbo) => intakeIds.contains(dbo.id))
+        .where((dbo) => intakeIdSet.contains(dbo.id))
         .map((dbo) => dbo.key)
         .whereType<int>()
         .toList();

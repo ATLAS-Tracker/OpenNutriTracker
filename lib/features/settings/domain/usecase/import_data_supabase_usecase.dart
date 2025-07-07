@@ -164,7 +164,6 @@ class ImportDataSupabaseUsecase {
       };
 
       final List<UserWeightDbo> weightsToSave = [];
-      final List<DateTime> weightDatesToDelete = [];
       for (final dbo in userWeightDBOs) {
         final key = DateTime(
           dbo.date.year,
@@ -175,17 +174,11 @@ class ImportDataSupabaseUsecase {
         if (current == null) {
           weightsToSave.add(dbo);
         } else if (dbo.updatedAt.isAfter(current.updatedAt)) {
-          weightDatesToDelete.add(current.date);
           weightsToSave.add(dbo);
         }
       }
       if (weightsToSave.isNotEmpty) {
         await _userWeightRepository.addAllUserWeightDBOs(weightsToSave);
-      }
-      if (weightDatesToDelete.isNotEmpty) {
-        await _userWeightRepository.deleteUserWeightsByDates(
-          weightDatesToDelete,
-        );
       }
 
       return true;

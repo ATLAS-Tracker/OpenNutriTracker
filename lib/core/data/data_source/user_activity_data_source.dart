@@ -23,22 +23,23 @@ class UserActivityDataSource {
 
   Future<void> deleteActivitiesByIds(List<String> ids) async {
     log.fine('Deleting multiple activity items from db');
+    final idSet = ids.toSet();
     final keys = _hive.userActivityBox.values
-        .where((dbo) => ids.contains(dbo.id))
+        .where((dbo) => idSet.contains(dbo.id))
         .map((dbo) => dbo.key)
         .whereType<int>()
         .toList();
     await _hive.userActivityBox.deleteAll(keys);
   }
 
-  Future<void> deleteIntakeFromId(String activityId) async {
+  Future<void> deleteActivityFromId(String activityId) async {
     log.fine('Deleting activity item from db');
     _hive.userActivityBox.values
         .where((dbo) => dbo.id == activityId)
         .toList()
         .forEach((element) {
-          element.delete();
-        });
+      element.delete();
+    });
   }
 
   Future<List<UserActivityDBO>> getAllUserActivities() async {
@@ -60,8 +61,8 @@ class UserActivityDataSource {
 
     //  sort list by date and filter unique activities
     userActivities.toList().sort(
-      (a, b) => a.date.toString().compareTo(b.date.toString()),
-    );
+          (a, b) => a.date.toString().compareTo(b.date.toString()),
+        );
 
     final filterActivityCodes = <String>{};
     final uniqueUserActivities = userActivities

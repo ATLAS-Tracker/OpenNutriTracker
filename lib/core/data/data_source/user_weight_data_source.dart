@@ -23,11 +23,6 @@ class UserWeightDataSource {
     await _hive.userWeightBox.delete(_normaliseDateToKey(dateTime));
   }
 
-  Future<void> deleteUserWeightsByDates(List<DateTime> dates) async {
-    final keys = dates.map(_normaliseDateToKey).toList();
-    await _hive.userWeightBox.deleteAll(keys);
-  }
-
   Future<UserWeightDbo?> getUserWeightByDate(DateTime dateTime) async {
     return _hive.userWeightBox.get(_normaliseDateToKey(dateTime));
   }
