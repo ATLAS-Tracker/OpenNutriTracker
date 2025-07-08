@@ -98,4 +98,15 @@ class ConfigDataSource {
     final config = _hive.configBox.get(_configKey);
     return config?.hasAcceptedSendAnonymousData ?? false;
   }
+
+  Future<void> setLastDataUpdate(DateTime date) async {
+    final config = _hive.configBox.get(_configKey);
+    config?.lastDataUpdate = date;
+    await config?.save();
+  }
+
+  Future<DateTime?> getLastDataUpdate() async {
+    final config = _hive.configBox.get(_configKey);
+    return config?.lastDataUpdate;
+  }
 }

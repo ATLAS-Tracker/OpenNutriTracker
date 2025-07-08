@@ -12,6 +12,7 @@ class ConfigEntity extends Equatable {
   final double? userCarbGoalPct;
   final double? userProteinGoalPct;
   final double? userFatGoalPct;
+  final DateTime? lastDataUpdate;
 
   const ConfigEntity(this.hasAcceptedDisclaimer, this.hasAcceptedPolicy,
       this.hasAcceptedSendAnonymousData, this.appTheme,
@@ -19,7 +20,8 @@ class ConfigEntity extends Equatable {
       this.userKcalAdjustment,
       this.userCarbGoalPct,
       this.userProteinGoalPct,
-      this.userFatGoalPct});
+      this.userFatGoalPct,
+      this.lastDataUpdate});
 
   factory ConfigEntity.fromConfigDBO(ConfigDBO dbo) => ConfigEntity(
         dbo.hasAcceptedDisclaimer,
@@ -31,6 +33,7 @@ class ConfigEntity extends Equatable {
         userCarbGoalPct: dbo.userCarbGoalPct,
         userProteinGoalPct: dbo.userProteinGoalPct,
         userFatGoalPct: dbo.userFatGoalPct,
+        lastDataUpdate: dbo.lastDataUpdate,
       );
 
   @override
@@ -43,5 +46,6 @@ class ConfigEntity extends Equatable {
         userCarbGoalPct,
         userProteinGoalPct,
         userFatGoalPct,
+        lastDataUpdate,
       ];
 }

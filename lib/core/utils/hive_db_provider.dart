@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -21,6 +22,7 @@ import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
 import 'package:opennutritracker/features/sync/tracked_day_change_isolate.dart';
 import 'package:opennutritracker/core/utils/secure_app_storage_provider.dart';
+import 'package:opennutritracker/core/data/data_source/config_data_source.dart';
 import 'package:logging/logging.dart';
 
 class HiveDBProvider extends ChangeNotifier {
@@ -45,6 +47,8 @@ class HiveDBProvider extends ChangeNotifier {
   late TrackedDayChangeIsolate trackedDayWatcher;
   late Box<UserWeightDbo> userWeightBox;
 
+  List<StreamSubscription<BoxEvent>>? _updateSubs;
+
   static bool _adaptersRegistered = false;
 
   Future<void> initHiveDB(Uint8List encryptionKey, {String? userId}) async {
@@ -58,6 +62,7 @@ class HiveDBProvider extends ChangeNotifier {
         // trackedDayWatcher must be stopped before its box is closed
         _log.fine('🔒 Closing boxes for user=$_userId');
         await trackedDayWatcher.stop();
+        await stopUpdateWatchers();
 
         // To prevent resource leaks, any new box added to this provider must also be added here.
         await Future.wait([
@@ -132,6 +137,29 @@ class HiveDBProvider extends ChangeNotifier {
 
   static generateNewHiveEncryptionKey() => Hive.generateSecureKey();
 
+  void startUpdateWatchers(ConfigDataSource config) {
+    stopUpdateWatchers();
+    _updateSubs = [
+      intakeBox.watch().listen((_) =>
+          config.setLastDataUpdate(DateTime.now().toUtc())),
+      userActivityBox.watch().listen((_) =>
+          config.setLastDataUpdate(DateTime.now().toUtc())),
+      trackedDayBox.watch().listen((_) =>
+          config.setLastDataUpdate(DateTime.now().toUtc())),
+      userWeightBox.watch().listen((_) =>
+          config.setLastDataUpdate(DateTime.now().toUtc())),
+    ];
+  }
+
+  Future<void> stopUpdateWatchers() async {
+    if (_updateSubs != null) {
+      for (final sub in _updateSubs!) {
+        await sub.cancel();
+      }
+      _updateSubs = null;
+    }
+  }
+
   /// Helper to (re)initialize Hive for the provided [userId].
   /// This fetches the encryption key from secure storage and delegates
   /// to [initHiveDB].
@@ -144,6 +172,7 @@ class HiveDBProvider extends ChangeNotifier {
   @override
   void dispose() {
     trackedDayWatcher.stop();
+    stopUpdateWatchers();
     super.dispose();
   }
 }

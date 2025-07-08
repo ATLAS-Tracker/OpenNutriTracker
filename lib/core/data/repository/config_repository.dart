@@ -63,4 +63,12 @@ class ConfigRepository {
     _configDataSource.setConfigProteinGoalPct(protein);
     _configDataSource.setConfigFatGoalPct(fat);
   }
+
+  Future<void> setLastDataUpdate(DateTime date) async {
+    await _configDataSource.setLastDataUpdate(date);
+  }
+
+  Future<DateTime?> getLastDataUpdate() async {
+    return await _configDataSource.getLastDataUpdate();
+  }
 }

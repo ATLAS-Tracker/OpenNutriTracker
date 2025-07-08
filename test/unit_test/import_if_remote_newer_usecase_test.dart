@@ -4,11 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/import_if_remote_newer_usecase.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/import_data_supabase_usecase.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
-import 'package:opennutritracker/core/data/repository/intake_repository.dart';
-import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
-import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
-import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
-import 'package:opennutritracker/core/data/data_source/user_weight_dbo.dart';
+import 'package:opennutritracker/core/data/repository/config_repository.dart';
 
 class MockSupabaseClient extends Mock implements SupabaseClient {}
 
@@ -21,13 +17,7 @@ class MockAuthClient extends Mock implements GoTrueClient {}
 class MockImportDataSupabaseUsecase extends Mock
     implements ImportDataSupabaseUsecase {}
 
-class MockIntakeRepository extends Mock implements IntakeRepository {}
-
-class MockUserActivityRepository extends Mock implements UserActivityRepository {}
-
-class MockTrackedDayRepository extends Mock implements TrackedDayRepository {}
-
-class MockUserWeightRepository extends Mock implements UserWeightRepository {}
+class MockConfigRepository extends Mock implements ConfigRepository {}
 
 void main() {
   setUpAll(() {
@@ -40,10 +30,7 @@ void main() {
     late MockStorageFileApi bucket;
     late MockAuthClient auth;
     late MockImportDataSupabaseUsecase importUsecase;
-    late MockIntakeRepository intakeRepo;
-    late MockUserActivityRepository activityRepo;
-    late MockTrackedDayRepository trackedRepo;
-    late MockUserWeightRepository weightRepo;
+    late MockConfigRepository configRepo;
     late ImportIfRemoteNewerUsecase usecase;
 
     setUp(() {
@@ -52,25 +39,15 @@ void main() {
       bucket = MockStorageFileApi();
       auth = MockAuthClient();
       importUsecase = MockImportDataSupabaseUsecase();
-      intakeRepo = MockIntakeRepository();
-      activityRepo = MockUserActivityRepository();
-      trackedRepo = MockTrackedDayRepository();
-      weightRepo = MockUserWeightRepository();
+      configRepo = MockConfigRepository();
 
       when(() => client.storage).thenReturn(storage);
       when(() => storage.from('exports')).thenReturn(bucket);
       when(() => client.auth).thenReturn(auth);
-      when(() => intakeRepo.getAllIntakesDBO()).thenAnswer((_) async => []);
-      when(() => activityRepo.getAllUserActivityDBO()).thenAnswer((_) async => []);
-      when(() => trackedRepo.getAllTrackedDaysDBO()).thenAnswer((_) async => []);
-
       usecase = ImportIfRemoteNewerUsecase(
         client,
         importUsecase,
-        intakeRepo,
-        activityRepo,
-        trackedRepo,
-        weightRepo,
+        configRepo,
       );
     });
 
@@ -104,8 +81,8 @@ void main() {
         createdAt: '',
       ));
       final localDate = DateTime.utc(2024, 1, 1);
-      when(() => weightRepo.getAllUserWeightDBOs())
-          .thenAnswer((_) async => [UserWeightDbo('1', 1, localDate, localDate)]);
+      when(() => configRepo.getLastDataUpdate())
+          .thenAnswer((_) async => localDate);
       when(() => importUsecase.importData(any(), any(), any(), any(), any()))
           .thenAnswer((_) async => true);
 
@@ -156,8 +133,8 @@ void main() {
         createdAt: '',
       ));
       final localDate = DateTime.utc(2024, 1, 1);
-      when(() => weightRepo.getAllUserWeightDBOs())
-          .thenAnswer((_) async => [UserWeightDbo('1', 1, localDate, localDate)]);
+      when(() => configRepo.getLastDataUpdate())
+          .thenAnswer((_) async => localDate);
 
       await usecase.maybeImport(
         ExportImportBloc.exportZipFileName,

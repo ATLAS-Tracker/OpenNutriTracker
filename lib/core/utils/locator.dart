@@ -114,7 +114,9 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
   );
 
   // DataSources
-  locator.registerLazySingleton(() => ConfigDataSource(hive));
+  final configDS = ConfigDataSource(hive);
+  locator.registerLazySingleton(() => configDS);
+  hive.startUpdateWatchers(configDS);
   locator.registerLazySingleton<UserDataSource>(() => UserDataSource(hive));
   locator.registerLazySingleton(() => IntakeDataSource(hive));
   locator.registerLazySingleton(() => RecipesDataSource(hive));
@@ -231,9 +233,6 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
 
   locator.registerLazySingleton(
     () => ImportIfRemoteNewerUsecase(
-      locator(),
-      locator(),
-      locator(),
       locator(),
       locator(),
       locator(),

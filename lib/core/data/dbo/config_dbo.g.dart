@@ -23,16 +23,18 @@ class ConfigDBOAdapter extends TypeAdapter<ConfigDBO> {
       fields[3] as AppThemeDBO,
       usesImperialUnits: fields[4] as bool?,
       userKcalAdjustment: fields[5] as double?,
+      lastDataUpdate: fields[9] as DateTime?,
     )
       ..userCarbGoalPct = fields[6] as double?
       ..userProteinGoalPct = fields[7] as double?
-      ..userFatGoalPct = fields[8] as double?;
+      ..userFatGoalPct = fields[8] as double?
+      ..lastDataUpdate = fields[9] as DateTime?;
   }
 
   @override
   void write(BinaryWriter writer, ConfigDBO obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.hasAcceptedDisclaimer)
       ..writeByte(1)
@@ -50,7 +52,9 @@ class ConfigDBOAdapter extends TypeAdapter<ConfigDBO> {
       ..writeByte(7)
       ..write(obj.userProteinGoalPct)
       ..writeByte(8)
-      ..write(obj.userFatGoalPct);
+      ..write(obj.userFatGoalPct)
+      ..writeByte(9)
+      ..write(obj.lastDataUpdate);
   }
 
   @override
@@ -75,6 +79,9 @@ ConfigDBO _$ConfigDBOFromJson(Map<String, dynamic> json) => ConfigDBO(
       $enumDecode(_$AppThemeDBOEnumMap, json['selectedAppTheme']),
       usesImperialUnits: json['usesImperialUnits'] as bool? ?? false,
       userKcalAdjustment: (json['userKcalAdjustment'] as num?)?.toDouble(),
+      lastDataUpdate: json['lastDataUpdate'] == null
+          ? null
+          : DateTime.parse(json['lastDataUpdate'] as String),
     )
       ..userCarbGoalPct = (json['userCarbGoalPct'] as num?)?.toDouble()
       ..userProteinGoalPct = (json['userProteinGoalPct'] as num?)?.toDouble()
@@ -90,6 +97,7 @@ Map<String, dynamic> _$ConfigDBOToJson(ConfigDBO instance) => <String, dynamic>{
       'userCarbGoalPct': instance.userCarbGoalPct,
       'userProteinGoalPct': instance.userProteinGoalPct,
       'userFatGoalPct': instance.userFatGoalPct,
+      'lastDataUpdate': instance.lastDataUpdate?.toIso8601String(),
     };
 
 const _$AppThemeDBOEnumMap = {
