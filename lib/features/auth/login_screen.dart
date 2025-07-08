@@ -10,6 +10,8 @@ import 'forgot_password_screen.dart';
 import 'reset_password_screen.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
+import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
+import 'package:opennutritracker/features/settings/domain/usecase/import_if_remote_newer_usecase.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -81,6 +83,14 @@ class _LoginScreenState extends State<LoginScreen> {
         final hive = locator<HiveDBProvider>();
         await hive.initForUser(res.user?.id);
         await registerUserScope(hive);
+        final importIfNewer = locator<ImportIfRemoteNewerUsecase>();
+        await importIfNewer.maybeImport(
+          ExportImportBloc.exportZipFileName,
+          ExportImportBloc.userActivityJsonFileName,
+          ExportImportBloc.userIntakeJsonFileName,
+          ExportImportBloc.trackedDayJsonFileName,
+          ExportImportBloc.userWeightJsonFileName,
+        );
         _navigateHome();
       }
     } on AuthException catch (e) {
