@@ -83,7 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
         final hive = locator<HiveDBProvider>();
         await hive.initForUser(res.user?.id);
         await registerUserScope(hive);
-        await hive.clearAllData();
         final importData = locator<ImportDataSupabaseUsecase>();
         final importSuccessful = await importData.importData(
           ExportImportBloc.exportZipFileName,

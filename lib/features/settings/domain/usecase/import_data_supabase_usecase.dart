@@ -12,6 +12,8 @@ import 'package:opennutritracker/core/data/repository/user_activity_repository.d
 import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
 import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
+import 'package:opennutritracker/core/utils/hive_db_provider.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
 
 /// Imports user data from a zip stored on Supabase storage.
 /// Existing entries are replaced if the incoming entry has a more recent
@@ -49,6 +51,10 @@ class ImportDataSupabaseUsecase {
       final filePath = '$userId/$exportZipFileName';
       final data = await _client.storage.from('exports').download(filePath);
       final archive = ZipDecoder().decodeBytes(data);
+
+      // The zip has been downloaded therefore we can clear the local database
+      final hive = locator<HiveDBProvider>();
+      await hive.clearAllData();
 
       // ----- USER ACTIVITY -----
       final userActivityFile = archive.findFile(userActivityJsonFileName);
