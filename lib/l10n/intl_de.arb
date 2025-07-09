@@ -446,4 +446,5 @@
   "mealPortionLabel": "Anzahl der Portionen",
   "portionEatLabel": "Verzehrte Portion",
   "noFoodAddedLabel": "Kein Lebensmittel hinzugefügt",
-  "signOutOfflineMessage": "Sie k\u00f6nnen sich nur abmelden, wenn eine Internetverbindung besteht, um Datenverlust zu vermeiden."}
+  "signOutOfflineMessage": "Sie k\u00f6nnen sich nur abmelden, wenn eine Internetverbindung besteht, um Datenverlust zu vermeiden.",
+  "signOutSyncFailedMessage": "Daten konnten nicht synchronisiert werden. Bitte sp\u00e4ter erneut anmelden."

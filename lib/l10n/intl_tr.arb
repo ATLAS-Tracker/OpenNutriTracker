@@ -453,5 +453,6 @@
   "mealPortionLabel": "Porsiyon sayısı",
   "portionEatLabel": "Yenilen porsiyon",
   "noFoodAddedLabel": "Hiçbir gıda eklenmedi",
-  "signOutOfflineMessage": "Verilerin kaybolmaması için yalnızca internet bağlantısı olduğunda çıkış yapabilirsiniz."
+  "signOutOfflineMessage": "Verilerin kaybolmaması için yalnızca internet bağlantısı olduğunda çıkış yapabilirsiniz.",
+  "signOutSyncFailedMessage": "Veriler senkronize edilemedi. Lütfen daha sonra tekrar giriş yapın."
 }

@@ -767,6 +767,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingsVolumeLabel": MessageLookupByLibrary.simpleMessage("Volume"),
         "signOutOfflineMessage": MessageLookupByLibrary.simpleMessage(
             "Vous ne pouvez vous déconnecter que lorsque la connexion internet est rétablie pour ne pas perdre vos données."),
+        "signOutSyncFailedMessage": MessageLookupByLibrary.simpleMessage(
+            "Échec de la synchronisation des données. Veuillez vous reconnecter plus tard."),
         "snackExample": MessageLookupByLibrary.simpleMessage(
             "ex : pomme, glace, chocolat..."),
         "snackLabel": MessageLookupByLibrary.simpleMessage("Collation"),

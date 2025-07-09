@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:collection/collection.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 import 'package:opennutritracker/core/utils/locator.dart';
@@ -10,25 +10,16 @@ import 'package:opennutritracker/features/settings/domain/usecase/export_data_su
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
+import 'package:opennutritracker/core/data/repository/config_repository.dart';
 
 final _log = Logger('AuthSafeSignOut');
 
 Future<void> safeSignOut(BuildContext context) async {
   final supabase = locator<SupabaseClient>();
   final exportUsecase = locator<ExportDataSupabaseUsecase>();
-  final connectivity = Connectivity();
+  final configRepo = locator<ConfigRepository>();
   final userId = supabase.auth.currentUser?.id;
 
-  // Vérifie la connexion internet avant toute action
-  if (userId != null &&
-      await connectivity.checkConnectivity() == ConnectivityResult.none) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(S.of(context).signOutOfflineMessage)),
-      );
-    }
-    return;
-  }
 
   // Affiche un loader **uniquement** si l’utilisateur est connecté
   if (userId != null && context.mounted) {
@@ -39,41 +30,57 @@ Future<void> safeSignOut(BuildContext context) async {
     );
   }
 
+  bool exportFailed = false;
   try {
     if (userId != null) {
-      _log.fine('Export vers Supabase pour uid=$userId');
-      final ok = await exportUsecase.exportData(
-        ExportImportBloc.exportZipFileName,
-        ExportImportBloc.userActivityJsonFileName,
-        ExportImportBloc.userIntakeJsonFileName,
-        ExportImportBloc.trackedDayJsonFileName,
-        ExportImportBloc.userWeightJsonFileName,
-      );
-      _log.log(
-        ok ? Level.FINE : Level.WARNING,
-        ok ? 'Export réussi' : 'Export échoué – utilisateur toujours connecté',
-      );
-      if (!ok) {
-        if (context.mounted) {
-          Navigator.of(context, rootNavigator: true).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(S.of(context).signOutOfflineMessage)),
+      final localDate = await configRepo.getLastDataUpdate();
+      DateTime? remoteDate;
+      try {
+        final files =
+            await supabase.storage.from('exports').list(path: userId);
+        final file = files.firstWhereOrNull(
+            (f) => f.name == ExportImportBloc.exportZipFileName);
+        if (file != null && file.updatedAt != null) {
+          remoteDate = DateTime.parse(file.updatedAt!);
+        }
+      } catch (e, stack) {
+        _log.warning('Unable to fetch remote timestamp', e, stack);
+      }
+
+      final needsUpload = localDate != null &&
+          (remoteDate == null || localDate.isAfter(remoteDate));
+
+      if (needsUpload) {
+        _log.fine('Export vers Supabase pour uid=$userId');
+        var ok = await exportUsecase.exportData(
+          ExportImportBloc.exportZipFileName,
+          ExportImportBloc.userActivityJsonFileName,
+          ExportImportBloc.userIntakeJsonFileName,
+          ExportImportBloc.trackedDayJsonFileName,
+          ExportImportBloc.userWeightJsonFileName,
+        );
+        if (!ok) {
+          _log.warning('Premier export échoué – nouvelle tentative');
+          ok = await exportUsecase.exportData(
+            ExportImportBloc.exportZipFileName,
+            ExportImportBloc.userActivityJsonFileName,
+            ExportImportBloc.userIntakeJsonFileName,
+            ExportImportBloc.trackedDayJsonFileName,
+            ExportImportBloc.userWeightJsonFileName,
           );
         }
-        return;
+        exportFailed = !ok;
+        _log.log(
+          ok ? Level.FINE : Level.WARNING,
+          ok ? 'Export réussi' : 'Export échoué – on déconnecte quand même',
+        );
       }
     } else {
       _log.warning('safeSignOut appelé sans session active');
     }
   } catch (err, stack) {
+    exportFailed = true;
     _log.severe('Erreur pendant export', err, stack);
-    if (context.mounted && userId != null) {
-      Navigator.of(context, rootNavigator: true).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(S.of(context).signOutOfflineMessage)),
-      );
-    }
-    return;
   } finally {
     // ▸ 1. Déconnexion Supabase
     try {
@@ -93,6 +100,11 @@ Future<void> safeSignOut(BuildContext context) async {
         context,
         rootNavigator: true,
       ).popUntil((route) => route.isFirst);
+      if (exportFailed) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(S.of(context).signOutSyncFailedMessage)),
+        );
+      }
     }
 
     // ▸ 3. Redirige vers la page login

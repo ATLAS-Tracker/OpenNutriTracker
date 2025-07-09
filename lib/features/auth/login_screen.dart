@@ -85,13 +85,22 @@ class _LoginScreenState extends State<LoginScreen> {
         await registerUserScope(hive);
         await hive.clearAllData();
         final importData = locator<ImportDataSupabaseUsecase>();
-        await importData.importData(
+        final importSuccessful = await importData.importData(
           ExportImportBloc.exportZipFileName,
           ExportImportBloc.userActivityJsonFileName,
           ExportImportBloc.userIntakeJsonFileName,
           ExportImportBloc.trackedDayJsonFileName,
           ExportImportBloc.userWeightJsonFileName,
         );
+
+        if (!importSuccessful) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(S.of(context).exportImportErrorLabel)),
+            );
+          }
+          return;
+        }
         _navigateHome();
       }
     } on AuthException catch (e) {

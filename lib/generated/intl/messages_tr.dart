@@ -734,6 +734,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingsVolumeLabel": MessageLookupByLibrary.simpleMessage("Hacim"),
         "signOutOfflineMessage": MessageLookupByLibrary.simpleMessage(
             "Verilerin kaybolmaması için yalnızca internet bağlantısı olduğunda çıkış yapabilirsiniz."),
+        "signOutSyncFailedMessage": MessageLookupByLibrary.simpleMessage(
+            "Veriler senkronize edilemedi. Lütfen daha sonra tekrar giriş yapın."),
         "snackExample": MessageLookupByLibrary.simpleMessage(
             "ör. elma, dondurma, çikolata ..."),
         "snackLabel": MessageLookupByLibrary.simpleMessage("Atıştırmalık"),

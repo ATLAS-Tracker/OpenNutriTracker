@@ -459,4 +459,5 @@
   "mealPortionLabel": "Nombre de portions",
   "portionEatLabel": "Portion mangée",
   "noFoodAddedLabel": "Aucun aliment ajouté",
-  "signOutOfflineMessage": "Vous ne pouvez vous déconnecter que lorsque la connexion internet est rétablie pour ne pas perdre vos données."}
+  "signOutOfflineMessage": "Vous ne pouvez vous déconnecter que lorsque la connexion internet est rétablie pour ne pas perdre vos données.",
+  "signOutSyncFailedMessage": "Échec de la synchronisation des données. Veuillez vous reconnecter plus tard."

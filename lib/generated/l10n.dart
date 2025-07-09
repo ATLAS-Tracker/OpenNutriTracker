@@ -4621,6 +4621,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Failed to sync your data. Please sign in again later.`
+  String get signOutSyncFailedMessage {
+    return Intl.message(
+      'Failed to sync your data. Please sign in again later.',
+      name: 'signOutSyncFailedMessage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
