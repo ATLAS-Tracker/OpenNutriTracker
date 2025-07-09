@@ -190,4 +190,9 @@ class TrackedDayDataSource {
       await updateDay.save();
     }
   }
+
+  Future<void> deleteTrackedDay(DateTime day) async {
+    log.fine('Deleting tracked day from db');
+    await _hive.trackedDayBox.delete(day.toParsedDay());
+  }
 }

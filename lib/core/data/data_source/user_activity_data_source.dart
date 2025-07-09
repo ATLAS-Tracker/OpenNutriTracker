@@ -33,6 +33,7 @@ class UserActivityDataSource {
   Future<List<UserActivityDBO>> getAllUserActivities() async {
     return _hive.userActivityBox.values.toList();
   }
+
   Future<List<UserActivityDBO>> getAllUserActivitiesByDate(
       DateTime dateTime) async {
     return _hive.userActivityBox.values
@@ -42,20 +43,21 @@ class UserActivityDataSource {
 
   Future<List<UserActivityDBO>> getRecentlyAddedUserActivity(
       {int number = 20}) async {
-    final userActivities = _hive.userActivityBox.values.toList().reversed;
+    final userActivities =
+        _hive.userActivityBox.values.toList().reversed.toList();
 
-    //  sort list by date and filter unique activities
-    userActivities
-        .toList()
-        .sort((a, b) => a.date.toString().compareTo(b.date.toString()));
+    // Sort list by date (descending or ascending, adjust as needed)
+    userActivities.sort(
+        (a, b) => b.date.compareTo(a.date)); // Or a.date.compareTo(b.date)
 
+    // Filter to get unique activities based on their code
     final filterActivityCodes = <String>{};
     final uniqueUserActivities = userActivities
         .where((activity) =>
             filterActivityCodes.add(activity.physicalActivityDBO.code))
         .toList();
 
-    // return range or full list
+    // Return the desired number or full list if not enough items
     try {
       return uniqueUserActivities.getRange(0, number).toList();
     } on RangeError catch (_) {
