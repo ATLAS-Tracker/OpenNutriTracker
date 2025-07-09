@@ -160,11 +160,13 @@ class HiveDBProvider extends ChangeNotifier {
     }
   }
 
-  /// Removes all entries from every opened Hive box.
+  /// Removes all user data from the opened Hive boxes.
+  ///
+  /// The configuration box is intentionally **not** cleared so that user
+  /// preferences such as theme and units persist across logins.
   Future<void> clearAllData() async {
-    _log.info('🗑️ Clearing all Hive boxes');
+    _log.info('🗑️ Clearing user Hive boxes');
     await Future.wait([
-      configBox.clear(),
       intakeBox.clear(),
       recipeBox.clear(),
       userActivityBox.clear(),

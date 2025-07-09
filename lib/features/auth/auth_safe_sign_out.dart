@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:collection/collection.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 import 'package:opennutritracker/core/utils/locator.dart';
@@ -18,8 +19,18 @@ Future<void> safeSignOut(BuildContext context) async {
   final supabase = locator<SupabaseClient>();
   final exportUsecase = locator<ExportDataSupabaseUsecase>();
   final configRepo = locator<ConfigRepository>();
+  final connectivity = Connectivity();
   final userId = supabase.auth.currentUser?.id;
 
+  // If there is no connection, abort and ask the user to retry later.
+  if (await connectivity.checkConnectivity() == ConnectivityResult.none) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.of(context).signOutOfflineMessage)),
+      );
+    }
+    return;
+  }
 
   // Affiche un loader **uniquement** si l’utilisateur est connecté
   if (userId != null && context.mounted) {
@@ -81,37 +92,41 @@ Future<void> safeSignOut(BuildContext context) async {
   } catch (err, stack) {
     exportFailed = true;
     _log.severe('Erreur pendant export', err, stack);
-  } finally {
-    // ▸ 1. Déconnexion Supabase
-    try {
-      _log.fine('Appel supabase.auth.signOut()');
-      await supabase.auth.signOut();
-    } catch (err, stack) {
-      _log.warning('Erreur pendant signOut', err, stack);
-    }
-
-    final hive = locator<HiveDBProvider>();
-    await hive.initForUser(null);
-    await registerUserScope(hive);
-
-    // ▸ 2. Ferme le loader
-    if (context.mounted) {
-      Navigator.of(
-        context,
-        rootNavigator: true,
-      ).popUntil((route) => route.isFirst);
-      if (exportFailed) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(S.of(context).signOutSyncFailedMessage)),
-        );
-      }
-    }
-
-    // ▸ 3. Redirige vers la page login
-    if (context.mounted) {
-      Navigator.of(context).pushReplacementNamed(NavigationOptions.loginRoute);
-    }
-
-    _log.fine('safeSignOut terminé → retour login.');
   }
+
+  if (exportFailed) {
+    if (context.mounted && userId != null) {
+      Navigator.of(context, rootNavigator: true)
+          .popUntil((route) => route.isFirst);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.of(context).signOutSyncFailedMessage)),
+      );
+    }
+    return;
+  }
+
+  // ▸ 1. Déconnexion Supabase
+  try {
+    _log.fine('Appel supabase.auth.signOut()');
+    await supabase.auth.signOut();
+  } catch (err, stack) {
+    _log.warning('Erreur pendant signOut', err, stack);
+  }
+
+  final hive = locator<HiveDBProvider>();
+  await hive.initForUser(null);
+  await registerUserScope(hive);
+
+  // ▸ 2. Ferme le loader
+  if (context.mounted && userId != null) {
+    Navigator.of(context, rootNavigator: true)
+        .popUntil((route) => route.isFirst);
+  }
+
+  // ▸ 3. Redirige vers la page login
+  if (context.mounted) {
+    Navigator.of(context).pushReplacementNamed(NavigationOptions.loginRoute);
+  }
+
+  _log.fine('safeSignOut terminé → retour login.');
 }
