@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:opennutritracker/generated/l10n.dart';
 
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/export_data_supabase_usecase.dart';
@@ -14,7 +16,19 @@ final _log = Logger('AuthSafeSignOut');
 Future<void> safeSignOut(BuildContext context) async {
   final supabase = locator<SupabaseClient>();
   final exportUsecase = locator<ExportDataSupabaseUsecase>();
+  final connectivity = Connectivity();
   final userId = supabase.auth.currentUser?.id;
+
+  // Vérifie la connexion internet avant toute action
+  if (userId != null &&
+      await connectivity.checkConnectivity() == ConnectivityResult.none) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.of(context).signOutOfflineMessage)),
+      );
+    }
+    return;
+  }
 
   // Affiche un loader **uniquement** si l’utilisateur est connecté
   if (userId != null && context.mounted) {
@@ -37,13 +51,29 @@ Future<void> safeSignOut(BuildContext context) async {
       );
       _log.log(
         ok ? Level.FINE : Level.WARNING,
-        ok ? 'Export réussi' : 'Export échoué – on continue quand même',
+        ok ? 'Export réussi' : 'Export échoué – utilisateur toujours connecté',
       );
+      if (!ok) {
+        if (context.mounted) {
+          Navigator.of(context, rootNavigator: true).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(S.of(context).signOutOfflineMessage)),
+          );
+        }
+        return;
+      }
     } else {
       _log.warning('safeSignOut appelé sans session active');
     }
   } catch (err, stack) {
     _log.severe('Erreur pendant export', err, stack);
+    if (context.mounted && userId != null) {
+      Navigator.of(context, rootNavigator: true).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.of(context).signOutOfflineMessage)),
+      );
+    }
+    return;
   } finally {
     // ▸ 1. Déconnexion Supabase
     try {

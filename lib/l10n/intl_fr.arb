@@ -458,5 +458,5 @@
   "errorRecipeLabel": "Aucune recette trouvée",
   "mealPortionLabel": "Nombre de portions",
   "portionEatLabel": "Portion mangée",
-  "noFoodAddedLabel": "Aucun aliment ajouté"
-}
+  "noFoodAddedLabel": "Aucun aliment ajouté",
+  "signOutOfflineMessage": "Vous ne pouvez vous déconnecter que lorsque la connexion internet est rétablie pour ne pas perdre vos données."}

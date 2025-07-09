@@ -445,5 +445,5 @@
   "errorRecipeLabel": "Kein Rezept gefunden",
   "mealPortionLabel": "Anzahl der Portionen",
   "portionEatLabel": "Verzehrte Portion",
-  "noFoodAddedLabel": "Kein Lebensmittel hinzugefügt"
-}
+  "noFoodAddedLabel": "Kein Lebensmittel hinzugefügt",
+  "signOutOfflineMessage": "Sie k\u00f6nnen sich nur abmelden, wenn eine Internetverbindung besteht, um Datenverlust zu vermeiden."}

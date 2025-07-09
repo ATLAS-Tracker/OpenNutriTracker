@@ -4611,6 +4611,16 @@ class S {
       args: [],
     );
   }
+
+  /// `You can only sign out when internet connection is available to avoid losing data.`
+  String get signOutOfflineMessage {
+    return Intl.message(
+      'You can only sign out when internet connection is available to avoid losing data.',
+      name: 'signOutOfflineMessage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
