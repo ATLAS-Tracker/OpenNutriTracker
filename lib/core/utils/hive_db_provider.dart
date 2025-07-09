@@ -160,6 +160,20 @@ class HiveDBProvider extends ChangeNotifier {
     }
   }
 
+  /// Removes all entries from every opened Hive box.
+  Future<void> clearAllData() async {
+    _log.info('🗑️ Clearing all Hive boxes');
+    await Future.wait([
+      configBox.clear(),
+      intakeBox.clear(),
+      recipeBox.clear(),
+      userActivityBox.clear(),
+      userBox.clear(),
+      trackedDayBox.clear(),
+      userWeightBox.clear(),
+    ]);
+  }
+
   /// Helper to (re)initialize Hive for the provided [userId].
   /// This fetches the encryption key from secure storage and delegates
   /// to [initHiveDB].
