@@ -14,6 +14,7 @@ import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
+import 'dart:typed_data';
 
 /// Imports user data from a zip stored on Supabase storage.
 /// Existing entries are replaced if the incoming entry has a more recent
@@ -48,8 +49,17 @@ class ImportDataSupabaseUsecase {
         return false;
       }
 
+      final bucket = _client.storage.from('exports');
+      final files = await bucket.list(path: userId);
+      final hasArchive = files.any((f) => f.name == exportZipFileName);
+
+      if (!hasArchive) {
+        _log.fine('No export archive found – first login, skipping import');
+        return true; // 👍 Rien à synchroniser
+      }
+
       final filePath = '$userId/$exportZipFileName';
-      final data = await _client.storage.from('exports').download(filePath);
+      final Uint8List data = await bucket.download(filePath);
       final archive = ZipDecoder().decodeBytes(data);
 
       // The zip has been downloaded therefore we can clear the local database

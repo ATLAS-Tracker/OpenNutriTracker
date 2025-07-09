@@ -79,10 +79,13 @@ class _LoginScreenState extends State<LoginScreen> {
         password: pass,
       );
 
-      if (res.session != null && mounted) {
+      if (res.session != null) {
+        // ── 1. Prépare Hive pour le user (nécessaire à l’import)
         final hive = locator<HiveDBProvider>();
         await hive.initForUser(res.user?.id);
         await registerUserScope(hive);
+
+        // ── 2. Tente l’import
         final importData = locator<ImportDataSupabaseUsecase>();
         final importSuccessful = await importData.importData(
           ExportImportBloc.exportZipFileName,
@@ -92,14 +95,27 @@ class _LoginScreenState extends State<LoginScreen> {
           ExportImportBloc.userWeightJsonFileName,
         );
 
+        // ── 3. ERREUR D’IMPORT  →  on déconnecte la session
         if (!importSuccessful) {
+          try {
+            await supabase.auth.signOut(); // libère le « verrou »
+          } catch (e, s) {
+            Logger('LoginScreen').warning('Forced sign-out failed', e, s);
+          }
+
+          // Nettoie la base locale (facultatif mais recommandé)
+          await hive.initForUser(null);
+          await registerUserScope(hive);
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(S.of(context).exportImportErrorLabel)),
             );
           }
-          return;
+          return; // reste sur l’écran de login
         }
+
+        // ── 4. Tout est OK  →  on passe à l’app
         _navigateHome();
       }
     } on AuthException catch (e) {
