@@ -33,8 +33,8 @@ class TrackedDayRepository {
     DateTime start,
     DateTime end,
   ) async {
-    final List<TrackedDayDBO> trackedDaysDBO = await _trackedDayDataSource
-        .getTrackedDaysInRange(start, end);
+    final List<TrackedDayDBO> trackedDaysDBO =
+        await _trackedDayDataSource.getTrackedDaysInRange(start, end);
 
     return trackedDaysDBO
         .map(
@@ -165,5 +165,9 @@ class TrackedDayRepository {
       fatAmount: fatTracked,
       proteinAmount: proteinTracked,
     );
+  }
+
+  Future<void> deleteTrackedDay(DateTime day) async {
+    await _trackedDayDataSource.deleteTrackedDay(day);
   }
 }

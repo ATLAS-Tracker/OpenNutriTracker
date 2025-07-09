@@ -62,10 +62,16 @@ class ImportDataSupabaseUsecase {
       final userActivityDBOs =
           userActivityList.map((e) => UserActivityDBO.fromJson(e)).toList();
 
-      final existingActivities = await _userActivityRepository.getAllUserActivityDBO();
-      final activityMap = {
-        for (final a in existingActivities) a.id: a
-      };
+      final existingActivities =
+          await _userActivityRepository.getAllUserActivityDBO();
+      final activityMap = {for (final a in existingActivities) a.id: a};
+      final activityIds = userActivityDBOs.map((e) => e.id).toSet();
+      for (final existing in existingActivities) {
+        if (!activityIds.contains(existing.id)) {
+          await _userActivityRepository.deleteUserActivity(
+              UserActivityEntity.fromUserActivityDBO(existing));
+        }
+      }
       for (final dbo in userActivityDBOs) {
         final current = activityMap[dbo.id];
         if (current == null) {
@@ -89,13 +95,20 @@ class ImportDataSupabaseUsecase {
 
       final existingIntakes = await _intakeRepository.getAllIntakesDBO();
       final intakeMap = {for (final i in existingIntakes) i.id: i};
+      final intakeIds = intakeDBOs.map((e) => e.id).toSet();
+      for (final existing in existingIntakes) {
+        if (!intakeIds.contains(existing.id)) {
+          await _intakeRepository
+              .deleteIntake(IntakeEntity.fromIntakeDBO(existing));
+        }
+      }
       for (final dbo in intakeDBOs) {
         final current = intakeMap[dbo.id];
         if (current == null) {
           await _intakeRepository.addAllIntakeDBOs([dbo]);
         } else if (dbo.updatedAt.isAfter(current.updatedAt)) {
-          await _intakeRepository.deleteIntake(
-              IntakeEntity.fromIntakeDBO(current));
+          await _intakeRepository
+              .deleteIntake(IntakeEntity.fromIntakeDBO(current));
           await _intakeRepository.addAllIntakeDBOs([dbo]);
         }
       }
@@ -113,9 +126,15 @@ class ImportDataSupabaseUsecase {
           trackedDayList.map((e) => TrackedDayDBO.fromJson(e)).toList();
 
       final existingDays = await _trackedDayRepository.getAllTrackedDaysDBO();
-      final dayMap = {
-        for (final d in existingDays) d.day.toIso8601String(): d
-      };
+      final dayMap = {for (final d in existingDays) d.day.toIso8601String(): d};
+      final dayKeys =
+          trackedDayDBOs.map((e) => e.day.toIso8601String()).toSet();
+      for (final existing in existingDays) {
+        final key = existing.day.toIso8601String();
+        if (!dayKeys.contains(key)) {
+          await _trackedDayRepository.deleteTrackedDay(existing.day);
+        }
+      }
       final List<TrackedDayDBO> daysToSave = [];
       for (final dbo in trackedDayDBOs) {
         final key = dbo.day.toIso8601String();
@@ -140,14 +159,27 @@ class ImportDataSupabaseUsecase {
       final userWeightDBOs =
           userWeightList.map((e) => UserWeightDbo.fromJson(e)).toList();
 
-      final existingWeights = await _userWeightRepository.getAllUserWeightDBOs();
+      final existingWeights =
+          await _userWeightRepository.getAllUserWeightDBOs();
       final weightMap = {
         for (final w in existingWeights)
           DateTime(w.date.year, w.date.month, w.date.day).toIso8601String(): w
       };
-      for (final dbo in userWeightDBOs) {
+      final weightKeys = userWeightDBOs
+          .map((e) =>
+              DateTime(e.date.year, e.date.month, e.date.day).toIso8601String())
+          .toSet();
+      for (final existing in existingWeights) {
         final key =
-            DateTime(dbo.date.year, dbo.date.month, dbo.date.day).toIso8601String();
+            DateTime(existing.date.year, existing.date.month, existing.date.day)
+                .toIso8601String();
+        if (!weightKeys.contains(key)) {
+          await _userWeightRepository.deleteUserWeightByDate(existing.date);
+        }
+      }
+      for (final dbo in userWeightDBOs) {
+        final key = DateTime(dbo.date.year, dbo.date.month, dbo.date.day)
+            .toIso8601String();
         final current = weightMap[key];
         if (current == null) {
           await _userWeightRepository.addAllUserWeightDBOs([dbo]);
