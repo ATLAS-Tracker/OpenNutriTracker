@@ -82,6 +82,23 @@ Future<void> safeSignOut(BuildContext context) async {
           ok ? Level.FINE : Level.WARNING,
           ok ? 'Export réussi' : 'Export échoué – on déconnecte quand même',
         );
+
+        if (ok) {
+          DateTime? uploadedDate;
+          try {
+            final newFiles =
+                await supabase.storage.from('exports').list(path: userId);
+            final uploaded = newFiles.firstWhereOrNull(
+                (f) => f.name == ExportImportBloc.exportZipFileName);
+            if (uploaded != null && uploaded.updatedAt != null) {
+              uploadedDate = DateTime.parse(uploaded.updatedAt!);
+            }
+          } catch (e, stack) {
+            _log.warning('Unable to fetch uploaded timestamp', e, stack);
+          }
+          await configRepo
+              .setLastDataUpdate((uploadedDate ?? DateTime.now()).toUtc());
+        }
       }
     } else {
       _log.warning('safeSignOut appelé sans session active');
