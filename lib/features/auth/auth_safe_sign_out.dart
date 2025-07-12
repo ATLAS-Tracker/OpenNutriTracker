@@ -19,7 +19,7 @@ Future<void> safeSignOut(BuildContext context) async {
   final supabase = locator<SupabaseClient>();
   final exportUsecase = locator<ExportDataSupabaseUsecase>();
   final configRepo = locator<ConfigRepository>();
-  final connectivity = Connectivity();
+  final connectivity = locator<Connectivity>();
   final userId = supabase.auth.currentUser?.id;
 
   // If there is no connection, abort and ask the user to retry later.
@@ -63,22 +63,19 @@ Future<void> safeSignOut(BuildContext context) async {
 
       if (needsUpload) {
         _log.fine('Export vers Supabase pour uid=$userId');
-        var ok = await exportUsecase.exportData(
-          ExportImportBloc.exportZipFileName,
-          ExportImportBloc.userActivityJsonFileName,
-          ExportImportBloc.userIntakeJsonFileName,
-          ExportImportBloc.trackedDayJsonFileName,
-          ExportImportBloc.userWeightJsonFileName,
-        );
+
+        Future<bool> doExport() => exportUsecase.exportData(
+              ExportImportBloc.exportZipFileName,
+              ExportImportBloc.userActivityJsonFileName,
+              ExportImportBloc.userIntakeJsonFileName,
+              ExportImportBloc.trackedDayJsonFileName,
+              ExportImportBloc.userWeightJsonFileName,
+            );
+
+        var ok = await doExport();
         if (!ok) {
           _log.warning('Premier export échoué – nouvelle tentative');
-          ok = await exportUsecase.exportData(
-            ExportImportBloc.exportZipFileName,
-            ExportImportBloc.userActivityJsonFileName,
-            ExportImportBloc.userIntakeJsonFileName,
-            ExportImportBloc.trackedDayJsonFileName,
-            ExportImportBloc.userWeightJsonFileName,
-          );
+          ok = await doExport();
         }
         exportFailed = !ok;
         _log.log(

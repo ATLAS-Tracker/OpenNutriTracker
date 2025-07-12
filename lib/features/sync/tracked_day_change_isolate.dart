@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:opennutritracker/core/data/dbo/tracked_day_dbo.dart';
 import 'package:opennutritracker/core/utils/extensions.dart'; // toParsedDay()
@@ -24,7 +25,7 @@ class TrackedDayChangeIsolate extends ChangeIsolate<DateTime> {
     Connectivity? connectivity,
     this.batchSize = 20,
   })  : _service = service ?? SupabaseTrackedDayService(),
-        _connectivity = connectivity ?? Connectivity(),
+        _connectivity = connectivity ?? locator<Connectivity>(),
         super(
           box: box,
           extractor: (event) {

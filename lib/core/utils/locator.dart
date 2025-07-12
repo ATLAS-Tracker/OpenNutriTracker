@@ -1,5 +1,6 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get_it/get_it.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:opennutritracker/core/data/data_source/config_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/intake_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/recipe_data_source.dart';
@@ -98,6 +99,8 @@ Future<void> initLocator() async {
   locator.registerLazySingleton<CacheManager>(
     () => OntImageCacheManager.instance,
   );
+
+  locator.registerLazySingleton<Connectivity>(() => Connectivity());
 
   await registerUserScope(hiveDBProvider);
 }
