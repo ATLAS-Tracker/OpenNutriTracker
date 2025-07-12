@@ -62,17 +62,24 @@ class ImportDataSupabaseUsecase {
       final Uint8List data = await bucket.download(filePath);
       final archive = ZipDecoder().decodeBytes(data);
 
-      // The zip has been downloaded therefore we can clear the local database
+      // Verify archive integrity here
+      final userActivityFile = archive.findFile(userActivityJsonFileName);
+      final intakeFile = archive.findFile(userIntakeJsonFileName);
+      final trackedDayFile = archive.findFile(trackedDayJsonFileName);
+      final userWeightFile = archive.findFile(userWeightJsonFileName);
+
+      if ([userActivityFile, intakeFile, trackedDayFile, userWeightFile]
+          .any((f) => f == null)) {
+        throw Exception('Archive is missing required files');
+      }
+
+      // The zip has been downloaded and validated, we can clear the local database
       final hive = locator<HiveDBProvider>();
       await hive.clearAllData();
 
       // ----- USER ACTIVITY -----
-      final userActivityFile = archive.findFile(userActivityJsonFileName);
-      if (userActivityFile == null) {
-        throw Exception('User activity file not found');
-      }
       final userActivityJsonString =
-          utf8.decode(userActivityFile.content as List<int>);
+          utf8.decode(userActivityFile!.content as List<int>);
       final userActivityList = (jsonDecode(userActivityJsonString) as List)
           .cast<Map<String, dynamic>>();
       final userActivityDBOs =
@@ -100,11 +107,7 @@ class ImportDataSupabaseUsecase {
       }
 
       // ----- INTAKES -----
-      final intakeFile = archive.findFile(userIntakeJsonFileName);
-      if (intakeFile == null) {
-        throw Exception('Intake file not found');
-      }
-      final intakeJsonString = utf8.decode(intakeFile.content as List<int>);
+      final intakeJsonString = utf8.decode(intakeFile!.content as List<int>);
       final intakeList =
           (jsonDecode(intakeJsonString) as List).cast<Map<String, dynamic>>();
       final intakeDBOs = intakeList.map((e) => IntakeDBO.fromJson(e)).toList();
@@ -130,12 +133,8 @@ class ImportDataSupabaseUsecase {
       }
 
       // ----- TRACKED DAYS -----
-      final trackedDayFile = archive.findFile(trackedDayJsonFileName);
-      if (trackedDayFile == null) {
-        throw Exception('Tracked day file not found');
-      }
       final trackedDayJsonString =
-          utf8.decode(trackedDayFile.content as List<int>);
+          utf8.decode(trackedDayFile!.content as List<int>);
       final trackedDayList = (jsonDecode(trackedDayJsonString) as List)
           .cast<Map<String, dynamic>>();
       final trackedDayDBOs =
@@ -164,12 +163,8 @@ class ImportDataSupabaseUsecase {
       }
 
       // ----- USER WEIGHT -----
-      final userWeightFile = archive.findFile(userWeightJsonFileName);
-      if (userWeightFile == null) {
-        throw Exception('User weight file not found');
-      }
       final userWeightJsonString =
-          utf8.decode(userWeightFile.content as List<int>);
+          utf8.decode(userWeightFile!.content as List<int>);
       final userWeightList = (jsonDecode(userWeightJsonString) as List)
           .cast<Map<String, dynamic>>();
       final userWeightDBOs =
