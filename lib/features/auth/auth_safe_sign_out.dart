@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
@@ -12,6 +11,7 @@ import 'package:opennutritracker/features/settings/presentation/bloc/export_impo
 import 'package:opennutritracker/core/utils/navigation_options.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:opennutritracker/core/data/repository/config_repository.dart';
+import 'package:opennutritracker/features/settings/domain/repository/supabase_exports_repository.dart';
 
 final _log = Logger('AuthSafeSignOut');
 
@@ -19,6 +19,7 @@ Future<void> safeSignOut(BuildContext context) async {
   final supabase = locator<SupabaseClient>();
   final exportUsecase = locator<ExportDataSupabaseUsecase>();
   final configRepo = locator<ConfigRepository>();
+  final exportsRepo = locator<SupabaseExportsRepository>();
   final connectivity = locator<Connectivity>();
   final userId = supabase.auth.currentUser?.id;
 
@@ -47,12 +48,12 @@ Future<void> safeSignOut(BuildContext context) async {
       final localDate = await configRepo.getLastDataUpdate();
       DateTime? remoteDate;
       try {
-        final files =
-            await supabase.storage.from('exports').list(path: userId);
-        final file = files.firstWhereOrNull(
-            (f) => f.name == ExportImportBloc.exportZipFileName);
-        if (file != null && file.updatedAt != null) {
-          remoteDate = DateTime.parse(file.updatedAt!);
+        final file = await exportsRepo.fetchExportFile(
+          userId,
+          ExportImportBloc.exportZipFileName,
+        );
+        if (file != null) {
+          remoteDate = exportsRepo.fileTimestamp(file);
         }
       } catch (e, stack) {
         _log.warning('Unable to fetch remote timestamp', e, stack);
@@ -82,6 +83,25 @@ Future<void> safeSignOut(BuildContext context) async {
           ok ? Level.FINE : Level.WARNING,
           ok ? 'Export réussi' : 'Export échoué – on déconnecte quand même',
         );
+
+        if (ok) {
+          _log.fine('Export terminé avec succès');
+          DateTime? uploadedDate;
+          try {
+            final uploaded = await exportsRepo.fetchExportFile(
+              userId,
+              ExportImportBloc.exportZipFileName,
+            );
+            if (uploaded != null) {
+              uploadedDate = exportsRepo.fileTimestamp(uploaded);
+            }
+          } catch (e, stack) {
+            _log.warning('Unable to fetch uploaded timestamp', e, stack);
+          }
+          if (uploadedDate != null) {
+            await configRepo.setLastDataUpdate(uploadedDate.toUtc());
+          }
+        }
       }
     } else {
       _log.warning('safeSignOut appelé sans session active');

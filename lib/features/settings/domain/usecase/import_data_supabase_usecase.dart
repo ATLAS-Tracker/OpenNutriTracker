@@ -10,11 +10,13 @@ import 'package:opennutritracker/core/data/repository/intake_repository.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
+import 'package:opennutritracker/core/data/repository/config_repository.dart';
 import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'dart:typed_data';
+import 'package:opennutritracker/features/settings/domain/repository/supabase_exports_repository.dart';
 
 /// Imports user data from a zip stored on Supabase storage.
 /// Existing entries are replaced if the incoming entry has a more recent
@@ -25,6 +27,8 @@ class ImportDataSupabaseUsecase {
   final TrackedDayRepository _trackedDayRepository;
   final UserWeightRepository _userWeightRepository;
   final SupabaseClient _client;
+  final ConfigRepository _configRepository;
+  final SupabaseExportsRepository _exportsRepository;
   final _log = Logger('ImportDataSupabaseUsecase');
 
   ImportDataSupabaseUsecase(
@@ -33,6 +37,8 @@ class ImportDataSupabaseUsecase {
     this._trackedDayRepository,
     this._userWeightRepository,
     this._client,
+    this._configRepository,
+    this._exportsRepository,
   );
 
   Future<bool> importData(
@@ -50,12 +56,18 @@ class ImportDataSupabaseUsecase {
       }
 
       final bucket = _client.storage.from('exports');
-      final files = await bucket.list(path: userId);
-      final hasArchive = files.any((f) => f.name == exportZipFileName);
+      final file = await _exportsRepository.fetchExportFile(userId, exportZipFileName);
 
-      if (!hasArchive) {
+      if (file == null) {
         _log.fine('No export archive found – first login, skipping import');
         return true; // 👍 Rien à synchroniser
+      }
+
+      final localDate = await _configRepository.getLastDataUpdate();
+      final remoteDate = _exportsRepository.fileTimestamp(file);
+      if (localDate != null && remoteDate != null && !remoteDate.isAfter(localDate)) {
+        _log.fine('Local data is up to date – skipping import');
+        return true;
       }
 
       final filePath = '$userId/$exportZipFileName';

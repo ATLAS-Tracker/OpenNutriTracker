@@ -6,6 +6,7 @@ import 'package:opennutritracker/core/data/repository/intake_repository.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
+import 'package:opennutritracker/core/data/repository/config_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:logging/logging.dart';
 
@@ -16,10 +17,17 @@ class ExportDataSupabaseUsecase {
   final TrackedDayRepository _trackedDayRepository;
   final UserWeightRepository _userWeightRepository;
   final SupabaseClient _client;
+  final ConfigRepository _configRepository;
   final _log = Logger('ExportServiceZipSupabaseUsecase');
 
-  ExportDataSupabaseUsecase(this._userActivityRepository,
-      this._intakeRepository, this._trackedDayRepository, this._userWeightRepository, this._client);
+  ExportDataSupabaseUsecase(
+    this._userActivityRepository,
+    this._intakeRepository,
+    this._trackedDayRepository,
+    this._userWeightRepository,
+    this._client,
+    this._configRepository,
+  );
 
   /// Creates a zipped backup and uploads it to Supabase storage.
   Future<bool> exportData(
@@ -70,10 +78,19 @@ class ExportDataSupabaseUsecase {
     final userId = _client.auth.currentUser?.id ?? 'unknown';
     final filePath = '$userId/$exportZipFileName';
     try {
+      final localDate = await _configRepository.getLastDataUpdate();
+      final metadata = <String, String>{};
+      if (localDate != null) {
+        metadata['lastDataUpdate'] = localDate.toUtc().toIso8601String();
+      }
       await _client.storage.from('exports').uploadBinary(
-          filePath, Uint8List.fromList(zipBytes),
-          fileOptions:
-              const FileOptions(contentType: 'application/zip', upsert: true));
+          filePath,
+          Uint8List.fromList(zipBytes),
+          fileOptions: FileOptions(
+            contentType: 'application/zip',
+            upsert: true,
+            metadata: metadata.isEmpty ? null : metadata,
+          ));
       return true;
     } catch (e, stack) {
       _log.severe('Upload FAILED for “$filePath”.', e, stack);
