@@ -36,7 +36,7 @@ class ConfigDBO extends HiveObject {
       this.lastDataUpdate});
 
   factory ConfigDBO.empty() =>
-      ConfigDBO(false, false, false, AppThemeDBO.system);
+      ConfigDBO(true, false, false, AppThemeDBO.system);
 
   factory ConfigDBO.fromConfigEntity(ConfigEntity entity) => ConfigDBO(
       entity.hasAcceptedDisclaimer,

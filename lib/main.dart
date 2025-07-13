@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logging/logging.dart';
-import 'package:opennutritracker/core/data/data_source/user_data_source.dart';
 import 'package:opennutritracker/core/data/repository/config_repository.dart';
 import 'package:opennutritracker/core/domain/entity/app_theme_entity.dart';
 import 'package:opennutritracker/core/presentation/main_screen.dart';
@@ -19,7 +18,6 @@ import 'package:opennutritracker/features/add_meal/presentation/add_meal_screen.
 import 'package:opennutritracker/features/add_weight/presentation/add_weight_screen.dart';
 import 'package:opennutritracker/features/add_activity/presentation/add_activity_screen.dart';
 import 'package:opennutritracker/features/edit_meal/presentation/edit_meal_screen.dart';
-import 'package:opennutritracker/features/onboarding/onboarding_screen.dart';
 import 'package:opennutritracker/features/scanner/scanner_screen.dart';
 import 'package:opennutritracker/features/meal_detail/meal_detail_screen.dart';
 import 'package:opennutritracker/features/settings/settings_screen.dart';
@@ -36,7 +34,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   LoggerConfig.intiLogger();
   await initLocator();
-  final isUserInitialized = await locator<UserDataSource>().hasUserData();
+  // Skip onboarding and use default user values
+  const isUserInitialized = true;
   final hasAuthSession = Supabase.instance.client.auth.currentSession != null;
   final configRepo = locator<ConfigRepository>();
   final hasAcceptedAnonymousData =
@@ -104,15 +103,10 @@ class OpenNutriTrackerApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      initialRoute: hasAuthSession
-          ? (userInitialized
-              ? NavigationOptions.mainRoute
-              : NavigationOptions.onboardingRoute)
-          : NavigationOptions.loginRoute,
+      initialRoute:
+          hasAuthSession ? NavigationOptions.mainRoute : NavigationOptions.loginRoute,
       routes: {
         NavigationOptions.mainRoute: (context) => const MainScreen(),
-        NavigationOptions.onboardingRoute: (context) =>
-            const OnboardingScreen(),
         NavigationOptions.settingsRoute: (context) => const SettingsScreen(),
         NavigationOptions.addMealRoute: (context) => const AddMealScreen(),
         NavigationOptions.scannerRoute: (context) => const ScannerScreen(),

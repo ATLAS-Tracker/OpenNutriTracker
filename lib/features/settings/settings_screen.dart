@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opennutritracker/core/domain/entity/app_theme_entity.dart';
 import 'package:opennutritracker/core/presentation/widgets/app_banner_version.dart';
-import 'package:opennutritracker/core/presentation/widgets/disclaimer_dialog.dart';
 import 'package:opennutritracker/core/utils/app_const.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/theme_mode_provider.dart';
@@ -87,11 +86,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leading: const Icon(Icons.cloud_sync_outlined),
                   title: Text(S.of(context).exportImportSupabaseLabel),
                   onTap: () => _showExportImportSupabaseDialog(context),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.description_outlined),
-                  title: Text(S.of(context).settingsDisclaimerLabel),
-                  onTap: () => _showDisclaimerDialog(context),
                 ),
                 ListTile(
                   leading: const Icon(Icons.bug_report_outlined),
@@ -273,13 +267,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         });
   }
 
-  void _showDisclaimerDialog(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return const DisclaimerDialog();
-        });
-  }
 
   void _showReportErrorDialog(BuildContext context) {
     showDialog(

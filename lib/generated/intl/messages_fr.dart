@@ -131,8 +131,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "dinnerExample":
             MessageLookupByLibrary.simpleMessage("ex : soupe, poulet, vin..."),
         "dinnerLabel": MessageLookupByLibrary.simpleMessage("Dîner"),
-        "disclaimerText": MessageLookupByLibrary.simpleMessage(
-            "OpenNutriTracker n\'est pas une application médicale. Toutes les données fournies ne sont pas validées et doivent être utilisées avec prudence. Veuillez maintenir un mode de vie sain et consulter un professionnel si vous avez des problèmes. L\'utilisation pendant la maladie, la grossesse ou l\'allaitement n\'est pas recommandée."),
         "editItemDialogTitle":
             MessageLookupByLibrary.simpleMessage("Modifier l\'élément"),
         "editMealLabel":
@@ -295,54 +293,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Très sévère"),
         "nutritionalStatusUnderweight":
             MessageLookupByLibrary.simpleMessage("Insuffisance pondérale"),
-        "offDisclaimer": MessageLookupByLibrary.simpleMessage(
-            "Les données qui vous sont fournies par cette application sont récupérées de la base de données Open Food Facts. Aucune garantie ne peut être faite quant à l\'exactitude, l\'exhaustivité ou la fiabilité des informations fournies. Les données sont fournies « telles quelles » et la source d\'origine des données (Open Food Facts) n\'est pas responsable des dommages résultant de l\'utilisation des données."),
-        "onboardingActivityQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage(
-                "Quel est votre niveau d\'activité ? (sans les entraînements)"),
-        "onboardingBirthdayHint":
-            MessageLookupByLibrary.simpleMessage("Entrez la date"),
-        "onboardingBirthdayQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage(
-                "Quelle est votre date de naissance ?"),
-        "onboardingEnterBirthdayLabel":
-            MessageLookupByLibrary.simpleMessage("Date de naissance"),
-        "onboardingGenderQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage("Quel est votre sexe ?"),
-        "onboardingGoalQuestionSubtitle": MessageLookupByLibrary.simpleMessage(
-            "Quel est votre objectif de poids actuel ?"),
-        "onboardingHeightExampleHintCm":
-            MessageLookupByLibrary.simpleMessage("ex : 170"),
-        "onboardingHeightExampleHintFt":
-            MessageLookupByLibrary.simpleMessage("ex : 5.8"),
-        "onboardingHeightQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage(
-                "Quelle est votre taille actuelle ?"),
-        "onboardingIntroDescription": MessageLookupByLibrary.simpleMessage(
-            "Pour commencer, l\'application a besoin de quelques informations vous concernant pour calculer votre objectif calorique quotidien.\nToutes les informations vous concernant sont stockées en toute sécurité sur votre appareil."),
-        "onboardingKcalPerDayLabel":
-            MessageLookupByLibrary.simpleMessage("kcal par jour"),
-        "onboardingOverviewLabel":
-            MessageLookupByLibrary.simpleMessage("Aperçu"),
-        "onboardingSaveUserError": MessageLookupByLibrary.simpleMessage(
-            "Saisie incorrecte, veuillez réessayer"),
-        "onboardingWeightExampleHintKg":
-            MessageLookupByLibrary.simpleMessage("ex : 60"),
-        "onboardingWeightExampleHintLbs":
-            MessageLookupByLibrary.simpleMessage("ex : 132"),
-        "onboardingWeightQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage(
-                "Quel est votre poids actuel ?"),
-        "onboardingWelcomeLabel":
-            MessageLookupByLibrary.simpleMessage("Bienvenue sur"),
-        "onboardingWrongHeightLabel":
-            MessageLookupByLibrary.simpleMessage("Entrez une taille correcte"),
-        "onboardingWrongWeightLabel":
-            MessageLookupByLibrary.simpleMessage("Entrez un poids correct"),
-        "onboardingYourGoalLabel":
-            MessageLookupByLibrary.simpleMessage("Votre objectif calorique :"),
-        "onboardingYourMacrosGoalLabel": MessageLookupByLibrary.simpleMessage(
-            "Vos objectifs en macronutriments :"),
         "ozUnit": MessageLookupByLibrary.simpleMessage("oz"),
         "paAmericanFootballGeneral":
             MessageLookupByLibrary.simpleMessage("football américain"),

@@ -127,8 +127,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "dinnerExample": MessageLookupByLibrary.simpleMessage(
             "e.g. soup, chicken, wine ..."),
         "dinnerLabel": MessageLookupByLibrary.simpleMessage("Dinner"),
-        "disclaimerText": MessageLookupByLibrary.simpleMessage(
-            "OpenNutriTracker is not a medical application. All data provided is not validated and should be used with caution. Please maintain a healthy lifestyle and consult a professional if you have any problems. Use during illness, pregnancy or lactation is not recommended."),
         "editItemDialogTitle":
             MessageLookupByLibrary.simpleMessage("Edit item"),
         "editMealLabel": MessageLookupByLibrary.simpleMessage("Edit meal"),
@@ -286,51 +284,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Very severe"),
         "nutritionalStatusUnderweight":
             MessageLookupByLibrary.simpleMessage("Underweight"),
-        "offDisclaimer": MessageLookupByLibrary.simpleMessage(
-            "The data provided to you by this app are retrieved from the Open Food Facts database. No guarantees can be made for the accuracy, completeness, or reliability of the information provided. The data are provided “as is” and the originating source for the data (Open Food Facts) is not liable for any damages arising out of the use of the data."),
-        "onboardingActivityQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage(
-                "How active are you? (without workouts)"),
-        "onboardingBirthdayHint":
-            MessageLookupByLibrary.simpleMessage("Enter Date"),
-        "onboardingBirthdayQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage("When is your birthday?"),
-        "onboardingEnterBirthdayLabel":
-            MessageLookupByLibrary.simpleMessage("Birthday"),
-        "onboardingGenderQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage("What\'s your gender?"),
-        "onboardingGoalQuestionSubtitle": MessageLookupByLibrary.simpleMessage(
-            "What\'s your current weight goal?"),
-        "onboardingHeightExampleHintCm":
-            MessageLookupByLibrary.simpleMessage("e.g. 170"),
-        "onboardingHeightExampleHintFt":
-            MessageLookupByLibrary.simpleMessage("e.g. 5.8"),
-        "onboardingHeightQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage("Whats your current height?"),
-        "onboardingIntroDescription": MessageLookupByLibrary.simpleMessage(
-            "To start, the app needs some information about you to calculate your daily calorie goal.\nAll information about you is stored securely on your device."),
-        "onboardingKcalPerDayLabel":
-            MessageLookupByLibrary.simpleMessage("kcal per day"),
-        "onboardingOverviewLabel":
-            MessageLookupByLibrary.simpleMessage("Overview"),
-        "onboardingSaveUserError": MessageLookupByLibrary.simpleMessage(
-            "Wrong input, please try again"),
-        "onboardingWeightExampleHintKg":
-            MessageLookupByLibrary.simpleMessage("e.g. 60"),
-        "onboardingWeightExampleHintLbs":
-            MessageLookupByLibrary.simpleMessage("e.g. 132"),
-        "onboardingWeightQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage("Whats your current weight?"),
-        "onboardingWelcomeLabel":
-            MessageLookupByLibrary.simpleMessage("Welcome to"),
-        "onboardingWrongHeightLabel":
-            MessageLookupByLibrary.simpleMessage("Enter correct height"),
-        "onboardingWrongWeightLabel":
-            MessageLookupByLibrary.simpleMessage("Enter correct weight"),
-        "onboardingYourGoalLabel":
-            MessageLookupByLibrary.simpleMessage("Your calorie goal:"),
-        "onboardingYourMacrosGoalLabel":
-            MessageLookupByLibrary.simpleMessage("Your macronutrient goals:"),
         "ozUnit": MessageLookupByLibrary.simpleMessage("oz"),
         "paAmericanFootballGeneral":
             MessageLookupByLibrary.simpleMessage("football"),

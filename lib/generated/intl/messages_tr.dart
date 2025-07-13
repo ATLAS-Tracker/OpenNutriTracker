@@ -121,8 +121,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "dinnerExample":
             MessageLookupByLibrary.simpleMessage("ör. çorba, tavuk, şarap ..."),
         "dinnerLabel": MessageLookupByLibrary.simpleMessage("Akşam Yemeği"),
-        "disclaimerText": MessageLookupByLibrary.simpleMessage(
-            "OpenNutriTracker bir tıbbi uygulama değildir. Sağlanan tüm veriler doğrulanmamıştır ve dikkatle kullanılmalıdır. Lütfen sağlıklı bir yaşam tarzı sürdürün ve herhangi bir sorununuz varsa bir profesyonele danışın. Hastalık, hamilelik veya emzirme döneminde kullanımı önerilmez.\n\n\nUygulama hala geliştirme aşamasındadır. Hatalar, aksaklıklar ve çökmeler meydana gelebilir."),
         "editItemDialogTitle":
             MessageLookupByLibrary.simpleMessage("Öğeyi Düzenle"),
         "editMealLabel": MessageLookupByLibrary.simpleMessage("Yemeği Düzenle"),
@@ -281,51 +279,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Çok şiddetli"),
         "nutritionalStatusUnderweight":
             MessageLookupByLibrary.simpleMessage("Düşük Kilolu"),
-        "offDisclaimer": MessageLookupByLibrary.simpleMessage(
-            "Bu uygulama tarafından size sağlanan veriler Open Food Facts veritabanından alınmaktadır. Sağlanan bilgilerin doğruluğu, eksiksizliği veya güvenilirliği konusunda hiçbir garanti verilmemektedir. Veriler \"olduğu gibi\" sağlanır ve verilerin kullanımıyla ilgili herhangi bir zarardan verilerin kaynağı (Open Food Facts) sorumlu tutulamaz."),
-        "onboardingActivityQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage(
-                "Ne kadar aktifsiz? (antrenmanlar hariç)"),
-        "onboardingBirthdayHint":
-            MessageLookupByLibrary.simpleMessage("Tarih Girin"),
-        "onboardingBirthdayQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage("Doğum gününüz ne zaman?"),
-        "onboardingEnterBirthdayLabel":
-            MessageLookupByLibrary.simpleMessage("Doğum Günü"),
-        "onboardingGenderQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage("Cinsiyetiniz nedir?"),
-        "onboardingGoalQuestionSubtitle": MessageLookupByLibrary.simpleMessage(
-            "Mevcut kilo hedefiniz nedir?"),
-        "onboardingHeightExampleHintCm":
-            MessageLookupByLibrary.simpleMessage("ör. 170"),
-        "onboardingHeightExampleHintFt":
-            MessageLookupByLibrary.simpleMessage("ör. 5.8"),
-        "onboardingHeightQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage("Mevcut boyunuz nedir?"),
-        "onboardingIntroDescription": MessageLookupByLibrary.simpleMessage(
-            "Başlamak için, uygulamanın günlük kalori hedefinizi hesaplamak için hakkınızda bazı bilgilere ihtiyacı var.\nHakkınızdaki tüm bilgiler cihazınızda güvenli bir şekilde saklanır."),
-        "onboardingKcalPerDayLabel":
-            MessageLookupByLibrary.simpleMessage("günlük kcal"),
-        "onboardingOverviewLabel":
-            MessageLookupByLibrary.simpleMessage("Genel Bakış"),
-        "onboardingSaveUserError": MessageLookupByLibrary.simpleMessage(
-            "Yanlış giriş, lütfen tekrar deneyin"),
-        "onboardingWeightExampleHintKg":
-            MessageLookupByLibrary.simpleMessage("ör. 60"),
-        "onboardingWeightExampleHintLbs":
-            MessageLookupByLibrary.simpleMessage("ör. 132"),
-        "onboardingWeightQuestionSubtitle":
-            MessageLookupByLibrary.simpleMessage("Mevcut kilonuz nedir?"),
-        "onboardingWelcomeLabel":
-            MessageLookupByLibrary.simpleMessage("Hoş geldiniz"),
-        "onboardingWrongHeightLabel":
-            MessageLookupByLibrary.simpleMessage("Doğru boy girin"),
-        "onboardingWrongWeightLabel":
-            MessageLookupByLibrary.simpleMessage("Doğru kilo girin"),
-        "onboardingYourGoalLabel":
-            MessageLookupByLibrary.simpleMessage("Kalori hedefiniz:"),
-        "onboardingYourMacrosGoalLabel":
-            MessageLookupByLibrary.simpleMessage("Makro besin hedefleriniz:"),
         "ozUnit": MessageLookupByLibrary.simpleMessage("oz"),
         "paAmericanFootballGeneral":
             MessageLookupByLibrary.simpleMessage("futbol"),

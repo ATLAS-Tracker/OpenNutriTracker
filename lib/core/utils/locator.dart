@@ -62,7 +62,6 @@ import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dar
 import 'package:opennutritracker/features/edit_meal/presentation/bloc/edit_meal_bloc.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/features/meal_detail/presentation/bloc/meal_detail_bloc.dart';
-import 'package:opennutritracker/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:opennutritracker/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:opennutritracker/features/scanner/domain/usecase/search_product_by_barcode_usecase.dart';
 import 'package:opennutritracker/features/scanner/presentation/scanner_bloc.dart';
@@ -243,12 +242,8 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
   );
 
   // BLoCs
-  locator.registerLazySingleton<OnboardingBloc>(
-    () => OnboardingBloc(locator(), locator()),
-  );
   locator.registerLazySingleton<HomeBloc>(
     () => HomeBloc(
-      locator(),
       locator(),
       locator(),
       locator(),

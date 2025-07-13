@@ -21,14 +21,6 @@ class ConfigDataSource {
     _hive.configBox.put(_configKey, configDBO);
   }
 
-  Future<void> setConfigDisclaimer(bool hasAcceptedDisclaimer) async {
-    _log.fine(
-        'Updating config hasAcceptedDisclaimer to $hasAcceptedDisclaimer');
-    final config = _hive.configBox.get(_configKey);
-    config?.hasAcceptedDisclaimer = hasAcceptedDisclaimer;
-    await config?.save();
-  }
-
   Future<void> setConfigAcceptedAnonymousData(
       bool hasAcceptedAnonymousData) async {
     _log.fine(
