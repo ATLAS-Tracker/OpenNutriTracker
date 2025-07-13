@@ -13,9 +13,7 @@ import 'package:opennutritracker/features/profile/presentation/widgets/set_goal_
 import 'package:opennutritracker/features/profile/presentation/widgets/set_height_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_pal_category_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_weight_dialog.dart';
-import 'package:opennutritracker/features/profile/presentation/widgets/set_role_dialog.dart';
-import 'package:opennutritracker/features/create_meal/pick_image_screen.dart';
-import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
+import 'package:opennutritracker/features/profile/presentation/widgets/profile_photo_picker.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/features/auth/auth_safe_sign_out.dart';
 
@@ -67,16 +65,12 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         const SizedBox(height: 32.0),
         Center(
-          child: SizedBox(
-            width: 240, // Largeur souhaitée
-            height: 240, // Hauteur souhaitée
-            child: PhotoPickerButton(
-              initialImagePath: user.profileImagePath,
-              onImagePicked: (path) {
-                user.profileImagePath = path;
-                _profileBloc.updateUser(user);
-              },
-            ),
+          child: ProfilePhotoPicker(
+            initialImagePath: user.profileImagePath,
+            onImagePicked: (path) {
+              user.profileImagePath = path;
+              _profileBloc.updateUser(user);
+            },
           ),
         ),
         const SizedBox(height: 32.0),
@@ -179,21 +173,6 @@ class _ProfilePageState extends State<ProfilePage> {
           },
         ),
         ListTile(
-          title: Text(
-            S.of(context).roleLabel,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          subtitle: Text(
-            user.role.getName(context),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: SizedBox(
-            height: double.infinity,
-            child: Icon(user.role.getIcon()),
-          ),
-          onTap: () => _showSetRoleDialog(context, user),
-        ),
-        ListTile(
           leading: const SizedBox(
             height: double.infinity,
             child: Icon(Icons.logout),
@@ -293,14 +272,4 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<void> _showSetRoleDialog(
-      BuildContext context, UserEntity userEntity) async {
-    final selectedRole = await showDialog<UserRoleEntity>(
-        context: context,
-        builder: (BuildContext context) => const SetRoleDialog());
-    if (selectedRole != null) {
-      userEntity.role = selectedRole;
-      _profileBloc.updateUser(userEntity);
-    }
-  }
 }
