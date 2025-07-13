@@ -20,6 +20,7 @@ import 'package:opennutritracker/core/data/dbo/user_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_gender_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/user_role_dbo.dart';
 import 'package:opennutritracker/features/sync/tracked_day_change_isolate.dart';
 import 'package:opennutritracker/core/utils/secure_app_storage_provider.dart';
 import 'package:opennutritracker/core/data/data_source/config_data_source.dart';
@@ -98,6 +99,7 @@ class HiveDBProvider extends ChangeNotifier {
         Hive.registerAdapter(UserGenderDBOAdapter());
         Hive.registerAdapter(UserWeightGoalDBOAdapter());
         Hive.registerAdapter(UserPALDBOAdapter());
+        Hive.registerAdapter(UserRoleDBOAdapter());
         Hive.registerAdapter(TrackedDayDBOAdapter());
         Hive.registerAdapter(UserActivityDBOAdapter());
         Hive.registerAdapter(PhysicalActivityDBOAdapter());

@@ -8,12 +8,14 @@ import 'package:opennutritracker/core/domain/entity/user_weight_goal_entity.dart
 import 'package:opennutritracker/core/utils/calc/unit_calc.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:opennutritracker/features/profile/presentation/widgets/bmi_overview.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_gender_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_goal_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_height_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_pal_category_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_weight_dialog.dart';
+import 'package:opennutritracker/features/profile/presentation/widgets/set_role_dialog.dart';
+import 'package:opennutritracker/features/create_meal/pick_image_screen.dart';
+import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/features/auth/auth_safe_sign_out.dart';
 
@@ -59,14 +61,19 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _getLoadedContent(BuildContext context, UserBMIEntity userBMIEntity,
+  Widget _getLoadedContent(BuildContext context, UserBMIEntity bmiEntity,
       UserEntity user, bool usesImperialUnits) {
     return ListView(
       children: [
         const SizedBox(height: 32.0),
-        BMIOverview(
-          bmiValue: userBMIEntity.bmiValue,
-          nutritionalStatus: userBMIEntity.nutritionalStatus,
+        Center(
+          child: PhotoPickerButton(
+            initialImagePath: user.profileImagePath,
+            onImagePicked: (path) {
+              user.profileImagePath = path;
+              _profileBloc.updateUser(user);
+            },
+          ),
         ),
         const SizedBox(height: 32.0),
         ListTile(
@@ -168,6 +175,21 @@ class _ProfilePageState extends State<ProfilePage> {
           },
         ),
         ListTile(
+          title: Text(
+            S.of(context).roleLabel,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          subtitle: Text(
+            user.role.getName(context),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          leading: SizedBox(
+            height: double.infinity,
+            child: Icon(user.role.getIcon()),
+          ),
+          onTap: () => _showSetRoleDialog(context, user),
+        ),
+        ListTile(
           leading: const SizedBox(
             height: double.infinity,
             child: Icon(Icons.logout),
@@ -263,6 +285,17 @@ class _ProfilePageState extends State<ProfilePage> {
     if (selectedGender != null) {
       userEntity.gender = selectedGender;
 
+      _profileBloc.updateUser(userEntity);
+    }
+  }
+
+  Future<void> _showSetRoleDialog(
+      BuildContext context, UserEntity userEntity) async {
+    final selectedRole = await showDialog<UserRoleEntity>(
+        context: context,
+        builder: (BuildContext context) => const SetRoleDialog());
+    if (selectedRole != null) {
+      userEntity.role = selectedRole;
       _profileBloc.updateUser(userEntity);
     }
   }

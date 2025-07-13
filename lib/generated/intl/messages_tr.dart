@@ -631,6 +631,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "resetPasswordTitle":
             MessageLookupByLibrary.simpleMessage("Yeni şifre"),
         "retryLabel": MessageLookupByLibrary.simpleMessage("Tekrar Dene"),
+        "roleCoachLabel": MessageLookupByLibrary.simpleMessage("Antrenör"),
+        "roleLabel": MessageLookupByLibrary.simpleMessage("Rol"),
+        "roleStudentLabel": MessageLookupByLibrary.simpleMessage("Öğrenci"),
         "saturatedFatLabel": MessageLookupByLibrary.simpleMessage("doymuş yağ"),
         "scanProductLabel": MessageLookupByLibrary.simpleMessage("Ürünü Tara"),
         "searchDefaultLabel": MessageLookupByLibrary.simpleMessage(
@@ -646,6 +649,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Boy Seçin"),
         "selectPalCategoryLabel":
             MessageLookupByLibrary.simpleMessage("Aktivite Seviyesini Seçin"),
+        "selectRoleDialogLabel":
+            MessageLookupByLibrary.simpleMessage("Rol Seçin"),
         "selectWeightDialogLabel":
             MessageLookupByLibrary.simpleMessage("Kilo Seçin"),
         "sendAnonymousUserData": MessageLookupByLibrary.simpleMessage(
@@ -660,8 +665,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Geri Bildirim"),
         "settingsCalculationsLabel":
             MessageLookupByLibrary.simpleMessage("Hesaplamalar"),
-        "settingsDisclaimerLabel":
-            MessageLookupByLibrary.simpleMessage("Sorumluluk Reddi"),
         "settingsDistanceLabel": MessageLookupByLibrary.simpleMessage("Mesafe"),
         "settingsImperialLabel":
             MessageLookupByLibrary.simpleMessage("İmperial (lbs, ft, oz)"),

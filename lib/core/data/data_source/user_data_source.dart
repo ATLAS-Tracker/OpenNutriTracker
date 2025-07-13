@@ -4,6 +4,7 @@ import 'package:opennutritracker/core/data/dbo/user_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_gender_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/user_role_dbo.dart';
 
 class UserDataSource {
   static const _userKey = "UserKey";
@@ -28,6 +29,8 @@ class UserDataSource {
             weightKG: 80,
             gender: UserGenderDBO.male,
             goal: UserWeightGoalDBO.maintainWeight,
-            pal: UserPALDBO.active);
+            pal: UserPALDBO.active,
+            role: UserRoleDBO.student,
+            profileImagePath: null);
   }
 }

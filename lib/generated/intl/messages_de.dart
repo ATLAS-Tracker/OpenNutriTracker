@@ -653,6 +653,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "resetPasswordTitle":
             MessageLookupByLibrary.simpleMessage("Neues Passwort"),
         "retryLabel": MessageLookupByLibrary.simpleMessage("Erneut versuchen"),
+        "roleCoachLabel": MessageLookupByLibrary.simpleMessage("Coach"),
+        "roleLabel": MessageLookupByLibrary.simpleMessage("Rolle"),
+        "roleStudentLabel": MessageLookupByLibrary.simpleMessage("Schüler"),
         "saturatedFatLabel":
             MessageLookupByLibrary.simpleMessage("gesättigtes Fett"),
         "scanProductLabel":
@@ -670,6 +673,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Größe auswählen"),
         "selectPalCategoryLabel":
             MessageLookupByLibrary.simpleMessage("Aktivitätslevel auswählen"),
+        "selectRoleDialogLabel":
+            MessageLookupByLibrary.simpleMessage("Rolle auswählen"),
         "selectWeightDialogLabel":
             MessageLookupByLibrary.simpleMessage("Gewicht auswählen"),
         "sendAnonymousUserData": MessageLookupByLibrary.simpleMessage(
@@ -684,8 +689,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Feedback"),
         "settingsCalculationsLabel":
             MessageLookupByLibrary.simpleMessage("Berechnungen"),
-        "settingsDisclaimerLabel":
-            MessageLookupByLibrary.simpleMessage("Hinweis"),
         "settingsDistanceLabel":
             MessageLookupByLibrary.simpleMessage("Entfernung"),
         "settingsLabel": MessageLookupByLibrary.simpleMessage("Einstellungen"),

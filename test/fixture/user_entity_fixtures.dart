@@ -2,6 +2,7 @@ import 'package:opennutritracker/core/domain/entity/user_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_gender_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_pal_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_goal_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
 
 class UserEntityFixtures {
   /// Mocked user entity
@@ -13,7 +14,8 @@ class UserEntityFixtures {
       weightKG: 80.0,
       gender: UserGenderEntity.male,
       goal: UserWeightGoalEntity.maintainWeight,
-      pal: UserPALEntity.sedentary);
+      pal: UserPALEntity.sedentary,
+      role: UserRoleEntity.student);
 
   /// Mocked user entity
   /// 54 years, 160 cm, 75 kg, female, lose weight, active
@@ -24,7 +26,8 @@ class UserEntityFixtures {
       weightKG: 75.0,
       gender: UserGenderEntity.female,
       goal: UserWeightGoalEntity.loseWeight,
-      pal: UserPALEntity.active);
+      pal: UserPALEntity.active,
+      role: UserRoleEntity.student);
 
   /// Mocked user entity
   /// 76 years, 164 cm, 55 kg, male, gain weight, low active
@@ -36,6 +39,7 @@ class UserEntityFixtures {
     gender: UserGenderEntity.male,
     goal: UserWeightGoalEntity.gainWeight,
     pal: UserPALEntity.lowActive,
+    role: UserRoleEntity.student,
   );
 
   /// Mocked user entity
@@ -49,5 +53,6 @@ class UserEntityFixtures {
     gender: UserGenderEntity.female,
     goal: UserWeightGoalEntity.loseWeight,
     pal: UserPALEntity.veryActive,
+    role: UserRoleEntity.student,
   );
 }
