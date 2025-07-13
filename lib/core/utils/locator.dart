@@ -78,6 +78,7 @@ const _userScope = 'user_scope';
 
 Future<void> initLocator() async {
   // Backend
+  locator.registerLazySingleton<Connectivity>(() => Connectivity());
   await Supabase.initialize(
     url: Env.supabaseProjectUrl,
     anonKey: Env.supabaseProjectAnonKey,
@@ -97,8 +98,6 @@ Future<void> initLocator() async {
   locator.registerLazySingleton<CacheManager>(
     () => OntImageCacheManager.instance,
   );
-
-  locator.registerLazySingleton<Connectivity>(() => Connectivity());
 
   await registerUserScope(hiveDBProvider);
 }
@@ -207,7 +206,6 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
   );
   locator.registerLazySingleton(() => GetMacroGoalUsecase(locator()));
   locator.registerLazySingleton(
-
     () => ExportDataUsecase(locator(), locator(), locator(), locator()),
   );
   locator.registerLazySingleton(

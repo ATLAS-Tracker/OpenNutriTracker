@@ -27,8 +27,7 @@ class ConfigDBOAdapter extends TypeAdapter<ConfigDBO> {
     )
       ..userCarbGoalPct = fields[6] as double?
       ..userProteinGoalPct = fields[7] as double?
-      ..userFatGoalPct = fields[8] as double?
-      ..lastDataUpdate = fields[9] as DateTime?;
+      ..userFatGoalPct = fields[8] as double?;
   }
 
   @override

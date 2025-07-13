@@ -2,9 +2,13 @@
 
 part of 'user_role_dbo.dart';
 
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
 class UserRoleDBOAdapter extends TypeAdapter<UserRoleDBO> {
   @override
-  final int typeId = 9;
+  final int typeId = 19;
 
   @override
   UserRoleDBO read(BinaryReader reader) {

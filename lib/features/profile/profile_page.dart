@@ -67,12 +67,16 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         const SizedBox(height: 32.0),
         Center(
-          child: PhotoPickerButton(
-            initialImagePath: user.profileImagePath,
-            onImagePicked: (path) {
-              user.profileImagePath = path;
-              _profileBloc.updateUser(user);
-            },
+          child: SizedBox(
+            width: 240, // Largeur souhaitée
+            height: 240, // Hauteur souhaitée
+            child: PhotoPickerButton(
+              initialImagePath: user.profileImagePath,
+              onImagePicked: (path) {
+                user.profileImagePath = path;
+                _profileBloc.updateUser(user);
+              },
+            ),
           ),
         ),
         const SizedBox(height: 32.0),

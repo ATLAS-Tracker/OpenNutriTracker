@@ -3,7 +3,7 @@ import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
 
 part 'user_role_dbo.g.dart';
 
-@HiveType(typeId: 9)
+@HiveType(typeId: 19)
 enum UserRoleDBO {
   @HiveField(0)
   coach,
