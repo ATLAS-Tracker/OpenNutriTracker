@@ -1,5 +1,6 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get_it/get_it.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:opennutritracker/core/data/data_source/config_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/intake_data_source.dart';
 import 'package:opennutritracker/core/data/data_source/recipe_data_source.dart';
@@ -69,7 +70,6 @@ import 'package:opennutritracker/features/settings/domain/usecase/export_data_us
 import 'package:opennutritracker/features/settings/domain/usecase/import_data_usecase.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/export_data_supabase_usecase.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/import_data_supabase_usecase.dart';
-import 'package:opennutritracker/features/settings/domain/usecase/import_if_remote_newer_usecase.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -98,6 +98,8 @@ Future<void> initLocator() async {
   locator.registerLazySingleton<CacheManager>(
     () => OntImageCacheManager.instance,
   );
+
+  locator.registerLazySingleton<Connectivity>(() => Connectivity());
 
   await registerUserScope(hiveDBProvider);
 }
@@ -226,13 +228,6 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
       locator(),
       locator(),
       locator(),
-      locator(),
-      locator(),
-    ),
-  );
-
-  locator.registerLazySingleton(
-    () => ImportIfRemoteNewerUsecase(
       locator(),
       locator(),
       locator(),

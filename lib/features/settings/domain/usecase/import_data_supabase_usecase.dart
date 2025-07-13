@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:archive/archive.dart';
 import 'package:logging/logging.dart';
+import 'package:collection/collection.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/data/data_source/user_activity_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/intake_dbo.dart';
@@ -10,8 +11,12 @@ import 'package:opennutritracker/core/data/repository/intake_repository.dart';
 import 'package:opennutritracker/core/data/repository/tracked_day_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
+import 'package:opennutritracker/core/data/repository/config_repository.dart';
 import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
+import 'package:opennutritracker/core/utils/hive_db_provider.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
+import 'dart:typed_data';
 
 /// Imports user data from a zip stored on Supabase storage.
 /// Existing entries are replaced if the incoming entry has a more recent
@@ -22,6 +27,7 @@ class ImportDataSupabaseUsecase {
   final TrackedDayRepository _trackedDayRepository;
   final UserWeightRepository _userWeightRepository;
   final SupabaseClient _client;
+  final ConfigRepository _configRepository;
   final _log = Logger('ImportDataSupabaseUsecase');
 
   ImportDataSupabaseUsecase(
@@ -30,6 +36,7 @@ class ImportDataSupabaseUsecase {
     this._trackedDayRepository,
     this._userWeightRepository,
     this._client,
+    this._configRepository,
   );
 
   Future<bool> importData(
@@ -46,17 +53,46 @@ class ImportDataSupabaseUsecase {
         return false;
       }
 
+      final bucket = _client.storage.from('exports');
+      final files = await bucket.list(path: userId);
+      final file = files.firstWhereOrNull((f) => f.name == exportZipFileName);
+
+      if (file == null) {
+        _log.fine('No export archive found – first login, skipping import');
+        return true; // 👍 Rien à synchroniser
+      }
+
+      if (file.updatedAt != null) {
+        final remoteDate = DateTime.parse(file.updatedAt!);
+        final localDate = await _configRepository.getLastDataUpdate();
+        if (localDate != null && !remoteDate.isAfter(localDate)) {
+          _log.fine('Local data is up to date – skipping import');
+          return true;
+        }
+      }
+
       final filePath = '$userId/$exportZipFileName';
-      final data = await _client.storage.from('exports').download(filePath);
+      final Uint8List data = await bucket.download(filePath);
       final archive = ZipDecoder().decodeBytes(data);
 
-      // ----- USER ACTIVITY -----
+      // Verify archive integrity here
       final userActivityFile = archive.findFile(userActivityJsonFileName);
-      if (userActivityFile == null) {
-        throw Exception('User activity file not found');
+      final intakeFile = archive.findFile(userIntakeJsonFileName);
+      final trackedDayFile = archive.findFile(trackedDayJsonFileName);
+      final userWeightFile = archive.findFile(userWeightJsonFileName);
+
+      if ([userActivityFile, intakeFile, trackedDayFile, userWeightFile]
+          .any((f) => f == null)) {
+        throw Exception('Archive is missing required files');
       }
+
+      // The zip has been downloaded and validated, we can clear the local database
+      final hive = locator<HiveDBProvider>();
+      await hive.clearAllData();
+
+      // ----- USER ACTIVITY -----
       final userActivityJsonString =
-          utf8.decode(userActivityFile.content as List<int>);
+          utf8.decode(userActivityFile!.content as List<int>);
       final userActivityList = (jsonDecode(userActivityJsonString) as List)
           .cast<Map<String, dynamic>>();
       final userActivityDBOs =
@@ -84,11 +120,7 @@ class ImportDataSupabaseUsecase {
       }
 
       // ----- INTAKES -----
-      final intakeFile = archive.findFile(userIntakeJsonFileName);
-      if (intakeFile == null) {
-        throw Exception('Intake file not found');
-      }
-      final intakeJsonString = utf8.decode(intakeFile.content as List<int>);
+      final intakeJsonString = utf8.decode(intakeFile!.content as List<int>);
       final intakeList =
           (jsonDecode(intakeJsonString) as List).cast<Map<String, dynamic>>();
       final intakeDBOs = intakeList.map((e) => IntakeDBO.fromJson(e)).toList();
@@ -114,12 +146,8 @@ class ImportDataSupabaseUsecase {
       }
 
       // ----- TRACKED DAYS -----
-      final trackedDayFile = archive.findFile(trackedDayJsonFileName);
-      if (trackedDayFile == null) {
-        throw Exception('Tracked day file not found');
-      }
       final trackedDayJsonString =
-          utf8.decode(trackedDayFile.content as List<int>);
+          utf8.decode(trackedDayFile!.content as List<int>);
       final trackedDayList = (jsonDecode(trackedDayJsonString) as List)
           .cast<Map<String, dynamic>>();
       final trackedDayDBOs =
@@ -148,12 +176,8 @@ class ImportDataSupabaseUsecase {
       }
 
       // ----- USER WEIGHT -----
-      final userWeightFile = archive.findFile(userWeightJsonFileName);
-      if (userWeightFile == null) {
-        throw Exception('User weight file not found');
-      }
       final userWeightJsonString =
-          utf8.decode(userWeightFile.content as List<int>);
+          utf8.decode(userWeightFile!.content as List<int>);
       final userWeightList = (jsonDecode(userWeightJsonString) as List)
           .cast<Map<String, dynamic>>();
       final userWeightDBOs =

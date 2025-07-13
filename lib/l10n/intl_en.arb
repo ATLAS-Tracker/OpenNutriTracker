@@ -460,5 +460,7 @@
   "errorRecipeLabel": "No recipe found",
   "mealPortionLabel": "Number of portions",
   "portionEatLabel": "Portion eaten",
-  "noFoodAddedLabel": "No food added"
+  "noFoodAddedLabel": "No food added",
+  "signOutOfflineMessage": "You can only sign out when internet connection is available to avoid losing data.",
+  "signOutSyncFailedMessage": "Failed to sync your data. Please sign in again later."
 }

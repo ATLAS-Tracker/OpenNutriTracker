@@ -4611,6 +4611,26 @@ class S {
       args: [],
     );
   }
+
+  /// `You can only sign out when internet connection is available to avoid losing data.`
+  String get signOutOfflineMessage {
+    return Intl.message(
+      'You can only sign out when internet connection is available to avoid losing data.',
+      name: 'signOutOfflineMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to sync your data. Please sign in again later.`
+  String get signOutSyncFailedMessage {
+    return Intl.message(
+      'Failed to sync your data. Please sign in again later.',
+      name: 'signOutSyncFailedMessage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

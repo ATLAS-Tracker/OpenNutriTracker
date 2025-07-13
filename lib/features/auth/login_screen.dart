@@ -11,7 +11,7 @@ import 'reset_password_screen.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
-import 'package:opennutritracker/features/settings/domain/usecase/import_if_remote_newer_usecase.dart';
+import 'package:opennutritracker/features/settings/domain/usecase/import_data_supabase_usecase.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -79,18 +79,43 @@ class _LoginScreenState extends State<LoginScreen> {
         password: pass,
       );
 
-      if (res.session != null && mounted) {
+      if (res.session != null) {
+        // ── 1. Prépare Hive pour le user (nécessaire à l’import)
         final hive = locator<HiveDBProvider>();
         await hive.initForUser(res.user?.id);
         await registerUserScope(hive);
-        final importIfNewer = locator<ImportIfRemoteNewerUsecase>();
-        await importIfNewer.maybeImport(
+
+        // ── 2. Tente l’import
+        final importData = locator<ImportDataSupabaseUsecase>();
+        final importSuccessful = await importData.importData(
           ExportImportBloc.exportZipFileName,
           ExportImportBloc.userActivityJsonFileName,
           ExportImportBloc.userIntakeJsonFileName,
           ExportImportBloc.trackedDayJsonFileName,
           ExportImportBloc.userWeightJsonFileName,
         );
+
+        // ── 3. ERREUR D’IMPORT  →  on déconnecte la session
+        if (!importSuccessful) {
+          try {
+            await supabase.auth.signOut(); // libère le « verrou »
+          } catch (e, s) {
+            Logger('LoginScreen').warning('Forced sign-out failed', e, s);
+          }
+
+          // Nettoie la base locale (facultatif mais recommandé)
+          await hive.initForUser(null);
+          await registerUserScope(hive);
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(S.of(context).exportImportErrorLabel)),
+            );
+          }
+          return; // reste sur l’écran de login
+        }
+
+        // ── 4. Tout est OK  →  on passe à l’app
         _navigateHome();
       }
     } on AuthException catch (e) {
