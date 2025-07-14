@@ -68,8 +68,17 @@ class _ProfilePageState extends State<ProfilePage> {
           child: ProfilePhotoPicker(
             initialImagePath: user.profileImagePath,
             onImagePicked: (path) {
-              user.profileImagePath = path;
-              _profileBloc.updateUser(user);
+              final updatedUser = UserEntity(
+                birthday: user.birthday,
+                heightCM: user.heightCM,
+                weightKG: user.weightKG,
+                gender: user.gender,
+                goal: user.goal,
+                pal: user.pal,
+                role: user.role,
+                profileImagePath: path,
+              );
+              _profileBloc.updateUser(updatedUser);
             },
           ),
         ),
