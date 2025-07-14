@@ -30,7 +30,7 @@ class _ProfilePhotoPickerState extends State<ProfilePhotoPicker> {
     _imagePath = widget.initialImagePath;
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(BuildContext context) async {
     try {
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
@@ -51,8 +51,14 @@ class _ProfilePhotoPickerState extends State<ProfilePhotoPicker> {
         });
         widget.onImagePicked(savedImage.path);
       }
-    } catch (e) {
-      debugPrint('Failed to pick and save image: $e');
+    } catch (e, s) {
+      debugPrint('Failed to pick and save image: $e\n$s');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to pick image. Please try again.'),
+        ),
+      );
     }
   }
 
@@ -61,12 +67,11 @@ class _ProfilePhotoPickerState extends State<ProfilePhotoPicker> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: _pickImage,
+      onTap: () => _pickImage(context),
       child: CircleAvatar(
         radius: widget.size / 2,
-        backgroundImage: _imagePath != null
-            ? FileImage(File(_imagePath!))
-            : null,
+        backgroundImage:
+            _imagePath != null ? FileImage(File(_imagePath!)) : null,
         child: _imagePath == null
             ? Icon(Icons.camera_alt, size: widget.size / 3)
             : null,
