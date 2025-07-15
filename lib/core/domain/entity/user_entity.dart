@@ -27,6 +27,7 @@ class UserEntity {
       this.profileImagePath});
 
   UserEntity copyWith({
+    String? name,
     DateTime? birthday,
     double? heightCM,
     double? weightKG,
@@ -37,6 +38,7 @@ class UserEntity {
     String? profileImagePath,
   }) {
     return UserEntity(
+      name: name ?? this.name,
       birthday: birthday ?? this.birthday,
       heightCM: heightCM ?? this.heightCM,
       weightKG: weightKG ?? this.weightKG,
