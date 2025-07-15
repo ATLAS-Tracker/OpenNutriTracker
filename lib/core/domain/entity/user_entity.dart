@@ -26,6 +26,28 @@ class UserEntity {
       required this.role,
       this.profileImagePath});
 
+  UserEntity copyWith({
+    DateTime? birthday,
+    double? heightCM,
+    double? weightKG,
+    UserGenderEntity? gender,
+    UserWeightGoalEntity? goal,
+    UserPALEntity? pal,
+    UserRoleEntity? role,
+    String? profileImagePath,
+  }) {
+    return UserEntity(
+      birthday: birthday ?? this.birthday,
+      heightCM: heightCM ?? this.heightCM,
+      weightKG: weightKG ?? this.weightKG,
+      gender: gender ?? this.gender,
+      goal: goal ?? this.goal,
+      pal: pal ?? this.pal,
+      role: role ?? this.role,
+      profileImagePath: profileImagePath ?? this.profileImagePath,
+    );
+  }
+
   factory UserEntity.fromUserDBO(UserDBO userDBO) {
     return UserEntity(
         name: userDBO.name,
@@ -39,5 +61,5 @@ class UserEntity {
         profileImagePath: userDBO.profileImagePath);
   }
 
-  int get age => DateTime.now().difference(birthday).inDays~/365;
+  int get age => DateTime.now().difference(birthday).inDays ~/ 365;
 }

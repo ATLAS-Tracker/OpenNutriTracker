@@ -72,131 +72,120 @@ class _ProfilePageState extends State<ProfilePage> {
               ProfilePhotoPicker(
                 initialImagePath: user.profileImagePath,
                 onImagePicked: (path) {
-                  final updatedUser = UserEntity(
-                    name: user.name,
-                    birthday: user.birthday,
-                    heightCM: user.heightCM,
-                    weightKG: user.weightKG,
-                    gender: user.gender,
-                    goal: user.goal,
-                    pal: user.pal,
-                    role: user.role,
-                    profileImagePath: path,
-                  );
+                  final updatedUser = user.copyWith(profileImagePath: path);
                   _profileBloc.updateUser(updatedUser);
                 },
               ),
               const SizedBox(height: 16.0),
-              Text(user.name,
-                  style: Theme.of(context).textTheme.titleLarge),
+              Text(user.name, style: Theme.of(context).textTheme.titleLarge),
             ],
           ),
         ),
         const SizedBox(height: 32.0),
         if (!isCoach)
           ListTile(
-          title: Text(
-            S.of(context).activityLabel,
-            style: Theme.of(context).textTheme.titleLarge,
+            title: Text(
+              S.of(context).activityLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              user.pal.getName(context),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.directions_walk_outlined),
+            ),
+            onTap: () => _showSetPALCategoryDialog(context, user),
           ),
-          subtitle: Text(
-            user.pal.getName(context),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: const SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.directions_walk_outlined),
-          ),
-          onTap: () => _showSetPALCategoryDialog(context, user),
-        ),
         if (!isCoach)
           ListTile(
-          title: Text(
-            S.of(context).goalLabel,
-            style: Theme.of(context).textTheme.titleLarge,
+            title: Text(
+              S.of(context).goalLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              user.goal.getName(context),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.flag_outlined),
+            ),
+            onTap: () => _showSetGoalDialog(context, user),
           ),
-          subtitle: Text(
-            user.goal.getName(context),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: const SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.flag_outlined),
-          ),
-          onTap: () => _showSetGoalDialog(context, user),
-        ),
         if (!isCoach)
           ListTile(
-          title: Text(
-            S.of(context).weightLabel,
-            style: Theme.of(context).textTheme.titleLarge,
+            title: Text(
+              S.of(context).weightLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              '${_profileBloc.getDisplayWeight(user, usesImperialUnits)} ${usesImperialUnits ? S.of(context).lbsLabel : S.of(context).kgLabel}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.monitor_weight_outlined),
+            ),
+            onTap: () {
+              _showSetWeightDialog(context, user, usesImperialUnits);
+            },
           ),
-          subtitle: Text(
-            '${_profileBloc.getDisplayWeight(user, usesImperialUnits)} ${usesImperialUnits ? S.of(context).lbsLabel : S.of(context).kgLabel}',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: const SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.monitor_weight_outlined),
-          ),
-          onTap: () {
-            _showSetWeightDialog(context, user, usesImperialUnits);
-          },
-        ),
         if (!isCoach)
           ListTile(
-          title: Text(
-            S.of(context).heightLabel,
-            style: Theme.of(context).textTheme.titleLarge,
+            title: Text(
+              S.of(context).heightLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              '${_profileBloc.getDisplayHeight(user, usesImperialUnits)} ${usesImperialUnits ? S.of(context).ftLabel : S.of(context).cmLabel}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.height_outlined),
+            ),
+            onTap: () {
+              _showSetHeightDialog(context, user, usesImperialUnits);
+            },
           ),
-          subtitle: Text(
-            '${_profileBloc.getDisplayHeight(user, usesImperialUnits)} ${usesImperialUnits ? S.of(context).ftLabel : S.of(context).cmLabel}',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: const SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.height_outlined),
-          ),
-          onTap: () {
-            _showSetHeightDialog(context, user, usesImperialUnits);
-          },
-        ),
         if (!isCoach)
           ListTile(
-          title: Text(
-            S.of(context).ageLabel,
-            style: Theme.of(context).textTheme.titleLarge,
+            title: Text(
+              S.of(context).ageLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              S.of(context).yearsLabel(user.age),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.cake_outlined),
+            ),
+            onTap: () {
+              _showSetBirthdayDialog(context, user);
+            },
           ),
-          subtitle: Text(
-            S.of(context).yearsLabel(user.age),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: const SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.cake_outlined),
-          ),
-          onTap: () {
-            _showSetBirthdayDialog(context, user);
-          },
-        ),
         if (!isCoach)
           ListTile(
-          title: Text(
-            S.of(context).genderLabel,
-            style: Theme.of(context).textTheme.titleLarge,
+            title: Text(
+              S.of(context).genderLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              user.gender.getName(context),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: SizedBox(
+              height: double.infinity,
+              child: Icon(user.gender.getIcon()),
+            ),
+            onTap: () {
+              _showSetGenderDialog(context, user);
+            },
           ),
-          subtitle: Text(
-            user.gender.getName(context),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: SizedBox(
-            height: double.infinity,
-            child: Icon(user.gender.getIcon()),
-          ),
-          onTap: () {
-            _showSetGenderDialog(context, user);
-          },
-        ),
         ListTile(
           leading: const SizedBox(
             height: double.infinity,
@@ -296,5 +285,4 @@ class _ProfilePageState extends State<ProfilePage> {
       _profileBloc.updateUser(userEntity);
     }
   }
-
 }
