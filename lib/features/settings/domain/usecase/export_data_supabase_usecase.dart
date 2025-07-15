@@ -12,6 +12,7 @@ import 'package:opennutritracker/core/data/repository/user_repository.dart';
 import 'package:path/path.dart' as p;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:logging/logging.dart';
+import 'package:opennutritracker/core/utils/path_helper.dart';
 
 /// Exports user data to a zip file and uploads it to Supabase storage.
 class ExportDataSupabaseUsecase {
@@ -126,7 +127,7 @@ class ExportDataSupabaseUsecase {
     }
 
     for (final path in imagePaths) {
-      final file = File(path);
+      final file = File(await PathHelper.localImagePath(path));
       if (await file.exists()) {
         final bytes = await file.readAsBytes();
         final filename = p.basename(path);

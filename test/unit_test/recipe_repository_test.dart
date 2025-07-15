@@ -8,6 +8,7 @@ import 'package:opennutritracker/core/data/dbo/meal_nutriments_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/meal_or_recipe_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/recipe_dbo.dart';
 import 'package:opennutritracker/core/data/repository/recipe_repository.dart';
+import 'package:opennutritracker/core/utils/path_helper.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:opennutritracker/features/add_meal/domain/entity/meal_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/add_recipe_usecase.dart';
@@ -28,6 +29,7 @@ void main() {
 
       tempDir = await Directory.systemTemp.createTemp('hive_test_');
       Hive.init(tempDir.path);
+      PathHelper.overrideDirectory = tempDir;
 
       Hive.registerAdapter(RecipesDBOAdapter());
       Hive.registerAdapter(MealDBOAdapter());
@@ -53,6 +55,7 @@ void main() {
       await Hive.deleteFromDisk();
       locator.reset();
       await tempDir.delete(recursive: true);
+      PathHelper.overrideDirectory = null;
     });
 
     test('remplace une recette existante par une nouvelle', () async {
@@ -117,16 +120,16 @@ void main() {
     });
 
     test('delete removes recipe and local image', () async {
-      final imagePath = '${tempDir.path}/img.png';
+      final imagePath = await PathHelper.localImagePath('img.png');
       final imageFile = File(imagePath);
       await imageFile.writeAsString('test');
 
       final recipe = RecipeEntityFixtures.basicRecipe.copyWith(
         meal: RecipeEntityFixtures.basicRecipe.meal.copyWith(
           code: 'to_delete',
-          url: imagePath,
-          thumbnailImageUrl: imagePath,
-          mainImageUrl: imagePath,
+          url: 'img.png',
+          thumbnailImageUrl: 'img.png',
+          mainImageUrl: 'img.png',
         ),
       );
       await locator<AddRecipeUsecase>().addRecipe(recipe);

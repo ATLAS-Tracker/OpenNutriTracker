@@ -3,6 +3,7 @@ import 'package:opennutritracker/core/data/dbo/user_gender_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/user_role_dbo.dart';
+import 'package:path/path.dart' as p;
 import 'package:opennutritracker/core/domain/entity/user_entity.dart';
 
 part 'user_dbo.g.dart';
@@ -49,6 +50,8 @@ class UserDBO extends HiveObject {
         goal: UserWeightGoalDBO.fromUserWeightGoalEntity(entity.goal),
         pal: UserPALDBO.fromUserPALEntity(entity.pal),
         role: UserRoleDBO.fromUserRoleEntity(entity.role),
-        profileImagePath: entity.profileImagePath);
+        profileImagePath: entity.profileImagePath != null
+            ? p.basename(entity.profileImagePath!)
+            : null);
   }
 }

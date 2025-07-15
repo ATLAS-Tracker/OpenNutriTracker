@@ -11,6 +11,7 @@ import 'package:opennutritracker/core/data/repository/recipe_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_repository.dart';
 import 'package:path/path.dart' as p;
 import 'dart:io';
+import 'package:opennutritracker/core/utils/path_helper.dart';
 
 class ExportDataUsecase {
   final UserActivityRepository _userActivityRepository;
@@ -115,7 +116,8 @@ class ExportDataUsecase {
     }
 
     for (final path in imagePaths) {
-      final file = File(path);
+      final absPath = await PathHelper.localImagePath(path);
+      final file = File(absPath);
       if (await file.exists()) {
         final bytes = await file.readAsBytes();
         final name = p.basename(path);

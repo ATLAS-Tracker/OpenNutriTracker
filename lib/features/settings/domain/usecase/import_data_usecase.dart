@@ -135,7 +135,7 @@ class ImportDataUsecase {
         if (imageEntry != null) {
           final file = File(p.join(dir.path, imageName));
           await file.writeAsBytes(imageEntry.content as List<int>);
-          profilePath = file.path;
+          profilePath = imageName;
         }
       }
       final userDBO = UserDBO(
@@ -168,7 +168,7 @@ class ImportDataUsecase {
           if (entry == null) return null;
           final file = File(p.join(dir.path, pName));
           file.writeAsBytesSync(entry.content as List<int>);
-          return file.path;
+          return pName;
         }
 
         final thumb = stored(copyPath(meal.thumbnailImageUrl));

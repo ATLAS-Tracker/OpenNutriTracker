@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'package:opennutritracker/core/utils/path_helper.dart';
 
 class ProfilePhotoPicker extends StatefulWidget {
   final void Function(String imagePath) onImagePicked;
@@ -27,7 +27,15 @@ class _ProfilePhotoPickerState extends State<ProfilePhotoPicker> {
   @override
   void initState() {
     super.initState();
-    _imagePath = widget.initialImagePath;
+    if (widget.initialImagePath != null) {
+      PathHelper.localImagePath(widget.initialImagePath!).then((path) {
+        if (mounted) {
+          setState(() {
+            _imagePath = path;
+          });
+        }
+      });
+    }
   }
 
   Future<void> _pickImage() async {
@@ -35,13 +43,12 @@ class _ProfilePhotoPickerState extends State<ProfilePhotoPicker> {
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         final imageFile = File(pickedFile.path);
-        final appDir = await getApplicationDocumentsDirectory();
         final now = DateTime.now();
         final formattedTime =
             '${now.year}${_twoDigits(now.month)}${_twoDigits(now.day)}_${_twoDigits(now.hour)}${_twoDigits(now.minute)}${_twoDigits(now.second)}';
         final fileName =
             'profile_photo_$formattedTime${p.extension(pickedFile.path)}';
-        final savedPath = p.join(appDir.path, fileName);
+        final savedPath = await PathHelper.localImagePath(fileName);
 
         final savedImage = await imageFile.copy(savedPath);
 
@@ -49,7 +56,7 @@ class _ProfilePhotoPickerState extends State<ProfilePhotoPicker> {
         setState(() {
           _imagePath = savedImage.path;
         });
-        widget.onImagePicked(savedImage.path);
+        widget.onImagePicked(fileName);
       }
     } catch (e) {
       debugPrint('Failed to pick and save image: $e');
