@@ -25,9 +25,12 @@ class UserDBO extends HiveObject {
   UserRoleDBO role;
   @HiveField(7)
   String? profileImagePath;
+  @HiveField(8)
+  String name;
 
   UserDBO(
-      {required this.birthday,
+      {required this.name,
+      required this.birthday,
       required this.heightCM,
       required this.weightKG,
       required this.gender,
@@ -38,6 +41,7 @@ class UserDBO extends HiveObject {
 
   factory UserDBO.fromUserEntity(UserEntity entity) {
     return UserDBO(
+        name: entity.name,
         birthday: entity.birthday,
         heightCM: entity.heightCM,
         weightKG: entity.weightKG,

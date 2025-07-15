@@ -5,6 +5,7 @@ import 'package:opennutritracker/core/domain/entity/user_weight_goal_entity.dart
 import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
 
 class UserEntity {
+  String name;
   DateTime birthday;
   double heightCM;
   double weightKG;
@@ -15,7 +16,8 @@ class UserEntity {
   String? profileImagePath;
 
   UserEntity(
-      {required this.birthday,
+      {required this.name,
+      required this.birthday,
       required this.heightCM,
       required this.weightKG,
       required this.gender,
@@ -26,6 +28,7 @@ class UserEntity {
 
   factory UserEntity.fromUserDBO(UserDBO userDBO) {
     return UserEntity(
+        name: userDBO.name,
         birthday: userDBO.birthday,
         heightCM: userDBO.heightCM,
         weightKG: userDBO.weightKG,

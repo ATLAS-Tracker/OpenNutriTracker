@@ -24,6 +24,7 @@ class UserDataSource {
   Future<UserDBO> getUserData() async {
     return _hive.userBox.get(_userKey) ??
         UserDBO(
+            name: 'John Doe',
             birthday: DateTime(2000, 1, 1),
             heightCM: 180,
             weightKG: 80,

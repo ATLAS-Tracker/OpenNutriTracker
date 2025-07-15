@@ -25,13 +25,14 @@ class UserDBOAdapter extends TypeAdapter<UserDBO> {
       pal: fields[5] as UserPALDBO,
       role: fields[6] as UserRoleDBO,
       profileImagePath: fields[7] as String?,
+      name: fields[8] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserDBO obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.birthday)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class UserDBOAdapter extends TypeAdapter<UserDBO> {
       ..writeByte(6)
       ..write(obj.role)
       ..writeByte(7)
-      ..write(obj.profileImagePath);
+      ..write(obj.profileImagePath)
+      ..writeByte(8)
+      ..write(obj.name);
   }
 
   @override
