@@ -43,6 +43,14 @@ class _ProfilePhotoPickerState extends State<ProfilePhotoPicker> {
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         final imageFile = File(pickedFile.path);
+        if (_imagePath != null) {
+          final oldFile = File(_imagePath!);
+          if (await oldFile.exists()) {
+            try {
+              await oldFile.delete();
+            } catch (_) {}
+          }
+        }
         final now = DateTime.now();
         final formattedTime =
             '${now.year}${_twoDigits(now.month)}${_twoDigits(now.day)}_${_twoDigits(now.hour)}${_twoDigits(now.minute)}${_twoDigits(now.second)}';
@@ -71,9 +79,8 @@ class _ProfilePhotoPickerState extends State<ProfilePhotoPicker> {
       onTap: _pickImage,
       child: CircleAvatar(
         radius: widget.size / 2,
-        backgroundImage: _imagePath != null
-            ? FileImage(File(_imagePath!))
-            : null,
+        backgroundImage:
+            _imagePath != null ? FileImage(File(_imagePath!)) : null,
         child: _imagePath == null
             ? Icon(Icons.camera_alt, size: widget.size / 3)
             : null,

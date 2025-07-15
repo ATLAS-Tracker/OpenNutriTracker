@@ -18,7 +18,6 @@ import 'package:opennutritracker/core/data/dbo/intake_recipe_dbo.dart';
 
 import '../fixture/recipe_entity_fixtures.dart';
 
-
 void main() {
   group('Recipe add/replace logic', () {
     late Box<RecipesDBO> box;
@@ -102,6 +101,7 @@ void main() {
       TestWidgetsFlutterBinding.ensureInitialized();
       tempDir = await Directory.systemTemp.createTemp('hive_test_del_');
       Hive.init(tempDir.path);
+      PathHelper.overrideDirectory = tempDir;
 
       box = await Hive.openBox<RecipesDBO>('recipes_test');
       final hive = HiveDBProvider();
@@ -117,6 +117,7 @@ void main() {
       await Hive.deleteFromDisk();
       locator.reset();
       await tempDir.delete(recursive: true);
+      PathHelper.overrideDirectory = null;
     });
 
     test('delete removes recipe and local image', () async {
