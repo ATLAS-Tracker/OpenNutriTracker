@@ -12,6 +12,7 @@ void main() {
   test('IOM TDEE calculation for a male user', () {
     // Mock a male user
     UserEntity user = UserEntity(
+        name: 'John',
         birthday: DateTime(DateTime.now().year - 25, DateTime.now().month,
             DateTime.now().day - 1),
         heightCM: 180.0,

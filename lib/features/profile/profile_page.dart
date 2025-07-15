@@ -5,6 +5,7 @@ import 'package:opennutritracker/core/domain/entity/user_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_gender_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_pal_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_goal_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
 import 'package:opennutritracker/core/utils/calc/unit_calc.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/profile/presentation/bloc/profile_bloc.dart';
@@ -13,9 +14,7 @@ import 'package:opennutritracker/features/profile/presentation/widgets/set_goal_
 import 'package:opennutritracker/features/profile/presentation/widgets/set_height_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_pal_category_dialog.dart';
 import 'package:opennutritracker/features/profile/presentation/widgets/set_weight_dialog.dart';
-import 'package:opennutritracker/features/profile/presentation/widgets/set_role_dialog.dart';
-import 'package:opennutritracker/features/create_meal/pick_image_screen.dart';
-import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
+import 'package:opennutritracker/features/profile/presentation/widgets/profile_photo_picker.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/features/auth/auth_safe_sign_out.dart';
 
@@ -63,136 +62,130 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _getLoadedContent(BuildContext context, UserBMIEntity bmiEntity,
       UserEntity user, bool usesImperialUnits) {
+    final isCoach = user.role == UserRoleEntity.coach;
     return ListView(
       children: [
         const SizedBox(height: 32.0),
         Center(
-          child: SizedBox(
-            width: 240, // Largeur souhaitée
-            height: 240, // Hauteur souhaitée
-            child: PhotoPickerButton(
-              initialImagePath: user.profileImagePath,
-              onImagePicked: (path) {
-                user.profileImagePath = path;
-                _profileBloc.updateUser(user);
-              },
-            ),
+          child: Column(
+            children: [
+              ProfilePhotoPicker(
+                initialImagePath: user.profileImagePath,
+                onImagePicked: (path) {
+                  final updatedUser = user.copyWith(profileImagePath: path);
+                  _profileBloc.updateUser(updatedUser);
+                },
+              ),
+              const SizedBox(height: 16.0),
+              Text(user.name, style: Theme.of(context).textTheme.titleLarge),
+            ],
           ),
         ),
         const SizedBox(height: 32.0),
-        ListTile(
-          title: Text(
-            S.of(context).activityLabel,
-            style: Theme.of(context).textTheme.titleLarge,
+        if (!isCoach)
+          ListTile(
+            title: Text(
+              S.of(context).activityLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              user.pal.getName(context),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.directions_walk_outlined),
+            ),
+            onTap: () => _showSetPALCategoryDialog(context, user),
           ),
-          subtitle: Text(
-            user.pal.getName(context),
-            style: Theme.of(context).textTheme.titleMedium,
+        if (!isCoach)
+          ListTile(
+            title: Text(
+              S.of(context).goalLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              user.goal.getName(context),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.flag_outlined),
+            ),
+            onTap: () => _showSetGoalDialog(context, user),
           ),
-          leading: const SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.directions_walk_outlined),
+        if (!isCoach)
+          ListTile(
+            title: Text(
+              S.of(context).weightLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              '${_profileBloc.getDisplayWeight(user, usesImperialUnits)} ${usesImperialUnits ? S.of(context).lbsLabel : S.of(context).kgLabel}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.monitor_weight_outlined),
+            ),
+            onTap: () {
+              _showSetWeightDialog(context, user, usesImperialUnits);
+            },
           ),
-          onTap: () => _showSetPALCategoryDialog(context, user),
-        ),
-        ListTile(
-          title: Text(
-            S.of(context).goalLabel,
-            style: Theme.of(context).textTheme.titleLarge,
+        if (!isCoach)
+          ListTile(
+            title: Text(
+              S.of(context).heightLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              '${_profileBloc.getDisplayHeight(user, usesImperialUnits)} ${usesImperialUnits ? S.of(context).ftLabel : S.of(context).cmLabel}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.height_outlined),
+            ),
+            onTap: () {
+              _showSetHeightDialog(context, user, usesImperialUnits);
+            },
           ),
-          subtitle: Text(
-            user.goal.getName(context),
-            style: Theme.of(context).textTheme.titleMedium,
+        if (!isCoach)
+          ListTile(
+            title: Text(
+              S.of(context).ageLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              S.of(context).yearsLabel(user.age),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.cake_outlined),
+            ),
+            onTap: () {
+              _showSetBirthdayDialog(context, user);
+            },
           ),
-          leading: const SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.flag_outlined),
+        if (!isCoach)
+          ListTile(
+            title: Text(
+              S.of(context).genderLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            subtitle: Text(
+              user.gender.getName(context),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            leading: SizedBox(
+              height: double.infinity,
+              child: Icon(user.gender.getIcon()),
+            ),
+            onTap: () {
+              _showSetGenderDialog(context, user);
+            },
           ),
-          onTap: () => _showSetGoalDialog(context, user),
-        ),
-        ListTile(
-          title: Text(
-            S.of(context).weightLabel,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          subtitle: Text(
-            '${_profileBloc.getDisplayWeight(user, usesImperialUnits)} ${usesImperialUnits ? S.of(context).lbsLabel : S.of(context).kgLabel}',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: const SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.monitor_weight_outlined),
-          ),
-          onTap: () {
-            _showSetWeightDialog(context, user, usesImperialUnits);
-          },
-        ),
-        ListTile(
-          title: Text(
-            S.of(context).heightLabel,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          subtitle: Text(
-            '${_profileBloc.getDisplayHeight(user, usesImperialUnits)} ${usesImperialUnits ? S.of(context).ftLabel : S.of(context).cmLabel}',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: const SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.height_outlined),
-          ),
-          onTap: () {
-            _showSetHeightDialog(context, user, usesImperialUnits);
-          },
-        ),
-        ListTile(
-          title: Text(
-            S.of(context).ageLabel,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          subtitle: Text(
-            S.of(context).yearsLabel(user.age),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: const SizedBox(
-            height: double.infinity,
-            child: Icon(Icons.cake_outlined),
-          ),
-          onTap: () {
-            _showSetBirthdayDialog(context, user);
-          },
-        ),
-        ListTile(
-          title: Text(
-            S.of(context).genderLabel,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          subtitle: Text(
-            user.gender.getName(context),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: SizedBox(
-            height: double.infinity,
-            child: Icon(user.gender.getIcon()),
-          ),
-          onTap: () {
-            _showSetGenderDialog(context, user);
-          },
-        ),
-        ListTile(
-          title: Text(
-            S.of(context).roleLabel,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          subtitle: Text(
-            user.role.getName(context),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          leading: SizedBox(
-            height: double.infinity,
-            child: Icon(user.role.getIcon()),
-          ),
-          onTap: () => _showSetRoleDialog(context, user),
-        ),
         ListTile(
           leading: const SizedBox(
             height: double.infinity,
@@ -289,17 +282,6 @@ class _ProfilePageState extends State<ProfilePage> {
     if (selectedGender != null) {
       userEntity.gender = selectedGender;
 
-      _profileBloc.updateUser(userEntity);
-    }
-  }
-
-  Future<void> _showSetRoleDialog(
-      BuildContext context, UserEntity userEntity) async {
-    final selectedRole = await showDialog<UserRoleEntity>(
-        context: context,
-        builder: (BuildContext context) => const SetRoleDialog());
-    if (selectedRole != null) {
-      userEntity.role = selectedRole;
       _profileBloc.updateUser(userEntity);
     }
   }
