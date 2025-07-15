@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:logging/logging.dart';
 import 'package:collection/collection.dart';
@@ -12,6 +13,19 @@ import 'package:opennutritracker/core/data/repository/tracked_day_repository.dar
 import 'package:opennutritracker/core/data/repository/user_activity_repository.dart';
 import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
 import 'package:opennutritracker/core/data/repository/config_repository.dart';
+import 'package:opennutritracker/core/data/repository/recipe_repository.dart';
+import 'package:opennutritracker/core/data/repository/user_repository.dart';
+import 'package:opennutritracker/core/data/dbo/recipe_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/intake_recipe_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/meal_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/user_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/user_gender_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/user_pal_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/user_weight_goal_dbo.dart';
+import 'package:opennutritracker/core/data/dbo/user_role_dbo.dart';
+import 'package:opennutritracker/core/domain/entity/user_entity.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
@@ -26,6 +40,8 @@ class ImportDataSupabaseUsecase {
   final IntakeRepository _intakeRepository;
   final TrackedDayRepository _trackedDayRepository;
   final UserWeightRepository _userWeightRepository;
+  final RecipeRepository _recipeRepository;
+  final UserRepository _userRepository;
   final SupabaseClient _client;
   final ConfigRepository _configRepository;
   final _log = Logger('ImportDataSupabaseUsecase');
@@ -35,6 +51,8 @@ class ImportDataSupabaseUsecase {
     this._intakeRepository,
     this._trackedDayRepository,
     this._userWeightRepository,
+    this._recipeRepository,
+    this._userRepository,
     this._client,
     this._configRepository,
   );
@@ -45,6 +63,8 @@ class ImportDataSupabaseUsecase {
     String userIntakeJsonFileName,
     String trackedDayJsonFileName,
     String userWeightJsonFileName,
+    String recipesJsonFileName,
+    String userJsonFileName,
   ) async {
     try {
       final userId = _client.auth.currentUser?.id;
@@ -80,8 +100,10 @@ class ImportDataSupabaseUsecase {
       final intakeFile = archive.findFile(userIntakeJsonFileName);
       final trackedDayFile = archive.findFile(trackedDayJsonFileName);
       final userWeightFile = archive.findFile(userWeightJsonFileName);
+      final recipesFile = archive.findFile(recipesJsonFileName);
+      final userFile = archive.findFile(userJsonFileName);
 
-      if ([userActivityFile, intakeFile, trackedDayFile, userWeightFile]
+      if ([userActivityFile, intakeFile, trackedDayFile, userWeightFile, recipesFile, userFile]
           .any((f) => f == null)) {
         throw Exception('Archive is missing required files');
       }
@@ -89,6 +111,84 @@ class ImportDataSupabaseUsecase {
       // The zip has been downloaded and validated, we can clear the local database
       final hive = locator<HiveDBProvider>();
       await hive.clearAllData();
+
+      Future<String?> restoreImage(String? path) async {
+        if (path == null || path.startsWith('http')) return path;
+        final fileName = p.basename(path);
+        final imageFile = archive.findFile('images/$fileName');
+        if (imageFile == null) return null;
+        final dir = await getApplicationDocumentsDirectory();
+        final filePath = p.join(dir.path, fileName);
+        final file = File(filePath);
+        await file.writeAsBytes(imageFile.content as List<int>);
+        return file.path;
+      }
+
+      Future<MealDBO> convertMeal(MealDBO meal) async {
+        return MealDBO(
+          code: meal.code,
+          name: meal.name,
+          brands: meal.brands,
+          thumbnailImageUrl: await restoreImage(meal.thumbnailImageUrl),
+          mainImageUrl: await restoreImage(meal.mainImageUrl),
+          url: await restoreImage(meal.url),
+          mealQuantity: meal.mealQuantity,
+          mealUnit: meal.mealUnit,
+          servingQuantity: meal.servingQuantity,
+          servingUnit: meal.servingUnit,
+          servingSize: meal.servingSize,
+          nutriments: meal.nutriments,
+          source: meal.source,
+        );
+      }
+
+      // ----- USER -----
+      final userJsonString = utf8.decode(userFile!.content as List<int>);
+      final userMap = jsonDecode(userJsonString) as Map<String, dynamic>;
+      final userDBO = UserDBO(
+        name: userMap['name'] as String,
+        birthday: DateTime.parse(userMap['birthday'] as String),
+        heightCM: (userMap['heightCM'] as num).toDouble(),
+        weightKG: (userMap['weightKG'] as num).toDouble(),
+        gender: UserGenderDBO.values[userMap['gender'] as int],
+        goal: UserWeightGoalDBO.values[userMap['goal'] as int],
+        pal: UserPALDBO.values[userMap['pal'] as int],
+        role: UserRoleDBO.values[userMap['role'] as int],
+        profileImagePath: userMap['profileImagePath'] as String?,
+      );
+      userDBO.profileImagePath = await restoreImage(userDBO.profileImagePath);
+      await _userRepository.updateUserData(UserEntity.fromUserDBO(userDBO));
+
+      // ----- RECIPES -----
+      final recipesJsonString = utf8.decode(recipesFile!.content as List<int>);
+      final recipesList =
+          (jsonDecode(recipesJsonString) as List).cast<Map<String, dynamic>>();
+      final recipesDBOs =
+          recipesList.map((e) => RecipesDBO.fromJson(e)).toList();
+
+      final List<RecipesDBO> updatedRecipes = [];
+      for (final r in recipesDBOs) {
+        final updatedMeal = await convertMeal(r.recipe);
+        final updatedIngredients = <IntakeForRecipeDBO>[];
+        for (final ing in r.ingredients) {
+          final m = ing.meal;
+          final updatedM = m == null ? null : await convertMeal(m);
+          updatedIngredients.add(IntakeForRecipeDBO(
+            code: ing.code,
+            name: ing.name,
+            unit: ing.unit,
+            amount: ing.amount,
+            meal: updatedM,
+          ));
+        }
+        updatedRecipes.add(RecipesDBO(
+          recipe: updatedMeal,
+          ingredients: updatedIngredients,
+        ));
+      }
+      if (updatedRecipes.isNotEmpty) {
+        await _recipeRepository.addAllRecipeDBOs(updatedRecipes);
+      }
 
       // ----- USER ACTIVITY -----
       final userActivityJsonString =
