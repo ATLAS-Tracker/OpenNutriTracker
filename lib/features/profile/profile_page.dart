@@ -17,6 +17,7 @@ import 'package:opennutritracker/features/profile/presentation/widgets/set_weigh
 import 'package:opennutritracker/features/profile/presentation/widgets/profile_photo_picker.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/features/auth/auth_safe_sign_out.dart';
+import 'coach_students_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -184,6 +185,22 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             onTap: () {
               _showSetGenderDialog(context, user);
+            },
+          ),
+        if (isCoach)
+          ListTile(
+            leading: const SizedBox(
+              height: double.infinity,
+              child: Icon(Icons.group_outlined),
+            ),
+            title: const Text('Voir mes élèves'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CoachStudentsPage(),
+                ),
+              );
             },
           ),
         ListTile(
