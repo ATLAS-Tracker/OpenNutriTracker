@@ -5,7 +5,12 @@ import 'package:opennutritracker/core/utils/locator.dart';
 class StudentMacrosPage extends StatefulWidget {
   final String studentId;
   final String studentName;
-  const StudentMacrosPage({super.key, required this.studentId, required this.studentName});
+
+  const StudentMacrosPage({
+    super.key,
+    required this.studentId,
+    required this.studentName,
+  });
 
   @override
   State<StudentMacrosPage> createState() => _StudentMacrosPageState();
@@ -23,12 +28,18 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
   Future<Map<String, dynamic>?> _fetchMacros() async {
     final supabase = locator<SupabaseClient>();
     final today = DateTime.now();
+    final startOfDay = DateTime(today.year, today.month, today.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+
     final response = await supabase
         .from('tracked_days')
-        .select('calorieGoal, caloriesTracked, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked')
+        .select(
+            'calorieGoal, caloriesTracked, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked')
         .eq('user_id', widget.studentId)
-        .eq('day', today.toIso8601String().substring(0, 10))
+        .gte('day', startOfDay.toIso8601String())
+        .lt('day', endOfDay.toIso8601String())
         .maybeSingle();
+
     if (response == null) return null;
     return Map<String, dynamic>.from(response as Map);
   }
@@ -42,23 +53,28 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
       body: FutureBuilder<Map<String, dynamic>?>(
         future: _macrosFuture,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            if (snapshot.hasError) {
-              return Center(child: Text('Erreur: ${snapshot.error}'));
-            }
+          if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Erreur : ${snapshot.error}'));
+          }
+
           final data = snapshot.data;
           if (data == null) {
-            return const Center(child: Text('Aucune donnée'));
+            return const Center(child: Text('Aucune donnée pour aujourd’hui'));
           }
+
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              _buildRow('Calories', data['caloriesTracked'], data['calorieGoal']),
+              _buildRow(
+                  'Calories', data['caloriesTracked'], data['calorieGoal']),
               _buildRow('Glucides', data['carbsTracked'], data['carbsGoal']),
               _buildRow('Lipides', data['fatTracked'], data['fatGoal']),
-              _buildRow('Protéines', data['proteinTracked'], data['proteinGoal']),
+              _buildRow(
+                  'Protéines', data['proteinTracked'], data['proteinGoal']),
             ],
           );
         },
@@ -69,7 +85,10 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
   Widget _buildRow(String label, dynamic tracked, dynamic goal) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text('$label : ${tracked ?? 0} / ${goal ?? 0}'),
+      child: Text(
+        '$label : ${tracked?.toStringAsFixed(0) ?? 0} / ${goal?.toStringAsFixed(0) ?? 0}',
+        style: const TextStyle(fontSize: 16),
+      ),
     );
   }
 }
