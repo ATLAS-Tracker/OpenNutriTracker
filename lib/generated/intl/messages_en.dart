@@ -92,6 +92,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "chooseWeightGoalLabel":
             MessageLookupByLibrary.simpleMessage("Choose Weight Goal"),
         "cmLabel": MessageLookupByLibrary.simpleMessage("cm"),
+        "coachStudentsLabel":
+            MessageLookupByLibrary.simpleMessage("My students"),
         "copyDialogTitle": MessageLookupByLibrary.simpleMessage(
             "Which meal type do you want to copy to?"),
         "copyOrDeleteTimeDialogContent": MessageLookupByLibrary.simpleMessage(

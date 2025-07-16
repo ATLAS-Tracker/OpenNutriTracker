@@ -450,5 +450,6 @@
   "errorPrefix": "Error:",
   "noDataToday": "No data for today",
   "signOutOfflineMessage": "You can only sign out when internet connection is available to avoid losing data.",
-  "signOutSyncFailedMessage": "Failed to sync your data. Please sign in again later."
+  "signOutSyncFailedMessage": "Failed to sync your data. Please sign in again later.",
+  "coachStudentsLabel": "My students"
 }

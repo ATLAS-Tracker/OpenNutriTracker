@@ -4511,6 +4511,16 @@ class S {
       args: [],
     );
   }
+
+  /// `My students`
+  String get coachStudentsLabel {
+    return Intl.message(
+      'My students',
+      name: 'coachStudentsLabel',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

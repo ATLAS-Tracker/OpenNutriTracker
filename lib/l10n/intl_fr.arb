@@ -448,5 +448,7 @@
   "errorPrefix": "Erreur :",
   "noDataToday": "Aucune donnée pour aujourd’hui",
   "signOutOfflineMessage": "Vous ne pouvez vous déconnecter que lorsque la connexion internet est rétablie pour ne pas perdre vos données.",
-  "signOutSyncFailedMessage": "Échec de la synchronisation des données. Veuillez vous reconnecter plus tard."}
+  "signOutSyncFailedMessage": "Échec de la synchronisation des données. Veuillez vous reconnecter plus tard.",
+  "coachStudentsLabel": "Voir mes élèves"
+}
 

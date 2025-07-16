@@ -94,6 +94,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "chooseWeightGoalLabel": MessageLookupByLibrary.simpleMessage(
             "Choisir l\'objectif de poids"),
         "cmLabel": MessageLookupByLibrary.simpleMessage("cm"),
+        "coachStudentsLabel":
+            MessageLookupByLibrary.simpleMessage("Voir mes élèves"),
         "copyDialogTitle": MessageLookupByLibrary.simpleMessage(
             "Vers quel type de repas voulez-vous copier ?"),
         "copyOrDeleteTimeDialogContent": MessageLookupByLibrary.simpleMessage(

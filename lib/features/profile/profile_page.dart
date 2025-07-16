@@ -193,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
               height: double.infinity,
               child: Icon(Icons.group_outlined),
             ),
-            title: const Text('Voir mes élèves'),
+            title: Text(S.of(context).coachStudentsLabel),
             onTap: () {
               Navigator.push(
                 context,
