@@ -87,7 +87,9 @@ class MessageLookup extends MessageLookupByLibrary {
             "Équation de l\'Institut de Médecine"),
         "calculationsTDEELabel":
             MessageLookupByLibrary.simpleMessage("Équation TDEE"),
+        "caloriesLabel": MessageLookupByLibrary.simpleMessage("Calories"),
         "carbohydrateLabel": MessageLookupByLibrary.simpleMessage("glucides"),
+        "carbohydratesLabel": MessageLookupByLibrary.simpleMessage("Glucides"),
         "carbsLabel": MessageLookupByLibrary.simpleMessage("glucides"),
         "chooseWeightGoalLabel": MessageLookupByLibrary.simpleMessage(
             "Choisir l\'objectif de poids"),
@@ -146,6 +148,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Erreur lors de l\'ouverture de l\'application navigateur"),
         "errorOpeningEmail": MessageLookupByLibrary.simpleMessage(
             "Erreur lors de l\'ouverture de l\'application e-mail"),
+        "errorPrefix": MessageLookupByLibrary.simpleMessage("Erreur :"),
         "errorProductNotFound":
             MessageLookupByLibrary.simpleMessage("Produit non trouvé"),
         "errorRecipeLabel":
@@ -170,6 +173,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "exportSupabaseLabel":
             MessageLookupByLibrary.simpleMessage("Exporter vers Supabase"),
         "fatLabel": MessageLookupByLibrary.simpleMessage("lipides"),
+        "fatsLabel": MessageLookupByLibrary.simpleMessage("Lipides"),
         "fiberLabel": MessageLookupByLibrary.simpleMessage("fibres"),
         "flOzUnit": MessageLookupByLibrary.simpleMessage("fl.oz"),
         "forgotPasswordBackToLogin":
@@ -255,14 +259,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "milliliterUnit": MessageLookupByLibrary.simpleMessage("ml"),
         "missingProductInfo": MessageLookupByLibrary.simpleMessage(
             "Le produit ne contient pas les informations requises sur les kcal ou les macronutriments"),
+        "myStudentsTitle": MessageLookupByLibrary.simpleMessage("Mes élèves"),
         "noActivityRecentlyAddedLabel": MessageLookupByLibrary.simpleMessage(
             "Aucune activité ajoutée récemment"),
+        "noDataToday": MessageLookupByLibrary.simpleMessage(
+            "Aucune donnée pour aujourd’hui"),
         "noFoodAddedLabel":
             MessageLookupByLibrary.simpleMessage("Aucun aliment ajouté"),
         "noMealsRecentlyAddedLabel": MessageLookupByLibrary.simpleMessage(
             "Aucun repas ajouté récemment"),
         "noResultsFound":
             MessageLookupByLibrary.simpleMessage("Aucun résultat trouvé"),
+        "noStudents": MessageLookupByLibrary.simpleMessage("Aucun élève"),
         "notAvailableLabel": MessageLookupByLibrary.simpleMessage("N/A"),
         "nothingAddedLabel":
             MessageLookupByLibrary.simpleMessage("Rien ajouté"),
@@ -635,6 +643,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Politique de confidentialité"),
         "profileLabel": MessageLookupByLibrary.simpleMessage("Profil"),
         "proteinLabel": MessageLookupByLibrary.simpleMessage("protéines"),
+        "proteinsLabel": MessageLookupByLibrary.simpleMessage("Protéines"),
         "quantityLabel": MessageLookupByLibrary.simpleMessage("Quantité"),
         "readLabel": MessageLookupByLibrary.simpleMessage(
             "J\'ai lu et j\'accepte la politique de confidentialité."),

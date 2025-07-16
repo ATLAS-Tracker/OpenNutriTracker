@@ -135,6 +135,10 @@
   "carbsLabel": "glucides",
   "fatLabel": "lipides",
   "proteinLabel": "protéines",
+  "caloriesLabel": "Calories",
+  "carbohydratesLabel": "Glucides",
+  "fatsLabel": "Lipides",
+  "proteinsLabel": "Protéines",
   "energyLabel": "énergie",
   "saturatedFatLabel": "graisses saturées",
   "carbohydrateLabel": "glucides",
@@ -439,6 +443,10 @@
   "mealPortionLabel": "Nombre de portions",
   "portionEatLabel": "Portion mangée",
   "noFoodAddedLabel": "Aucun aliment ajouté",
+  "myStudentsTitle": "Mes élèves",
+  "noStudents": "Aucun élève",
+  "errorPrefix": "Erreur :",
+  "noDataToday": "Aucune donnée pour aujourd’hui",
   "signOutOfflineMessage": "Vous ne pouvez vous déconnecter que lorsque la connexion internet est rétablie pour ne pas perdre vos données.",
   "signOutSyncFailedMessage": "Échec de la synchronisation des données. Veuillez vous reconnecter plus tard."}
 

@@ -1382,6 +1382,46 @@ class S {
     );
   }
 
+  /// `Calories`
+  String get caloriesLabel {
+    return Intl.message(
+      'Calories',
+      name: 'caloriesLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Carbohydrates`
+  String get carbohydratesLabel {
+    return Intl.message(
+      'Carbohydrates',
+      name: 'carbohydratesLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fats`
+  String get fatsLabel {
+    return Intl.message(
+      'Fats',
+      name: 'fatsLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Proteins`
+  String get proteinsLabel {
+    return Intl.message(
+      'Proteins',
+      name: 'proteinsLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `energy`
   String get energyLabel {
     return Intl.message(
@@ -4407,6 +4447,46 @@ class S {
     return Intl.message(
       'No food added',
       name: 'noFoodAddedLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My students`
+  String get myStudentsTitle {
+    return Intl.message(
+      'My students',
+      name: 'myStudentsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No students`
+  String get noStudents {
+    return Intl.message(
+      'No students',
+      name: 'noStudents',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error:`
+  String get errorPrefix {
+    return Intl.message(
+      'Error:',
+      name: 'errorPrefix',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No data for today`
+  String get noDataToday {
+    return Intl.message(
+      'No data for today',
+      name: 'noDataToday',
       desc: '',
       args: [],
     );

@@ -79,8 +79,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Tıp Enstitüsü Denklemi"),
         "calculationsTDEELabel":
             MessageLookupByLibrary.simpleMessage("TDEE denklemi"),
+        "caloriesLabel": MessageLookupByLibrary.simpleMessage("Kalori"),
         "carbohydrateLabel":
             MessageLookupByLibrary.simpleMessage("karbonhidrat"),
+        "carbohydratesLabel":
+            MessageLookupByLibrary.simpleMessage("Karbonhidratlar"),
         "carbsLabel": MessageLookupByLibrary.simpleMessage("karbonhidrat"),
         "chooseWeightGoalLabel":
             MessageLookupByLibrary.simpleMessage("Kilo Hedefini Seçin"),
@@ -135,6 +138,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Tarayıcı uygulaması açılırken hata oluştu"),
         "errorOpeningEmail": MessageLookupByLibrary.simpleMessage(
             "E-posta uygulaması açılırken hata oluştu"),
+        "errorPrefix": MessageLookupByLibrary.simpleMessage("Hata:"),
         "errorProductNotFound":
             MessageLookupByLibrary.simpleMessage("Ürün bulunamadı"),
         "errorRecipeLabel":
@@ -159,6 +163,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "exportSupabaseLabel":
             MessageLookupByLibrary.simpleMessage("Supabase\'e Aktar"),
         "fatLabel": MessageLookupByLibrary.simpleMessage("yağ"),
+        "fatsLabel": MessageLookupByLibrary.simpleMessage("Yağlar"),
         "fiberLabel": MessageLookupByLibrary.simpleMessage("lif"),
         "flOzUnit": MessageLookupByLibrary.simpleMessage("fl.oz"),
         "forgotPasswordBackToLogin":
@@ -240,14 +245,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "milliliterUnit": MessageLookupByLibrary.simpleMessage("ml"),
         "missingProductInfo": MessageLookupByLibrary.simpleMessage(
             "Üründe gerekli kcal veya makro besin bilgileri eksik"),
+        "myStudentsTitle": MessageLookupByLibrary.simpleMessage("Öğrencilerim"),
         "noActivityRecentlyAddedLabel": MessageLookupByLibrary.simpleMessage(
             "Son zamanlarda eklenen aktivite yok"),
+        "noDataToday":
+            MessageLookupByLibrary.simpleMessage("Bugün için veri yok"),
         "noFoodAddedLabel":
             MessageLookupByLibrary.simpleMessage("Hiçbir gıda eklenmedi"),
         "noMealsRecentlyAddedLabel": MessageLookupByLibrary.simpleMessage(
             "Son zamanlarda eklenen yemek yok"),
         "noResultsFound":
             MessageLookupByLibrary.simpleMessage("Sonuç bulunamadı"),
+        "noStudents": MessageLookupByLibrary.simpleMessage("Öğrenci yok"),
         "notAvailableLabel":
             MessageLookupByLibrary.simpleMessage("Mevcut Değil"),
         "nothingAddedLabel":
@@ -608,6 +617,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Gizlilik politikası"),
         "profileLabel": MessageLookupByLibrary.simpleMessage("Profil"),
         "proteinLabel": MessageLookupByLibrary.simpleMessage("protein"),
+        "proteinsLabel": MessageLookupByLibrary.simpleMessage("Proteinler"),
         "quantityLabel": MessageLookupByLibrary.simpleMessage("Miktar"),
         "readLabel": MessageLookupByLibrary.simpleMessage(
             "Gizlilik politikasını okudum ve kabul ediyorum."),
