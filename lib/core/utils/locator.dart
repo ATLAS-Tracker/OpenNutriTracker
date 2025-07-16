@@ -206,13 +206,29 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
   );
   locator.registerLazySingleton(() => GetMacroGoalUsecase(locator()));
   locator.registerLazySingleton(
-    () => ExportDataUsecase(locator(), locator(), locator(), locator()),
+    () => ExportDataUsecase(
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+    ),
   );
   locator.registerLazySingleton(
-    () => ImportDataUsecase(locator(), locator(), locator(), locator()),
+    () => ImportDataUsecase(
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+    ),
   );
   locator.registerLazySingleton(
     () => ExportDataSupabaseUsecase(
+      locator(),
+      locator(),
       locator(),
       locator(),
       locator(),
@@ -222,6 +238,8 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
   );
   locator.registerLazySingleton(
     () => ImportDataSupabaseUsecase(
+      locator(),
+      locator(),
       locator(),
       locator(),
       locator(),

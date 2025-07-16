@@ -70,6 +70,8 @@ Future<void> safeSignOut(BuildContext context) async {
               ExportImportBloc.userIntakeJsonFileName,
               ExportImportBloc.trackedDayJsonFileName,
               ExportImportBloc.userWeightJsonFileName,
+              ExportImportBloc.recipesJsonFileName,
+              ExportImportBloc.userJsonFileName,
             );
 
         var ok = await doExport();

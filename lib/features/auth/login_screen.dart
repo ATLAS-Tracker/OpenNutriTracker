@@ -93,6 +93,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ExportImportBloc.userIntakeJsonFileName,
           ExportImportBloc.trackedDayJsonFileName,
           ExportImportBloc.userWeightJsonFileName,
+          ExportImportBloc.recipesJsonFileName,
+          ExportImportBloc.userJsonFileName,
         );
 
         // ── 3. ERREUR D’IMPORT  →  on déconnecte la session
