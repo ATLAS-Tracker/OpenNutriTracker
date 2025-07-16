@@ -121,7 +121,7 @@ class ImportDataSupabaseUsecase {
         final filePath = p.join(dir.path, fileName);
         final file = File(filePath);
         await file.writeAsBytes(imageFile.content as List<int>);
-        return file.path;
+        return fileName;
       }
 
       Future<MealDBO> convertMeal(MealDBO meal) async {
