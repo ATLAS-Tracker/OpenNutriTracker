@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
+import 'package:opennutritracker/generated/l10n.dart';
 import 'student_macros_page.dart';
 
 class CoachStudentsPage extends StatefulWidget {
@@ -24,41 +25,40 @@ class _CoachStudentsPageState extends State<CoachStudentsPage> {
     final coachId = supabase.auth.currentUser?.id;
     if (coachId == null) return [];
 
-    final response = await supabase
+    final List<Map<String, dynamic>> response = await supabase
         .from('users')
         .select('id, display_name')
         .eq('coach_id', coachId);
 
-    final students = (response as List)
-        .map((e) => Map<String, dynamic>.from(e as Map))
+    return response
         .map((e) => {
               'id': e['id'],
               'name': e['display_name'] ?? e['id'],
             })
         .toList();
-
-    return students;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mes élèves'),
+        title: Text(S.of(context).myStudentsTitle),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _studentsFuture,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             if (snapshot.hasError) {
-              return Center(child: Text('Erreur: ${snapshot.error}'));
+              return Center(
+                  child:
+                      Text('${S.of(context).errorPrefix} ${snapshot.error}'));
             }
             return const Center(child: CircularProgressIndicator());
           }
 
           final students = snapshot.data!;
           if (students.isEmpty) {
-            return const Center(child: Text('Aucun élève'));
+            return Center(child: Text(S.of(context).noStudents));
           }
 
           return ListView.builder(

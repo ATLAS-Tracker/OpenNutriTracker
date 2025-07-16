@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
+import 'package:opennutritracker/generated/l10n.dart';
 
 class StudentMacrosPage extends StatefulWidget {
   final String studentId;
@@ -28,20 +30,18 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
   Future<Map<String, dynamic>?> _fetchMacros() async {
     final supabase = locator<SupabaseClient>();
     final today = DateTime.now();
-    final startOfDay = DateTime(today.year, today.month, today.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
+    final formattedDay = DateFormat('yyyy-MM-dd').format(today);
 
     final response = await supabase
         .from('tracked_days')
         .select(
             'calorieGoal, caloriesTracked, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked')
         .eq('user_id', widget.studentId)
-        .gte('day', startOfDay.toIso8601String())
-        .lt('day', endOfDay.toIso8601String())
+        .eq('day', formattedDay)
         .maybeSingle();
 
     if (response == null) return null;
-    return Map<String, dynamic>.from(response as Map);
+    return response;
   }
 
   @override
@@ -58,23 +58,27 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text('Erreur : ${snapshot.error}'));
+            return Center(
+              child: Text('${S.of(context).errorPrefix} ${snapshot.error}'),
+            );
           }
 
           final data = snapshot.data;
           if (data == null) {
-            return const Center(child: Text('Aucune donnée pour aujourd’hui'));
+            return Center(child: Text(S.of(context).noDataToday));
           }
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              _buildRow(S.of(context).caloriesLabel, data['caloriesTracked'],
+                  data['calorieGoal']),
+              _buildRow(S.of(context).carbohydratesLabel, data['carbsTracked'],
+                  data['carbsGoal']),
               _buildRow(
-                  'Calories', data['caloriesTracked'], data['calorieGoal']),
-              _buildRow('Glucides', data['carbsTracked'], data['carbsGoal']),
-              _buildRow('Lipides', data['fatTracked'], data['fatGoal']),
-              _buildRow(
-                  'Protéines', data['proteinTracked'], data['proteinGoal']),
+                  S.of(context).fatsLabel, data['fatTracked'], data['fatGoal']),
+              _buildRow(S.of(context).proteinsLabel, data['proteinTracked'],
+                  data['proteinGoal']),
             ],
           );
         },
