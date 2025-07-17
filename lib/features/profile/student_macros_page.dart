@@ -6,7 +6,6 @@ import 'package:opennutritracker/features/home/presentation/widgets/macro_nutrim
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:opennutritracker/generated/l10n.dart';
-import 'package:opennutritracker/features/diary/presentation/widgets/diary_table_calendar.dart';
 
 class StudentMacrosPage extends StatefulWidget {
   final String studentId;
@@ -70,29 +69,27 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
 
           if (snapshot.hasError) {
             return Center(
-                child: Text('${S.of(context).errorPrefix} ${snapshot.error}'));
+              child: Text('${S.of(context).errorPrefix} ${snapshot.error}'),
+            );
           }
 
           if (snapshot.hasData) {
             _weekMacros = snapshot.data!;
           }
+
           final dayKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
           final data = _weekMacros[dayKey];
-          if (data == null) {
-            return Center(child: Text(S.of(context).noDataToday));
-          }
 
-          // Récupération des données avec fallback
-          final double calorieGoal = (data['calorieGoal'] ?? 0).toDouble();
+          final double calorieGoal = (data?['calorieGoal'] ?? 0).toDouble();
           final double caloriesTracked =
-              (data['caloriesTracked'] ?? 0).toDouble();
-          final double carbsGoal = (data['carbsGoal'] ?? 0).toDouble();
-          final double carbsTracked = (data['carbsTracked'] ?? 0).toDouble();
-          final double fatGoal = (data['fatGoal'] ?? 0).toDouble();
-          final double fatTracked = (data['fatTracked'] ?? 0).toDouble();
-          final double proteinGoal = (data['proteinGoal'] ?? 0).toDouble();
+              (data?['caloriesTracked'] ?? 0).toDouble();
+          final double carbsGoal = (data?['carbsGoal'] ?? 0).toDouble();
+          final double carbsTracked = (data?['carbsTracked'] ?? 0).toDouble();
+          final double fatGoal = (data?['fatGoal'] ?? 0).toDouble();
+          final double fatTracked = (data?['fatTracked'] ?? 0).toDouble();
+          final double proteinGoal = (data?['proteinGoal'] ?? 0).toDouble();
           final double proteinTracked =
-              (data['proteinTracked'] ?? 0).toDouble();
+              (data?['proteinTracked'] ?? 0).toDouble();
 
           final double kcalLeft = calorieGoal - caloriesTracked;
           final double gaugeValue = calorieGoal == 0
@@ -108,6 +105,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
+                    // Navigation toujours visible
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -115,12 +113,9 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                           icon: const Icon(Icons.chevron_left),
                           onPressed: _goToPreviousDay,
                         ),
-                        TextButton(
-                          onPressed: _showCalendar,
-                          child: Text(
-                            DateFormat('yyyy-MM-dd').format(_selectedDate),
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
+                        Text(
+                          DateFormat('yyyy-MM-dd').format(_selectedDate),
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                         IconButton(
                           icon: const Icon(Icons.chevron_right),
@@ -129,104 +124,112 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Column(
-                          children: [
-                            Icon(Icons.keyboard_arrow_up_outlined,
-                                color: Theme.of(context).colorScheme.onSurface),
-                            Text('${caloriesTracked.toInt()}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface)),
-                            Text(S.of(context).suppliedLabel,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface)),
-                          ],
-                        ),
-                        CircularPercentIndicator(
-                          radius: 90.0,
-                          lineWidth: 13.0,
-                          animation: true,
-                          percent: gaugeValue,
-                          arcType: ArcType.FULL,
-                          progressColor: Theme.of(context).colorScheme.primary,
-                          arcBackgroundColor: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withAlpha(50),
-                          center: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+
+                    // Si pas de données pour ce jour
+                    if (data == null)
+                      Text(S.of(context).noDataToday)
+                    else ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Column(
                             children: [
-                              AnimatedFlipCounter(
-                                duration: const Duration(milliseconds: 1000),
-                                value: kcalLeft.clamp(0, calorieGoal).toInt(),
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .headlineMedium
-                                    ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                        letterSpacing: -1),
-                              ),
-                              Text(
-                                S.of(context).kcalLeftLabel,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface),
-                              )
+                              Icon(Icons.keyboard_arrow_up_outlined,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface),
+                              Text('${caloriesTracked.toInt()}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface)),
+                              Text(S.of(context).suppliedLabel,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface)),
                             ],
                           ),
-                          circularStrokeCap: CircularStrokeCap.round,
-                        ),
-                        Column(
-                          children: [
-                            Icon(Icons.keyboard_arrow_down_outlined,
-                                color: Theme.of(context).colorScheme.onSurface),
-                            Text(
-                                '0', // Tu peux adapter si tu veux gérer "burned"
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface)),
-                            Text(S.of(context).burnedLabel,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface)),
-                          ],
-                        ),
-                      ],
-                    ),
-                    MacroNutrientsView(
-                      totalCarbsIntake: carbsTracked,
-                      totalFatsIntake: fatTracked,
-                      totalProteinsIntake: proteinTracked,
-                      totalCarbsGoal: carbsGoal,
-                      totalFatsGoal: fatGoal,
-                      totalProteinsGoal: proteinGoal,
-                    ),
+                          CircularPercentIndicator(
+                            radius: 90.0,
+                            lineWidth: 13.0,
+                            animation: true,
+                            percent: gaugeValue,
+                            arcType: ArcType.FULL,
+                            progressColor:
+                                Theme.of(context).colorScheme.primary,
+                            arcBackgroundColor: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withAlpha(50),
+                            center: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AnimatedFlipCounter(
+                                  duration: const Duration(milliseconds: 1000),
+                                  value: kcalLeft.clamp(0, calorieGoal).toInt(),
+                                  textStyle: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
+                                          letterSpacing: -1),
+                                ),
+                                Text(
+                                  S.of(context).kcalLeftLabel,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface),
+                                )
+                              ],
+                            ),
+                            circularStrokeCap: CircularStrokeCap.round,
+                          ),
+                          Column(
+                            children: [
+                              Icon(Icons.keyboard_arrow_down_outlined,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface),
+                              Text('0',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface)),
+                              Text(S.of(context).burnedLabel,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      MacroNutrientsView(
+                        totalCarbsIntake: carbsTracked,
+                        totalFatsIntake: fatTracked,
+                        totalProteinsIntake: proteinTracked,
+                        totalCarbsGoal: carbsGoal,
+                        totalFatsGoal: fatGoal,
+                        totalProteinsGoal: proteinGoal,
+                      ),
+                    ]
                   ],
                 ),
               ),
@@ -250,41 +253,5 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
       _macrosFuture = _fetchMacros();
     });
   }
-
-  Future<void> _showCalendar() async {
-    final selected = await showDialog<DateTime>(
-      context: context,
-      builder: (context) {
-        var tempDate = _selectedDate;
-        return AlertDialog(
-          content: SizedBox(
-            height: 300,
-            child: DiaryTableCalendar(
-              onDateSelected: (day, _) {
-                tempDate = day;
-              },
-              calendarDurationDays: const Duration(days: 3),
-              focusedDate: tempDate,
-              currentDate: _selectedDate,
-              selectedDate: tempDate,
-              trackedDaysMap: const {},
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(tempDate),
-              child: const Text('OK'),
-            )
-          ],
-        );
-      },
-    );
-
-    if (selected != null) {
-      setState(() {
-        _selectedDate = selected;
-        _macrosFuture = _fetchMacros();
-      });
-    }
-  }
+  // ...existing code...
 }

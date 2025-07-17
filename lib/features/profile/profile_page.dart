@@ -17,6 +17,7 @@ import 'package:opennutritracker/features/profile/presentation/widgets/set_weigh
 import 'package:opennutritracker/features/profile/presentation/widgets/profile_photo_picker.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/features/auth/auth_safe_sign_out.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'coach_students_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -194,7 +195,22 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Icon(Icons.group_outlined),
             ),
             title: Text(S.of(context).coachStudentsLabel),
-            onTap: () {
+            onTap: () async {
+              final connectivityResult =
+                  await locator<Connectivity>().checkConnectivity();
+              final isConnected = connectivityResult != ConnectivityResult.none;
+
+              if (!isConnected) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        'Pas de connexion Internet. Fonctionnalité indisponible.'),
+                  ),
+                );
+                return; // ne pas naviguer
+              }
+
+              // Connexion OK, on navigue
               Navigator.push(
                 context,
                 MaterialPageRoute(
