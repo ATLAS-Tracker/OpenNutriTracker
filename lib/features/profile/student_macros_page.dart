@@ -5,6 +5,7 @@ import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/macro_nutriments_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:animated_flip_counter/animated_flip_counter.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 
 class StudentMacrosPage extends StatefulWidget {
@@ -21,10 +22,13 @@ class StudentMacrosPage extends StatefulWidget {
   State<StudentMacrosPage> createState() => _StudentMacrosPageState();
 }
 
+enum MacroType { calories, carbs, fat, protein }
+
 class _StudentMacrosPageState extends State<StudentMacrosPage> {
   late Future<Map<String, Map<String, dynamic>>> _macrosFuture;
-  Map<String, Map<String, dynamic>> _weekMacros = {};
+  Map<String, Map<String, dynamic>> _allMacros = {};
   DateTime _selectedDate = DateTime.now();
+  MacroType _selectedMacro = MacroType.calories;
 
   @override
   void initState() {
@@ -34,18 +38,12 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
 
   Future<Map<String, Map<String, dynamic>>> _fetchMacros() async {
     final supabase = locator<SupabaseClient>();
-    final start = DateFormat('yyyy-MM-dd')
-        .format(_selectedDate.subtract(const Duration(days: 3)));
-    final end = DateFormat('yyyy-MM-dd')
-        .format(_selectedDate.add(const Duration(days: 3)));
 
     final response = await supabase
         .from('tracked_days')
         .select(
             'day, calorieGoal, caloriesTracked, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked')
         .eq('user_id', widget.studentId)
-        .gte('day', start)
-        .lte('day', end)
         .order('day');
 
     return {
@@ -74,11 +72,11 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
           }
 
           if (snapshot.hasData) {
-            _weekMacros = snapshot.data!;
+            _allMacros = snapshot.data!;
           }
 
           final dayKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
-          final data = _weekMacros[dayKey];
+          final data = _allMacros[dayKey];
 
           final double calorieGoal = (data?['calorieGoal'] ?? 0).toDouble();
           final double caloriesTracked =
@@ -232,6 +230,53 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                         totalFatsGoal: fatGoal,
                         totalProteinsGoal: proteinGoal,
                       ),
+                      const SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: DropdownButton<MacroType>(
+                          value: _selectedMacro,
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _selectedMacro = value;
+                              });
+                            }
+                          },
+                          items: [
+                            DropdownMenuItem(
+                              value: MacroType.calories,
+                              child: Text(S.of(context).caloriesLabel),
+                            ),
+                            DropdownMenuItem(
+                              value: MacroType.carbs,
+                              child: Text(S.of(context).carbsLabel),
+                            ),
+                            DropdownMenuItem(
+                              value: MacroType.fat,
+                              child: Text(S.of(context).fatLabel),
+                            ),
+                            DropdownMenuItem(
+                              value: MacroType.protein,
+                              child: Text(S.of(context).proteinLabel),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 200,
+                        child: SfCartesianChart(
+                          primaryXAxis: DateTimeAxis(),
+                          series: <LineSeries<_MacroPoint, DateTime>>[
+                            LineSeries<_MacroPoint, DateTime>(
+                              dataSource: _getMacroPoints(_selectedMacro),
+                              xValueMapper: (p, _) => p.date,
+                              yValueMapper: (p, _) => p.value,
+                              markerSettings:
+                                  const MarkerSettings(isVisible: true),
+                            ),
+                          ],
+                        ),
+                      ),
                     ]
                   ],
                 ),
@@ -246,14 +291,12 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
   void _goToPreviousDay() {
     setState(() {
       _selectedDate = _selectedDate.subtract(const Duration(days: 1));
-      _macrosFuture = _fetchMacros();
     });
   }
 
   void _goToNextDay() {
     setState(() {
       _selectedDate = _selectedDate.add(const Duration(days: 1));
-      _macrosFuture = _fetchMacros();
     });
   }
 
@@ -268,9 +311,42 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
-        _macrosFuture = _fetchMacros();
       });
     }
   }
+  List<_MacroPoint> _getMacroPoints(MacroType type) {
+    final List<_MacroPoint> points = [];
+    for (final entry in _allMacros.entries) {
+      final date = DateTime.parse(entry.key);
+      final data = entry.value;
+      double value = 0;
+      switch (type) {
+        case MacroType.calories:
+          value = (data['caloriesTracked'] ?? 0).toDouble();
+          break;
+        case MacroType.carbs:
+          value = (data['carbsTracked'] ?? 0).toDouble();
+          break;
+        case MacroType.fat:
+          value = (data['fatTracked'] ?? 0).toDouble();
+          break;
+        case MacroType.protein:
+          value = (data['proteinTracked'] ?? 0).toDouble();
+          break;
+      }
+      points.add(_MacroPoint(date, value));
+    }
+    points.sort((a, b) => a.date.compareTo(b.date));
+    return points;
+  }
+
   // ...existing code...
 }
+
+class _MacroPoint {
+  final DateTime date;
+  final double value;
+
+  _MacroPoint(this.date, this.value);
+}
+
