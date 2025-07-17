@@ -68,49 +68,39 @@ class _CoachStudentsPageState extends State<CoachStudentsPage> {
               final studentId = student['id'].toString();
               final studentName = student['name'].toString();
 
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.grey.shade500
-                          .withAlpha(80), // bordure quasi imperceptible
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color:
-                            Colors.black.withAlpha(10), // ombre légère, subtile
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: const CircleAvatar(
-                      radius: 24,
-                      backgroundColor:
-                          Color(0xFFE0E0E0), // gris clair placeholder
-                      child: Icon(Icons.person, color: Colors.white),
-                    ),
-                    title: Text(
-                      studentName,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => StudentMacrosPage(
-                            studentId: studentId,
-                            studentName: studentName,
-                          ),
+              return Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  side:
+                      BorderSide(color: Theme.of(context).colorScheme.outline),
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => StudentMacrosPage(
+                          studentId: studentId,
+                          studentName: studentName,
                         ),
-                      );
-                    },
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: ListTile(
+                      leading: const CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Color(0xFFE0E0E0),
+                        child: Icon(Icons.person, color: Colors.white),
+                      ),
+                      title: Text(
+                        studentName,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
                   ),
                 ),
               );
