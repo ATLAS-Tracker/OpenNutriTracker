@@ -50,7 +50,8 @@ class _CoachStudentsPageState extends State<CoachStudentsPage> {
                 'name': e['display_name'] ?? e['id'],
               })
           .toList();
-    } catch (_) {
+    } catch (e, s) {
+      debugPrint('Failed to fetch students: $e\n$s');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(S.of(context).errorLoadingStudents)),
