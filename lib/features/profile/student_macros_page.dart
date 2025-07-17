@@ -6,6 +6,7 @@ import 'package:opennutritracker/features/home/presentation/widgets/macro_nutrim
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:opennutritracker/generated/l10n.dart';
+import 'package:opennutritracker/features/diary/presentation/widgets/diary_table_calendar.dart';
 
 class StudentMacrosPage extends StatefulWidget {
   final String studentId;
@@ -22,7 +23,9 @@ class StudentMacrosPage extends StatefulWidget {
 }
 
 class _StudentMacrosPageState extends State<StudentMacrosPage> {
-  late Future<Map<String, dynamic>?> _macrosFuture;
+  late Future<Map<String, Map<String, dynamic>>> _macrosFuture;
+  Map<String, Map<String, dynamic>> _weekMacros = {};
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -30,19 +33,26 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     _macrosFuture = _fetchMacros();
   }
 
-  Future<Map<String, dynamic>?> _fetchMacros() async {
+  Future<Map<String, Map<String, dynamic>>> _fetchMacros() async {
     final supabase = locator<SupabaseClient>();
-    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final start = DateFormat('yyyy-MM-dd')
+        .format(_selectedDate.subtract(const Duration(days: 3)));
+    final end = DateFormat('yyyy-MM-dd')
+        .format(_selectedDate.add(const Duration(days: 3)));
 
     final response = await supabase
         .from('tracked_days')
         .select(
-            'calorieGoal, caloriesTracked, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked')
+            'day, calorieGoal, caloriesTracked, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked')
         .eq('user_id', widget.studentId)
-        .eq('day', today)
-        .maybeSingle();
+        .gte('day', start)
+        .lte('day', end)
+        .order('day');
 
-    return response;
+    return {
+      for (final Map<String, dynamic> item in response)
+        item['day'] as String: item
+    };
   }
 
   @override
@@ -51,7 +61,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
       appBar: AppBar(
         title: Text(widget.studentName),
       ),
-      body: FutureBuilder<Map<String, dynamic>?>(
+      body: FutureBuilder<Map<String, Map<String, dynamic>>>(
         future: _macrosFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
@@ -63,7 +73,11 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                 child: Text('${S.of(context).errorPrefix} ${snapshot.error}'));
           }
 
-          final data = snapshot.data;
+          if (snapshot.hasData) {
+            _weekMacros = snapshot.data!;
+          }
+          final dayKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
+          final data = _weekMacros[dayKey];
           if (data == null) {
             return Center(child: Text(S.of(context).noDataToday));
           }
@@ -94,6 +108,27 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left),
+                          onPressed: _goToPreviousDay,
+                        ),
+                        TextButton(
+                          onPressed: _showCalendar,
+                          child: Text(
+                            DateFormat('yyyy-MM-dd').format(_selectedDate),
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right),
+                          onPressed: _goToNextDay,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -200,5 +235,56 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
         },
       ),
     );
+  }
+
+  void _goToPreviousDay() {
+    setState(() {
+      _selectedDate = _selectedDate.subtract(const Duration(days: 1));
+      _macrosFuture = _fetchMacros();
+    });
+  }
+
+  void _goToNextDay() {
+    setState(() {
+      _selectedDate = _selectedDate.add(const Duration(days: 1));
+      _macrosFuture = _fetchMacros();
+    });
+  }
+
+  Future<void> _showCalendar() async {
+    final selected = await showDialog<DateTime>(
+      context: context,
+      builder: (context) {
+        var tempDate = _selectedDate;
+        return AlertDialog(
+          content: SizedBox(
+            height: 300,
+            child: DiaryTableCalendar(
+              onDateSelected: (day, _) {
+                tempDate = day;
+              },
+              calendarDurationDays: const Duration(days: 3),
+              focusedDate: tempDate,
+              currentDate: _selectedDate,
+              selectedDate: tempDate,
+              trackedDaysMap: const {},
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(tempDate),
+              child: const Text('OK'),
+            )
+          ],
+        );
+      },
+    );
+
+    if (selected != null) {
+      setState(() {
+        _selectedDate = selected;
+        _macrosFuture = _fetchMacros();
+      });
+    }
   }
 }
