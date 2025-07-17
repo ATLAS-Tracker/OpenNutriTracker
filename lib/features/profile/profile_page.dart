@@ -201,6 +201,7 @@ class _ProfilePageState extends State<ProfilePage> {
               final isConnected = connectivityResult != ConnectivityResult.none;
 
               if (!isConnected) {
+                if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(S.of(context).noInternetConnectionMessage),
@@ -210,6 +211,7 @@ class _ProfilePageState extends State<ProfilePage> {
               }
 
               // Connexion OK, on navigue
+              if (!mounted) return;
               Navigator.push(
                 context,
                 MaterialPageRoute(
