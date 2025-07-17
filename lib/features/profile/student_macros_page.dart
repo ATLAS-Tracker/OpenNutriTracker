@@ -264,6 +264,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
+    if (!mounted) return;
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
