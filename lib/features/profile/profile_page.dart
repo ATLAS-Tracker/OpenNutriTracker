@@ -196,28 +196,33 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             title: Text(S.of(context).coachStudentsLabel),
             onTap: () async {
+              // 1. Effectuez l'opération asynchrone
               final connectivityResult =
                   await locator<Connectivity>().checkConnectivity();
+
+              // 2. APRÈS l'await, vérifiez si le widget est toujours monté
+              if (!mounted) return;
+
+              // 3. Maintenant, vous pouvez utiliser le context en toute sécurité
               final isConnected = connectivityResult != ConnectivityResult.none;
 
-              if (!isConnected) {
-                if (!mounted) return;
+              if (isConnected) {
+                Navigator.push(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const CoachStudentsPage(),
+                  ),
+                );
+              } else {
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
+                    // ignore: use_build_context_synchronously
                     content: Text(S.of(context).noInternetConnectionMessage),
                   ),
                 );
-                return; // ne pas naviguer
               }
-
-              // Connexion OK, on navigue
-              if (!mounted) return;
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const CoachStudentsPage(),
-                ),
-              );
             },
           ),
         ListTile(
