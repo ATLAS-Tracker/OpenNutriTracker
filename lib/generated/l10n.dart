@@ -4521,6 +4521,16 @@ class S {
       args: [],
     );
   }
+
+  /// `No internet connection. Feature unavailable.`
+  String get noInternetConnectionMessage {
+    return Intl.message(
+      'No internet connection. Feature unavailable.',
+      name: 'noInternetConnectionMessage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

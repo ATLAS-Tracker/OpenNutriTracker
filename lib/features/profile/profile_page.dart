@@ -203,8 +203,7 @@ class _ProfilePageState extends State<ProfilePage> {
               if (!isConnected) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                        'Pas de connexion Internet. Fonctionnalité indisponible.'),
+                    content: Text(S.of(context).noInternetConnectionMessage),
                   ),
                 );
                 return; // ne pas naviguer

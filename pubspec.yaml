@@ -98,49 +98,47 @@ dev_dependencies:
   analyzer: ^6.11.0
 
 flutter:
-
   uses-material-design: true
-
+  generate: true
   assets:
     - assets/icon/ont_logo_square.png
     - assets/icon/ont_logo_square.svg
     - assets/icon/ont_logo_square_light.png
     - assets/icon/ont_banner_top.png
     - assets/icon/ont_banner_top_light.png
-
   fonts:
     - family: CustomIcons
       fonts:
-      - asset: fonts/CustomIcons.ttf
+        - asset: fonts/CustomIcons.ttf
     - family: Poppins
       fonts:
-      - asset: fonts/Poppins-Black.ttf
-      - asset: fonts/Poppins-BlackItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-Bold.ttf
-      - asset: fonts/Poppins-BoldItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-ExtraBold.ttf
-      - asset: fonts/Poppins-ExtraBoldItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-ExtraLight.ttf
-      - asset: fonts/Poppins-ExtraLightItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-Italic.ttf
-        style: italic
-      - asset: fonts/Poppins-Light.ttf
-      - asset: fonts/Poppins-LightItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-Medium.ttf
-      - asset: fonts/Poppins-MediumItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-Regular.ttf
-      - asset: fonts/Poppins-SemiBold.ttf
-      - asset: fonts/Poppins-SemiBoldItalic.ttf
-        style: italic
-      - asset: fonts/Poppins-Thin.ttf
-      - asset: fonts/Poppins-ThinItalic.ttf
-        style: italic
+        - asset: fonts/Poppins-Black.ttf
+        - asset: fonts/Poppins-BlackItalic.ttf
+          style: italic
+        - asset: fonts/Poppins-Bold.ttf
+        - asset: fonts/Poppins-BoldItalic.ttf
+          style: italic
+        - asset: fonts/Poppins-ExtraBold.ttf
+        - asset: fonts/Poppins-ExtraBoldItalic.ttf
+          style: italic
+        - asset: fonts/Poppins-ExtraLight.ttf
+        - asset: fonts/Poppins-ExtraLightItalic.ttf
+          style: italic
+        - asset: fonts/Poppins-Italic.ttf
+          style: italic
+        - asset: fonts/Poppins-Light.ttf
+        - asset: fonts/Poppins-LightItalic.ttf
+          style: italic
+        - asset: fonts/Poppins-Medium.ttf
+        - asset: fonts/Poppins-MediumItalic.ttf
+          style: italic
+        - asset: fonts/Poppins-Regular.ttf
+        - asset: fonts/Poppins-SemiBold.ttf
+        - asset: fonts/Poppins-SemiBoldItalic.ttf
+          style: italic
+        - asset: fonts/Poppins-Thin.ttf
+        - asset: fonts/Poppins-ThinItalic.ttf
+          style: italic
 
 flutter_intl:
   enabled: true

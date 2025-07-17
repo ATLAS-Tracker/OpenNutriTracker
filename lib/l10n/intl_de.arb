@@ -438,5 +438,7 @@
   "errorPrefix": "Fehler:",
   "noDataToday": "Keine Daten für heute",
   "signOutOfflineMessage": "Sie k\u00f6nnen sich nur abmelden, wenn eine Internetverbindung besteht, um Datenverlust zu vermeiden.",
-  "signOutSyncFailedMessage": "Daten konnten nicht synchronisiert werden. Bitte sp\u00e4ter erneut anmelden."}
+  "signOutSyncFailedMessage": "Daten konnten nicht synchronisiert werden. Bitte sp\u00e4ter erneut anmelden.",
+  "noInternetConnectionMessage": "Keine Internetverbindung. Funktion nicht verfügbar."
+}
 

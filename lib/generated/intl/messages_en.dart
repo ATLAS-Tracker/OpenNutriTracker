@@ -260,6 +260,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No data for today"),
         "noFoodAddedLabel":
             MessageLookupByLibrary.simpleMessage("No food added"),
+        "noInternetConnectionMessage": MessageLookupByLibrary.simpleMessage(
+            "No internet connection. Feature unavailable."),
         "noMealsRecentlyAddedLabel":
             MessageLookupByLibrary.simpleMessage("No meals recently added"),
         "noResultsFound":

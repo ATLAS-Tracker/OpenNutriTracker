@@ -254,6 +254,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Bugün için veri yok"),
         "noFoodAddedLabel":
             MessageLookupByLibrary.simpleMessage("Hiçbir gıda eklenmedi"),
+        "noInternetConnectionMessage": MessageLookupByLibrary.simpleMessage(
+            "İnternet bağlantısı yok. Özellik kullanılamıyor."),
         "noMealsRecentlyAddedLabel": MessageLookupByLibrary.simpleMessage(
             "Son zamanlarda eklenen yemek yok"),
         "noResultsFound":
