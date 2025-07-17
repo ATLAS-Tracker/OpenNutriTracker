@@ -113,9 +113,12 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                           icon: const Icon(Icons.chevron_left),
                           onPressed: _goToPreviousDay,
                         ),
-                        Text(
-                          DateFormat('yyyy-MM-dd').format(_selectedDate),
-                          style: Theme.of(context).textTheme.titleMedium,
+                        InkWell(
+                          onTap: _selectDate,
+                          child: Text(
+                            DateFormat('yyyy-MM-dd').format(_selectedDate),
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
                         ),
                         IconButton(
                           icon: const Icon(Icons.chevron_right),
@@ -252,6 +255,21 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
       _selectedDate = _selectedDate.add(const Duration(days: 1));
       _macrosFuture = _fetchMacros();
     });
+  }
+
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _macrosFuture = _fetchMacros();
+      });
+    }
   }
   // ...existing code...
 }
