@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'student_macros_page.dart';
@@ -13,29 +15,55 @@ class CoachStudentsPage extends StatefulWidget {
 
 class _CoachStudentsPageState extends State<CoachStudentsPage> {
   late Future<List<Map<String, dynamic>>> _studentsFuture;
+  StreamSubscription<ConnectivityResult>? _connectivitySub;
 
   @override
   void initState() {
     super.initState();
     _studentsFuture = _fetchStudents();
+    _connectivitySub = locator<Connectivity>()
+        .onConnectivityChanged
+        .listen(_onConnectivityChanged);
+  }
+
+  void _onConnectivityChanged(ConnectivityResult result) {
+    if (result == ConnectivityResult.none && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.of(context).errorLoadingStudents)),
+      );
+    }
   }
 
   Future<List<Map<String, dynamic>>> _fetchStudents() async {
     final supabase = locator<SupabaseClient>();
     final coachId = supabase.auth.currentUser?.id;
     if (coachId == null) return [];
+    try {
+      final List<Map<String, dynamic>> response = await supabase
+          .from('users')
+          .select('id, display_name')
+          .eq('coach_id', coachId);
 
-    final List<Map<String, dynamic>> response = await supabase
-        .from('users')
-        .select('id, display_name')
-        .eq('coach_id', coachId);
+      return response
+          .map((e) => {
+                'id': e['id'],
+                'name': e['display_name'] ?? e['id'],
+              })
+          .toList();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(S.of(context).errorLoadingStudents)),
+        );
+      }
+      rethrow;
+    }
+  }
 
-    return response
-        .map((e) => {
-              'id': e['id'],
-              'name': e['display_name'] ?? e['id'],
-            })
-        .toList();
+  @override
+  void dispose() {
+    _connectivitySub?.cancel();
+    super.dispose();
   }
 
   @override

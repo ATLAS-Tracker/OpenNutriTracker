@@ -445,6 +445,7 @@
   "noFoodAddedLabel": "Aucun aliment ajouté",
   "myStudentsTitle": "Mes élèves",
   "noStudents": "Aucun élève",
+  "errorLoadingStudents": "Erreur lors du chargement des élèves",
   "errorPrefix": "Erreur :",
   "noDataToday": "Aucune donnée pour aujourd’hui",
   "signOutOfflineMessage": "Vous ne pouvez vous déconnecter que lorsque la connexion internet est rétablie pour ne pas perdre vos données.",

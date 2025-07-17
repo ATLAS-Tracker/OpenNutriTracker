@@ -4472,6 +4472,16 @@ class S {
     );
   }
 
+  /// `Error while loading students`
+  String get errorLoadingStudents {
+    return Intl.message(
+      'Error while loading students',
+      name: 'errorLoadingStudents',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Error:`
   String get errorPrefix {
     return Intl.message(

@@ -134,6 +134,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Ürün verileri alınırken hata oluştu"),
         "errorLoadingActivities": MessageLookupByLibrary.simpleMessage(
             "Aktiviteler yüklenirken hata oluştu"),
+        "errorLoadingStudents": MessageLookupByLibrary.simpleMessage(
+            "Öğrenciler yüklenirken hata oluştu"),
         "errorMealSave": MessageLookupByLibrary.simpleMessage(
             "Yemek kaydedilirken hata oluştu. Doğru yemek bilgilerini girdiniz mi?"),
         "errorOpeningBrowser": MessageLookupByLibrary.simpleMessage(

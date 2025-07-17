@@ -439,6 +439,7 @@
   "noFoodAddedLabel": "Hiçbir gıda eklenmedi",
   "myStudentsTitle": "Öğrencilerim",
   "noStudents": "Öğrenci yok",
+  "errorLoadingStudents": "Öğrenciler yüklenirken hata oluştu",
   "errorPrefix": "Hata:",
   "noDataToday": "Bugün için veri yok",
   "signOutOfflineMessage": "Verilerin kaybolmaması için yalnızca internet bağlantısı olduğunda çıkış yapabilirsiniz.",

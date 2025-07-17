@@ -144,6 +144,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Erreur lors de la récupération des données du produit"),
         "errorLoadingActivities": MessageLookupByLibrary.simpleMessage(
             "Erreur lors du chargement des activités"),
+        "errorLoadingStudents": MessageLookupByLibrary.simpleMessage(
+            "Erreur lors du chargement des élèves"),
         "errorMealSave": MessageLookupByLibrary.simpleMessage(
             "Erreur lors de l\'enregistrement du repas. Avez-vous entré les informations correctes sur le repas ?"),
         "errorOpeningBrowser": MessageLookupByLibrary.simpleMessage(

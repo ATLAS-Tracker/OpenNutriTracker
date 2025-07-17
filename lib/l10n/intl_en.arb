@@ -447,6 +447,7 @@
   "noFoodAddedLabel": "No food added",
   "myStudentsTitle": "My students",
   "noStudents": "No students",
+  "errorLoadingStudents": "Error while loading students",
   "errorPrefix": "Error:",
   "noDataToday": "No data for today",
   "signOutOfflineMessage": "You can only sign out when internet connection is available to avoid losing data.",

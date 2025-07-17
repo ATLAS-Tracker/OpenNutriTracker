@@ -140,6 +140,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Error while fetching product data"),
         "errorLoadingActivities": MessageLookupByLibrary.simpleMessage(
             "Error while loading activities"),
+        "errorLoadingStudents": MessageLookupByLibrary.simpleMessage(
+            "Error while loading students"),
         "errorMealSave": MessageLookupByLibrary.simpleMessage(
             "Error while saving meal. Did you input the correct meal information?"),
         "errorOpeningBrowser": MessageLookupByLibrary.simpleMessage(
