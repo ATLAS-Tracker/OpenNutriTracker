@@ -23,12 +23,14 @@ class StudentMacrosPage extends StatefulWidget {
 }
 
 enum MacroType { calories, carbs, fat, protein }
+enum TimeRange { week, month, threeMonths, sixMonths, year }
 
 class _StudentMacrosPageState extends State<StudentMacrosPage> {
   late Future<Map<String, Map<String, dynamic>>> _macrosFuture;
   Map<String, Map<String, dynamic>> _allMacros = {};
   DateTime _selectedDate = DateTime.now();
   MacroType _selectedMacro = MacroType.calories;
+  TimeRange _selectedRange = TimeRange.month;
 
   @override
   void initState() {
@@ -39,11 +41,18 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
   Future<Map<String, Map<String, dynamic>>> _fetchMacros() async {
     final supabase = locator<SupabaseClient>();
 
+    final now = DateTime.now();
+    final startDate =
+        DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 365)));
+    final endDate = DateFormat('yyyy-MM-dd').format(now);
+
     final response = await supabase
         .from('tracked_days')
         .select(
             'day, calorieGoal, caloriesTracked, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked')
         .eq('user_id', widget.studentId)
+        .gte('day', startDate)
+        .lte('day', endDate)
         .order('day');
 
     return {
@@ -231,36 +240,70 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                         totalProteinsGoal: proteinGoal,
                       ),
                       const SizedBox(height: 16),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: DropdownButton<MacroType>(
-                          value: _selectedMacro,
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedMacro = value;
-                              });
-                            }
-                          },
-                          items: [
-                            DropdownMenuItem(
-                              value: MacroType.calories,
-                              child: Text(S.of(context).caloriesLabel),
-                            ),
-                            DropdownMenuItem(
-                              value: MacroType.carbs,
-                              child: Text(S.of(context).carbsLabel),
-                            ),
-                            DropdownMenuItem(
-                              value: MacroType.fat,
-                              child: Text(S.of(context).fatLabel),
-                            ),
-                            DropdownMenuItem(
-                              value: MacroType.protein,
-                              child: Text(S.of(context).proteinLabel),
-                            ),
-                          ],
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          DropdownButton<MacroType>(
+                            value: _selectedMacro,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _selectedMacro = value;
+                                });
+                              }
+                            },
+                            items: [
+                              DropdownMenuItem(
+                                value: MacroType.calories,
+                                child: Text(S.of(context).caloriesLabel),
+                              ),
+                              DropdownMenuItem(
+                                value: MacroType.carbs,
+                                child: Text(S.of(context).carbsLabel),
+                              ),
+                              DropdownMenuItem(
+                                value: MacroType.fat,
+                                child: Text(S.of(context).fatLabel),
+                              ),
+                              DropdownMenuItem(
+                                value: MacroType.protein,
+                                child: Text(S.of(context).proteinLabel),
+                              ),
+                            ],
+                          ),
+                          DropdownButton<TimeRange>(
+                            value: _selectedRange,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _selectedRange = value;
+                                });
+                              }
+                            },
+                            items: const [
+                              DropdownMenuItem(
+                                value: TimeRange.week,
+                                child: Text('1W'),
+                              ),
+                              DropdownMenuItem(
+                                value: TimeRange.month,
+                                child: Text('1M'),
+                              ),
+                              DropdownMenuItem(
+                                value: TimeRange.threeMonths,
+                                child: Text('3M'),
+                              ),
+                              DropdownMenuItem(
+                                value: TimeRange.sixMonths,
+                                child: Text('6M'),
+                              ),
+                              DropdownMenuItem(
+                                value: TimeRange.year,
+                                child: Text('1Y'),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                       SizedBox(
                         height: 200,
@@ -315,32 +358,50 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     }
   }
   List<_MacroPoint> _getMacroPoints(MacroType type) {
+    final now = DateTime.now();
+    final start = _rangeStart(now);
     final List<_MacroPoint> points = [];
-    for (final entry in _allMacros.entries) {
-      final date = DateTime.parse(entry.key);
-      final data = entry.value;
+    for (var day = start;
+        !day.isAfter(now);
+        day = day.add(const Duration(days: 1))) {
+      final key = DateFormat('yyyy-MM-dd').format(day);
+      final data = _allMacros[key];
       double value = 0;
-      switch (type) {
-        case MacroType.calories:
-          value = (data['caloriesTracked'] ?? 0).toDouble();
-          break;
-        case MacroType.carbs:
-          value = (data['carbsTracked'] ?? 0).toDouble();
-          break;
-        case MacroType.fat:
-          value = (data['fatTracked'] ?? 0).toDouble();
-          break;
-        case MacroType.protein:
-          value = (data['proteinTracked'] ?? 0).toDouble();
-          break;
+      if (data != null) {
+        switch (type) {
+          case MacroType.calories:
+            value = (data['caloriesTracked'] ?? 0).toDouble();
+            break;
+          case MacroType.carbs:
+            value = (data['carbsTracked'] ?? 0).toDouble();
+            break;
+          case MacroType.fat:
+            value = (data['fatTracked'] ?? 0).toDouble();
+            break;
+          case MacroType.protein:
+            value = (data['proteinTracked'] ?? 0).toDouble();
+            break;
+        }
       }
-      points.add(_MacroPoint(date, value));
+      points.add(_MacroPoint(day, value));
     }
-    points.sort((a, b) => a.date.compareTo(b.date));
     return points;
   }
 
-  // ...existing code...
+  DateTime _rangeStart(DateTime now) {
+    switch (_selectedRange) {
+      case TimeRange.week:
+        return now.subtract(const Duration(days: 7));
+      case TimeRange.month:
+        return now.subtract(const Duration(days: 30));
+      case TimeRange.threeMonths:
+        return now.subtract(const Duration(days: 90));
+      case TimeRange.sixMonths:
+        return now.subtract(const Duration(days: 180));
+      case TimeRange.year:
+        return now.subtract(const Duration(days: 365));
+    }
+  }
 }
 
 class _MacroPoint {
