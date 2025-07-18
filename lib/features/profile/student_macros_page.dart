@@ -23,6 +23,7 @@ class StudentMacrosPage extends StatefulWidget {
 }
 
 enum MacroType { calories, carbs, fat, protein }
+
 enum TimeRange { week, month, threeMonths, sixMonths, year }
 
 class _StudentMacrosPageState extends State<StudentMacrosPage> {
@@ -42,8 +43,8 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     final supabase = locator<SupabaseClient>();
 
     final now = DateTime.now();
-    final startDate =
-        DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 365)));
+    final startDate = DateFormat('yyyy-MM-dd')
+        .format(now.subtract(const Duration(days: 365)));
     final endDate = DateFormat('yyyy-MM-dd').format(now);
 
     final response = await supabase
@@ -239,88 +240,93 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                         totalFatsGoal: fatGoal,
                         totalProteinsGoal: proteinGoal,
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          DropdownButton<MacroType>(
-                            value: _selectedMacro,
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _selectedMacro = value;
-                                });
-                              }
-                            },
-                            items: [
-                              DropdownMenuItem(
-                                value: MacroType.calories,
-                                child: Text(S.of(context).caloriesLabel),
-                              ),
-                              DropdownMenuItem(
-                                value: MacroType.carbs,
-                                child: Text(S.of(context).carbsLabel),
-                              ),
-                              DropdownMenuItem(
-                                value: MacroType.fat,
-                                child: Text(S.of(context).fatLabel),
-                              ),
-                              DropdownMenuItem(
-                                value: MacroType.protein,
-                                child: Text(S.of(context).proteinLabel),
-                              ),
-                            ],
-                          ),
-                          DropdownButton<TimeRange>(
-                            value: _selectedRange,
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _selectedRange = value;
-                                });
-                              }
-                            },
-                            items: const [
-                              DropdownMenuItem(
-                                value: TimeRange.week,
-                                child: Text('1W'),
-                              ),
-                              DropdownMenuItem(
-                                value: TimeRange.month,
-                                child: Text('1M'),
-                              ),
-                              DropdownMenuItem(
-                                value: TimeRange.threeMonths,
-                                child: Text('3M'),
-                              ),
-                              DropdownMenuItem(
-                                value: TimeRange.sixMonths,
-                                child: Text('6M'),
-                              ),
-                              DropdownMenuItem(
-                                value: TimeRange.year,
-                                child: Text('1Y'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 200,
-                        child: SfCartesianChart(
-                          primaryXAxis: DateTimeAxis(),
-                          series: <LineSeries<_MacroPoint, DateTime>>[
-                            LineSeries<_MacroPoint, DateTime>(
-                              dataSource: _getMacroPoints(_selectedMacro),
-                              xValueMapper: (p, _) => p.date,
-                              yValueMapper: (p, _) => p.value,
-                              markerSettings:
-                                  const MarkerSettings(isVisible: true),
+                    ],
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        DropdownButton<MacroType>(
+                          value: _selectedMacro,
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _selectedMacro = value;
+                              });
+                            }
+                          },
+                          items: [
+                            DropdownMenuItem(
+                              value: MacroType.calories,
+                              child: Text(S.of(context).caloriesLabel),
+                            ),
+                            DropdownMenuItem(
+                              value: MacroType.carbs,
+                              child: Text(S.of(context).carbsLabel),
+                            ),
+                            DropdownMenuItem(
+                              value: MacroType.fat,
+                              child: Text(S.of(context).fatLabel),
+                            ),
+                            DropdownMenuItem(
+                              value: MacroType.protein,
+                              child: Text(S.of(context).proteinLabel),
                             ),
                           ],
                         ),
+                        DropdownButton<TimeRange>(
+                          value: _selectedRange,
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _selectedRange = value;
+                              });
+                            }
+                          },
+                          items: const [
+                            DropdownMenuItem(
+                              value: TimeRange.week,
+                              child: Text('1W'),
+                            ),
+                            DropdownMenuItem(
+                              value: TimeRange.month,
+                              child: Text('1M'),
+                            ),
+                            DropdownMenuItem(
+                              value: TimeRange.threeMonths,
+                              child: Text('3M'),
+                            ),
+                            DropdownMenuItem(
+                              value: TimeRange.sixMonths,
+                              child: Text('6M'),
+                            ),
+                            DropdownMenuItem(
+                              value: TimeRange.year,
+                              child: Text('1Y'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 200,
+                      child: SfCartesianChart(
+                        primaryXAxis: DateTimeAxis(),
+                        series: <ScatterSeries<_MacroPoint, DateTime>>[
+                          ScatterSeries<_MacroPoint, DateTime>(
+                            dataSource: _getMacroPoints(_selectedMacro)
+                                .where((e) => e.value != null)
+                                .toList(),
+                            xValueMapper: (p, _) => p.date,
+                            yValueMapper: (p, _) => p.value,
+                            markerSettings: const MarkerSettings(
+                              isVisible: true,
+                              width: 8,
+                              height: 8,
+                            ),
+                          ),
+                        ],
                       ),
-                    ]
+                    ),
                   ],
                 ),
               ),
@@ -357,34 +363,40 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
       });
     }
   }
+
   List<_MacroPoint> _getMacroPoints(MacroType type) {
     final now = DateTime.now();
     final start = _rangeStart(now);
     final List<_MacroPoint> points = [];
+
     for (var day = start;
         !day.isAfter(now);
         day = day.add(const Duration(days: 1))) {
       final key = DateFormat('yyyy-MM-dd').format(day);
       final data = _allMacros[key];
-      double value = 0;
+
+      double? value;
       if (data != null) {
         switch (type) {
           case MacroType.calories:
-            value = (data['caloriesTracked'] ?? 0).toDouble();
+            value = (data['caloriesTracked'] as num?)?.toDouble();
             break;
           case MacroType.carbs:
-            value = (data['carbsTracked'] ?? 0).toDouble();
+            value = (data['carbsTracked'] as num?)?.toDouble();
             break;
           case MacroType.fat:
-            value = (data['fatTracked'] ?? 0).toDouble();
+            value = (data['fatTracked'] as num?)?.toDouble();
             break;
           case MacroType.protein:
-            value = (data['proteinTracked'] ?? 0).toDouble();
+            value = (data['proteinTracked'] as num?)?.toDouble();
             break;
         }
       }
+
+      // Ajoute la valeur (null s'il n'y a pas de données)
       points.add(_MacroPoint(day, value));
     }
+
     return points;
   }
 
@@ -406,8 +418,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
 
 class _MacroPoint {
   final DateTime date;
-  final double value;
+  final double? value; // Nullable pour gérer les jours sans données
 
   _MacroPoint(this.date, this.value);
 }
-
