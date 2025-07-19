@@ -450,6 +450,7 @@
   "signOutOfflineMessage": "Vous ne pouvez vous déconnecter que lorsque la connexion internet est rétablie pour ne pas perdre vos données.",
   "signOutSyncFailedMessage": "Échec de la synchronisation des données. Veuillez vous reconnecter plus tard.",
   "coachStudentsLabel": "Voir mes élèves",
-  "noInternetConnectionMessage": "Pas de connexion Internet. Fonctionnalité indisponible."
+  "noInternetConnectionMessage": "Pas de connexion Internet. Fonctionnalité indisponible.",
+  "setMacrosLabel": "Définir les macros"
 }
 

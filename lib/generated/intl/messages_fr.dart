@@ -701,6 +701,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Taille de la portion (oz/fl oz)"),
         "servingSizeLabelMetric":
             MessageLookupByLibrary.simpleMessage("Taille de la portion (g/ml)"),
+        "setMacrosLabel":
+            MessageLookupByLibrary.simpleMessage("Définir les macros"),
         "settingAboutLabel": MessageLookupByLibrary.simpleMessage("À propos"),
         "settingFeedbackLabel":
             MessageLookupByLibrary.simpleMessage("Commentaires"),

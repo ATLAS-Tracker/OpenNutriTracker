@@ -686,6 +686,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Serving size (oz/fl oz)"),
         "servingSizeLabelMetric":
             MessageLookupByLibrary.simpleMessage("Serving size (g/ml)"),
+        "setMacrosLabel": MessageLookupByLibrary.simpleMessage("Set macros"),
         "settingAboutLabel": MessageLookupByLibrary.simpleMessage("About"),
         "settingFeedbackLabel":
             MessageLookupByLibrary.simpleMessage("Feedback"),

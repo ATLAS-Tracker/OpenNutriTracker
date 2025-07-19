@@ -7,6 +7,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:opennutritracker/generated/l10n.dart';
+import 'set_student_macros_page.dart';
 
 class StudentMacrosPage extends StatefulWidget {
   final String studentId;
@@ -67,6 +68,11 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.studentName),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _openSetMacrosPage,
+        icon: const Icon(Icons.edit_outlined),
+        label: Text(S.of(context).setMacrosLabel),
       ),
       body: FutureBuilder<Map<String, Map<String, dynamic>>>(
         future: _macrosFuture,
@@ -362,6 +368,15 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
         _selectedDate = picked;
       });
     }
+  }
+
+  void _openSetMacrosPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SetStudentMacrosPage(studentId: widget.studentId),
+      ),
+    );
   }
 
   List<_MacroPoint> _getMacroPoints(MacroType type) {
