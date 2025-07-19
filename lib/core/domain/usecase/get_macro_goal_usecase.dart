@@ -1,32 +1,26 @@
 import 'package:opennutritracker/core/data/repository/config_repository.dart';
-import 'package:opennutritracker/core/utils/calc/macro_calc.dart';
 
 class GetMacroGoalUsecase {
   final ConfigRepository _configRepository;
 
   GetMacroGoalUsecase(this._configRepository);
 
-  Future<double> getCarbsGoal(double totalCalorieGoal) async {
-    final config = await _configRepository.getConfig();
-    final userCarbGoal = config.userCarbGoalPct;
+  static const _defaultCarbsGoal = 250.0;
+  static const _defaultFatsGoal = 60.0;
+  static const _defaultProteinsGoal = 120.0;
 
-    return MacroCalc.getTotalCarbsGoal(totalCalorieGoal,
-        userCarbsGoal: userCarbGoal);
+  Future<double> getCarbsGoal([double? _]) async {
+    final config = await _configRepository.getConfig();
+    return config.userCarbGoal ?? _defaultCarbsGoal;
   }
 
-  Future<double> getFatsGoal(double totalCalorieGoal) async {
+  Future<double> getFatsGoal([double? _]) async {
     final config = await _configRepository.getConfig();
-    final userFatGoal = config.userFatGoalPct;
-
-    return MacroCalc.getTotalFatsGoal(totalCalorieGoal,
-        userFatsGoal: userFatGoal);
+    return config.userFatGoal ?? _defaultFatsGoal;
   }
 
-  Future<double> getProteinsGoal(double totalCalorieGoal) async {
+  Future<double> getProteinsGoal([double? _]) async {
     final config = await _configRepository.getConfig();
-    final userProteinGoal = config.userProteinGoalPct;
-
-    return MacroCalc.getTotalProteinsGoal(totalCalorieGoal,
-        userProteinsGoal: userProteinGoal);
+    return config.userProteinGoal ?? _defaultProteinsGoal;
   }
 }

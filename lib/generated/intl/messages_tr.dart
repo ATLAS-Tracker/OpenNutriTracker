@@ -674,6 +674,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Porsiyon boyutu (oz/fl oz)"),
         "servingSizeLabelMetric":
             MessageLookupByLibrary.simpleMessage("Porsiyon boyutu (g/ml)"),
+        "setMacrosLabel":
+            MessageLookupByLibrary.simpleMessage("Makro hedeflerini ayarla"),
         "settingAboutLabel": MessageLookupByLibrary.simpleMessage("Hakkında"),
         "settingFeedbackLabel":
             MessageLookupByLibrary.simpleMessage("Geri Bildirim"),

@@ -452,5 +452,6 @@
   "signOutOfflineMessage": "You can only sign out when internet connection is available to avoid losing data.",
   "signOutSyncFailedMessage": "Failed to sync your data. Please sign in again later.",
   "coachStudentsLabel": "My students",
-  "noInternetConnectionMessage": "No internet connection. Feature unavailable."
+  "noInternetConnectionMessage": "No internet connection. Feature unavailable.",
+  "setMacrosLabel": "Set macros"
 }

@@ -4531,6 +4531,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Set macros`
+  String get setMacrosLabel {
+    return Intl.message(
+      'Set macros',
+      name: 'setMacrosLabel',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
