@@ -61,24 +61,24 @@ class ConfigDataSource {
     await config?.save();
   }
 
-  Future<void> setConfigCarbGoalPct(double carbGoalPct) async {
-    _log.fine('Updating config carbGoalPct to $carbGoalPct');
+  Future<void> setConfigCarbGoal(double carbGoal) async {
+    _log.fine('Updating config carbGoal to $carbGoal');
     final config = _hive.configBox.get(_configKey);
-    config?.userCarbGoalPct = carbGoalPct;
+    config?.userCarbGoal = carbGoal;
     await config?.save();
   }
 
-  Future<void> setConfigProteinGoalPct(double proteinGoalPct) async {
-    _log.fine('Updating config proteinGoalPct to $proteinGoalPct');
+  Future<void> setConfigProteinGoal(double proteinGoal) async {
+    _log.fine('Updating config proteinGoal to $proteinGoal');
     final config = _hive.configBox.get(_configKey);
-    config?.userProteinGoalPct = proteinGoalPct;
+    config?.userProteinGoal = proteinGoal;
     await config?.save();
   }
 
-  Future<void> setConfigFatGoalPct(double fatGoalPct) async {
-    _log.fine('Updating config fatGoalPct to $fatGoalPct');
+  Future<void> setConfigFatGoal(double fatGoal) async {
+    _log.fine('Updating config fatGoal to $fatGoal');
     final config = _hive.configBox.get(_configKey);
-    config?.userFatGoalPct = fatGoalPct;
+    config?.userFatGoal = fatGoal;
     await config?.save();
   }
 

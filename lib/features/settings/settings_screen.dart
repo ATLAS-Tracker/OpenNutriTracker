@@ -6,7 +6,6 @@ import 'package:opennutritracker/core/utils/app_const.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/theme_mode_provider.dart';
 import 'package:opennutritracker/core/utils/url_const.dart';
-import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
 import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
 import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/features/profile/presentation/bloc/profile_bloc.dart';
@@ -18,7 +17,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:opennutritracker/features/settings/presentation/widgets/calculations_dialog.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -32,7 +30,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late ProfileBloc _profileBloc;
   late HomeBloc _homeBloc;
   late DiaryBloc _diaryBloc;
-  late CalendarDayBloc _calendarDayBloc;
 
   @override
   void initState() {
@@ -40,7 +37,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _profileBloc = locator<ProfileBloc>();
     _homeBloc = locator<HomeBloc>();
     _diaryBloc = locator<DiaryBloc>();
-    _calendarDayBloc = locator<CalendarDayBloc>();
     super.initState();
   }
 
@@ -66,11 +62,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: Text(S.of(context).settingsUnitsLabel),
                   onTap: () =>
                       _showUnitsDialog(context, state.usesImperialUnits),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.calculate_outlined),
-                  title: Text(S.of(context).settingsCalculationsLabel),
-                  onTap: () => _showCalculationsDialog(context),
                 ),
                 ListTile(
                   leading: const Icon(Icons.brightness_medium_outlined),
@@ -168,18 +159,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _showCalculationsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => CalculationsDialog(
-        settingsBloc: _settingsBloc,
-        profileBloc: _profileBloc,
-        homeBloc: _homeBloc,
-        diaryBloc: _diaryBloc,
-        calendarDayBloc: _calendarDayBloc,
-      ),
-    );
-  }
 
   void _showExportImportDialog(BuildContext context) {
     showDialog(
