@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/generated/l10n.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:logging/logging.dart';
 
 class SetStudentMacrosPage extends StatefulWidget {
   final String studentId;
@@ -14,7 +16,7 @@ class SetStudentMacrosPage extends StatefulWidget {
 
 class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
   DateTime _startDate = DateTime.now();
-
+  final log = Logger('SetStudentMacrosPage');
   final _kcalController = TextEditingController(text: '2000');
   final _carbsController = TextEditingController(text: '250');
   final _fatController = TextEditingController(text: '60');
@@ -142,18 +144,34 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
   }
 
   Future<void> _saveMacros() async {
-    final supabase = locator<SupabaseClient>();
-    final json = {
-      'user_id': widget.studentId,
-      'start_date': DateFormat('yyyy-MM-dd').format(_startDate),
-      'calorie_goal': int.parse(_kcalController.text),
-      'carb_goal': int.parse(_carbsController.text),
-      'fat_goal': int.parse(_fatController.text),
-      'protein_goal': int.parse(_proteinController.text),
-    };
+    try {
+      final supabase = locator<SupabaseClient>();
+      final json = {
+        'user_id': widget.studentId,
+        'start_date': DateFormat('yyyy-MM-dd').format(_startDate),
+        'calorie_goal': int.parse(_kcalController.text),
+        'carb_goal': int.parse(_carbsController.text),
+        'fat_goal': int.parse(_fatController.text),
+        'protein_goal': int.parse(_proteinController.text),
+      };
 
-    await supabase.from('coach_macro_goals').upsert(json, onConflict: 'user_id');
-    if (!mounted) return;
-    Navigator.pop(context);
+      await supabase
+          .from('coach_macro_goals')
+          .upsert(json, onConflict: 'user_id');
+
+      if (!mounted) return;
+      Navigator.pop(context);
+    } catch (exception, stacktrace) {
+      log.warning("Erreur lors de l'enregistrement des objectifs macro.");
+      Sentry.captureException(exception, stackTrace: stacktrace);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  "Problème lors de l'enregistrement des objectifs macro.")),
+        );
+      }
+    }
   }
 }
