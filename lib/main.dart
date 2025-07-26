@@ -29,11 +29,17 @@ import 'package:opennutritracker/features/auth/reset_password_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:opennutritracker/firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   LoggerConfig.intiLogger();
   await initLocator();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   // Skip onboarding and use default user values
   const isUserInitialized = true;
   final hasAuthSession = Supabase.instance.client.auth.currentSession != null;
@@ -103,8 +109,9 @@ class OpenNutriTrackerApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      initialRoute:
-          hasAuthSession ? NavigationOptions.mainRoute : NavigationOptions.loginRoute,
+      initialRoute: hasAuthSession
+          ? NavigationOptions.mainRoute
+          : NavigationOptions.loginRoute,
       routes: {
         NavigationOptions.mainRoute: (context) => const MainScreen(),
         NavigationOptions.settingsRoute: (context) => const SettingsScreen(),

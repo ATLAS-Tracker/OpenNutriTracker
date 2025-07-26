@@ -12,6 +12,8 @@ import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
 import 'package:opennutritracker/features/settings/domain/usecase/import_data_supabase_usecase.dart';
+import 'package:opennutritracker/services/firebase_messaging_service.dart';
+import 'package:opennutritracker/services/local_notifications_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -116,6 +118,15 @@ class _LoginScreenState extends State<LoginScreen> {
           }
           return; // reste sur l’écran de login
         }
+
+        // ✅ Init Firebase Messaging & Local Notifications après login
+        final localNotificationsService = LocalNotificationsService.instance();
+        await localNotificationsService.init();
+
+        final firebaseMessagingService = FirebaseMessagingService.instance();
+        await firebaseMessagingService.init(
+          localNotificationsService: localNotificationsService,
+        );
 
         // ── 4. Tout est OK  →  on passe à l’app
         _navigateHome();

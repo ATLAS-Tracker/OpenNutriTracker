@@ -31,7 +31,7 @@ class UserDataSource {
             gender: UserGenderDBO.male,
             goal: UserWeightGoalDBO.maintainWeight,
             pal: UserPALDBO.active,
-            role: UserRoleDBO.student,
+            role: UserRoleDBO.coach, //  TODO
             profileImagePath: null);
   }
 }
