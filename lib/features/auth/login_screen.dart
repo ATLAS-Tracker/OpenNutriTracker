@@ -14,6 +14,13 @@ import 'package:opennutritracker/features/settings/presentation/bloc/export_impo
 import 'package:opennutritracker/features/settings/domain/usecase/import_data_supabase_usecase.dart';
 import 'package:opennutritracker/services/firebase_messaging_service.dart';
 import 'package:opennutritracker/services/local_notifications_service.dart';
+import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
+import 'package:opennutritracker/core/domain/usecase/add_user_usecase.dart';
+import 'package:opennutritracker/core/domain/entity/user_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_gender_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_weight_goal_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_pal_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -86,6 +93,38 @@ class _LoginScreenState extends State<LoginScreen> {
         final hive = locator<HiveDBProvider>();
         await hive.initForUser(res.user?.id);
         await registerUserScope(hive);
+
+        final userId = res.user?.id;
+        if (userId != null) {
+          final getUser = locator<GetUserUsecase>();
+          final addUser = locator<AddUserUsecase>();
+          final hasProfile = await getUser.hasUserData(userKey: userId);
+          if (!hasProfile) {
+            final List<Map<String, dynamic>> rows = await supabase
+                .from('users')
+                .select('display_name, role')
+                .eq('id', userId);
+            if (rows.isNotEmpty) {
+              final row = rows.first;
+              final roleStr = (row['role'] as String?) ?? 'student';
+              final displayName = (row['display_name'] as String?) ?? 'John Doe';
+              final role =
+                  roleStr == 'coach' ? UserRoleEntity.coach : UserRoleEntity.student;
+              final defaultUser = UserEntity(
+                name: displayName,
+                birthday: DateTime(2000, 1, 1),
+                heightCM: 180,
+                weightKG: 80,
+                gender: UserGenderEntity.male,
+                goal: UserWeightGoalEntity.maintainWeight,
+                pal: UserPALEntity.active,
+                role: role,
+                profileImagePath: null,
+              );
+              await addUser.addUser(defaultUser, userKey: userId);
+            }
+          }
+        }
 
         // ── 2. Tente l’import
         final importData = locator<ImportDataSupabaseUsecase>();
