@@ -17,6 +17,7 @@ class UserDBOAdapter extends TypeAdapter<UserDBO> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UserDBO(
+      name: fields[8] as String,
       birthday: fields[0] as DateTime,
       heightCM: fields[1] as double,
       weightKG: fields[2] as double,
@@ -25,7 +26,6 @@ class UserDBOAdapter extends TypeAdapter<UserDBO> {
       pal: fields[5] as UserPALDBO,
       role: fields[6] as UserRoleDBO,
       profileImagePath: fields[7] as String?,
-      name: fields[8] as String,
     );
   }
 

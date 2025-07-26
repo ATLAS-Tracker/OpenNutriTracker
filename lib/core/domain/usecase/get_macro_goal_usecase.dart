@@ -1,24 +1,33 @@
-// import 'package:opennutritracker/core/data/repository/config_repository.dart';
+import 'package:opennutritracker/core/data/repository/macro_goal_repository.dart';
+import 'package:opennutritracker/core/domain/entity/macro_goal_entity.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
 
 class GetMacroGoalUsecase {
-  // final ConfigRepository _configRepository;
+  final MacroGoalRepository _macroGoalRepository =
+      locator<MacroGoalRepository>();
 
-  // GetMacroGoalUsecase(this._configRepository);
   GetMacroGoalUsecase();
 
-  static const _defaultCarbsGoal = 250.0;
-  static const _defaultFatsGoal = 60.0;
-  static const _defaultProteinsGoal = 120.0;
-
-  Future<double> getCarbsGoal([double? _]) async {
-    return _defaultCarbsGoal;
+  Future<double?> getCarbsGoal() async {
+    final MacroGoalEntity? macroGoal =
+        await _macroGoalRepository.getMacroGoal();
+    return macroGoal?.newCarbsGoal;
   }
 
-  Future<double> getFatsGoal([double? _]) async {
-    return _defaultFatsGoal;
+  Future<double?> getFatsGoal() async {
+    final MacroGoalEntity? macroGoal =
+        await _macroGoalRepository.getMacroGoal();
+    return macroGoal?.newFatsGoal;
   }
 
-  Future<double> getProteinsGoal([double? _]) async {
-    return _defaultProteinsGoal;
+  Future<double?> getProteinsGoal() async {
+    final MacroGoalEntity? macroGoal =
+        await _macroGoalRepository.getMacroGoal();
+    return macroGoal?.newProteinsGoal;
+  }
+
+  /// Optionnel : récupérer l'entité complète
+  Future<MacroGoalEntity?> getMacroGoal() async {
+    return await _macroGoalRepository.getMacroGoal();
   }
 }

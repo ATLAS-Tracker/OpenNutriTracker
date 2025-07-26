@@ -80,19 +80,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   void setKcalAdjustment(double kcalAdjustment) {
     _addConfigUsecase.setConfigKcalAdjustment(kcalAdjustment);
   }
-  void setMacroGoals(
-      double carbGoal, double proteinGoal, double fatGoal) {
+
+  void setMacroGoals(double carbGoal, double proteinGoal, double fatGoal) {
     _addConfigUsecase.setConfigMacroGoals(carbGoal, proteinGoal, fatGoal);
   }
 
   void updateTrackedDay(DateTime day) async {
     final day = DateTime.now();
     final totalKcalGoal = await _getKcalGoalUsecase.getKcalGoal();
-    final totalCarbsGoal =
-        await _getMacroGoalUsecase.getCarbsGoal(totalKcalGoal);
-    final totalFatGoal = await _getMacroGoalUsecase.getFatsGoal(totalKcalGoal);
-    final totalProteinGoal =
-        await _getMacroGoalUsecase.getProteinsGoal(totalKcalGoal);
+    final totalCarbsGoal = await _getMacroGoalUsecase.getCarbsGoal();
+    final totalFatGoal = await _getMacroGoalUsecase.getFatsGoal();
+    final totalProteinGoal = await _getMacroGoalUsecase.getProteinsGoal();
 
     final hasTrackedDay = await _addTrackedDayUsecase.hasTrackedDay(day);
 

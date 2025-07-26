@@ -39,6 +39,9 @@ import 'package:opennutritracker/core/domain/usecase/get_user_activity_usecase.d
 import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_weight_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/update_intake_usecase.dart';
+import 'package:opennutritracker/core/data/data_source/macro_goal_data_source.dart';
+import 'package:opennutritracker/core/data/repository/macro_goal_repository.dart';
+import 'package:opennutritracker/core/domain/usecase/add_macro_goal_usecase.dart';
 import 'package:opennutritracker/core/utils/env.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:opennutritracker/core/utils/ont_image_cache_manager.dart';
@@ -125,6 +128,7 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
   locator.registerLazySingleton(() => PhysicalActivityDataSource());
   locator.registerLazySingleton(() => TrackedDayDataSource(hive));
   locator.registerLazySingleton(() => UserWeightDataSource(hive));
+  locator.registerLazySingleton(() => MacroGoalDataSource(hive));
   locator.registerLazySingleton<OFFDataSource>(() => OFFDataSource());
   locator.registerLazySingleton<FDCDataSource>(() => FDCDataSource());
   locator.registerLazySingleton<SpFdcDataSource>(() => SpFdcDataSource());
@@ -143,6 +147,7 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
   locator.registerLazySingleton(() => PhysicalActivityRepository(locator()));
   locator.registerLazySingleton(() => TrackedDayRepository(locator()));
   locator.registerLazySingleton(() => UserWeightRepository(locator()));
+  locator.registerLazySingleton(() => MacroGoalRepository(locator()));
 
   // UseCases
   locator.registerLazySingleton<GetConfigUsecase>(
@@ -252,6 +257,9 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
 
   locator.registerLazySingleton<AddWeightUsecase>(
     () => AddWeightUsecase(locator()),
+  );
+  locator.registerLazySingleton<AddMacroGoalUsecase>(
+    () => AddMacroGoalUsecase(),
   );
   locator.registerLazySingleton<GetWeightUsecase>(() => GetWeightUsecase());
   locator.registerLazySingleton<DeleteUserWeightUsecase>(

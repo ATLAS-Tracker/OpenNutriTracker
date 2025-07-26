@@ -30,11 +30,11 @@ class MealDetailBloc extends Bloc<MealDetailEvent, MealDetailState> {
     this._getKcalGoalUsecase,
     this._getMacroGoalUsecase,
   ) : super(
-        MealDetailInitial(
-          totalQuantityConverted: '100',
-          selectedUnit: UnitDropdownItem.gml.toString(),
-        ),
-      ) {
+          MealDetailInitial(
+            totalQuantityConverted: '100',
+            selectedUnit: UnitDropdownItem.gml.toString(),
+          ),
+        ) {
     on<UpdateKcalEvent>((event, emit) async {
       try {
         final selectedTotalQuantity =
@@ -114,22 +114,16 @@ class MealDetailBloc extends Bloc<MealDetailEvent, MealDetailState> {
     final hasTrackedDay = await _addTrackedDayUsecase.hasTrackedDay(day);
     if (!hasTrackedDay) {
       final totalKcalGoal = await _getKcalGoalUsecase.getKcalGoal();
-      final totalCarbsGoal = await _getMacroGoalUsecase.getCarbsGoal(
-        totalKcalGoal,
-      );
-      final totalFatGoal = await _getMacroGoalUsecase.getFatsGoal(
-        totalKcalGoal,
-      );
-      final totalProteinGoal = await _getMacroGoalUsecase.getProteinsGoal(
-        totalKcalGoal,
-      );
+      final totalCarbsGoal = await _getMacroGoalUsecase.getCarbsGoal();
+      final totalFatGoal = await _getMacroGoalUsecase.getFatsGoal();
+      final totalProteinGoal = await _getMacroGoalUsecase.getProteinsGoal();
 
       await _addTrackedDayUsecase.addNewTrackedDay(
         day,
         totalKcalGoal,
-        totalCarbsGoal,
-        totalFatGoal,
-        totalProteinGoal,
+        totalCarbsGoal!,
+        totalFatGoal!,
+        totalProteinGoal!,
       );
     }
 

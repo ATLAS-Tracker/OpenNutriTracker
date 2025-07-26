@@ -7,6 +7,7 @@ import 'package:opennutritracker/core/data/data_source/user_activity_dbo.dart';
 import 'package:opennutritracker/core/data/data_source/user_weight_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/app_theme_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/config_dbo.dart';
+import 'package:opennutritracker/core/data/data_source/macro_goal_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/intake_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/recipe_dbo.dart';
 import 'package:opennutritracker/core/data/dbo/intake_recipe_dbo.dart';
@@ -35,6 +36,7 @@ class HiveDBProvider extends ChangeNotifier {
   static const trackedDayBoxName = 'TrackedDayBox';
   static const recipeBoxName = "RecipeBox";
   static const userWeightBoxName = 'UserWeightBox';
+  static const macroGoalBoxName = 'MacroGoalBox';
 
   String? _userId;
   String _boxName(String base) => _userId == null ? base : '${_userId}_$base';
@@ -47,6 +49,7 @@ class HiveDBProvider extends ChangeNotifier {
   late Box<RecipesDBO> recipeBox;
   late TrackedDayChangeIsolate trackedDayWatcher;
   late Box<UserWeightDbo> userWeightBox;
+  late Box<MacroGoalDbo> macroGoalBox;
 
   List<StreamSubscription<BoxEvent>>? _updateSubs;
 
@@ -106,6 +109,7 @@ class HiveDBProvider extends ChangeNotifier {
         Hive.registerAdapter(PhysicalActivityTypeDBOAdapter());
         Hive.registerAdapter(AppThemeDBOAdapter());
         Hive.registerAdapter(UserWeightDboAdapter());
+        Hive.registerAdapter(MacroGoalDboAdapter());
         _adaptersRegistered = true;
       }
 
@@ -128,6 +132,7 @@ class HiveDBProvider extends ChangeNotifier {
       trackedDayWatcher = TrackedDayChangeIsolate(trackedDayBox);
       await trackedDayWatcher.start();
       userWeightBox = await openBox(userWeightBoxName);
+      macroGoalBox = await openBox(macroGoalBoxName);
       _log.info('✅ Hive initialised for user=$_userId');
     } catch (e, s) {
       // Log the error for debugging. You'll need to add a logger to the class.
@@ -142,14 +147,21 @@ class HiveDBProvider extends ChangeNotifier {
   void startUpdateWatchers(ConfigDataSource config) {
     stopUpdateWatchers();
     _updateSubs = [
-      intakeBox.watch().listen((_) =>
-          config.setLastDataUpdate(DateTime.now().toUtc())),
-      userActivityBox.watch().listen((_) =>
-          config.setLastDataUpdate(DateTime.now().toUtc())),
-      trackedDayBox.watch().listen((_) =>
-          config.setLastDataUpdate(DateTime.now().toUtc())),
-      userWeightBox.watch().listen((_) =>
-          config.setLastDataUpdate(DateTime.now().toUtc())),
+      intakeBox
+          .watch()
+          .listen((_) => config.setLastDataUpdate(DateTime.now().toUtc())),
+      userActivityBox
+          .watch()
+          .listen((_) => config.setLastDataUpdate(DateTime.now().toUtc())),
+      trackedDayBox
+          .watch()
+          .listen((_) => config.setLastDataUpdate(DateTime.now().toUtc())),
+      userWeightBox
+          .watch()
+          .listen((_) => config.setLastDataUpdate(DateTime.now().toUtc())),
+      macroGoalBox
+          .watch()
+          .listen((_) => config.setLastDataUpdate(DateTime.now().toUtc())),
     ];
   }
 
@@ -175,6 +187,7 @@ class HiveDBProvider extends ChangeNotifier {
       userBox.clear(),
       trackedDayBox.clear(),
       userWeightBox.clear(),
+      macroGoalBox.clear(),
     ]);
   }
 

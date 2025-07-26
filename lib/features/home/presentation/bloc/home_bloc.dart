@@ -108,12 +108,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           userActivities.map((activity) => activity.burnedKcal).toList().sum;
 
       final totalKcalGoal = await _getKcalGoalUsecase.getKcalGoal();
-      final totalCarbsGoal =
-          await _getMacroGoalUsecase.getCarbsGoal(totalKcalGoal);
-      final totalFatsGoal =
-          await _getMacroGoalUsecase.getFatsGoal(totalKcalGoal);
-      final totalProteinsGoal =
-          await _getMacroGoalUsecase.getProteinsGoal(totalKcalGoal);
+      final totalCarbsGoal = await _getMacroGoalUsecase.getCarbsGoal();
+      final totalFatsGoal = await _getMacroGoalUsecase.getFatsGoal();
+      final totalProteinsGoal = await _getMacroGoalUsecase.getProteinsGoal();
 
       final totalKcalLeft =
           CalorieGoalCalc.getDailyKcalLeft(totalKcalGoal, totalKcalIntake);
@@ -127,9 +124,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           totalKcalBurned: totalKcalActivities,
           totalCarbsIntake: totalCarbsIntake,
           totalFatsIntake: totalFatsIntake,
-          totalCarbsGoal: totalCarbsGoal,
-          totalFatsGoal: totalFatsGoal,
-          totalProteinsGoal: totalProteinsGoal,
+          totalCarbsGoal: 200, // TODO: Use from config
+          totalFatsGoal: 70,
+          totalProteinsGoal: 100,
           totalProteinsIntake: totalProteinsIntake,
           breakfastIntakeList: breakfastIntakeList,
           lunchIntakeList: lunchIntakeList,
@@ -152,7 +149,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   double getTotalProteins(List<IntakeEntity> intakeList) =>
       intakeList.map((intake) => intake.totalProteinsGram).toList().sum;
-
 
   Future<void> updateIntakeItem(
       String intakeId, Map<String, dynamic> fields) async {
