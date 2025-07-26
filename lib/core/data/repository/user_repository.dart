@@ -7,20 +7,21 @@ class UserRepository {
 
   UserRepository(this._userDataSource);
 
-  Future<void> updateUserData(UserEntity userEntity) async {
+  Future<void> updateUserData(UserEntity userEntity, {String? userKey}) async {
     final userDBO = UserDBO.fromUserEntity(userEntity);
-    await _userDataSource.saveUserData(userDBO);
+    await _userDataSource.saveUserData(userDBO, userKey: userKey);
   }
 
-  Future<bool> hasUserData() async => await _userDataSource.hasUserData();
+  Future<bool> hasUserData({String? userKey}) async =>
+      await _userDataSource.hasUserData(userKey: userKey);
 
-  Future<UserEntity> getUserData() async {
-    final userDBO = await _userDataSource.getUserData();
+  Future<UserEntity> getUserData({String? userKey}) async {
+    final userDBO = await _userDataSource.getUserData(userKey: userKey);
     return UserEntity.fromUserDBO(userDBO);
   }
 
-  Future<UserDBO> getUserDBO() async {
-    final userDBO = await _userDataSource.getUserData();
+  Future<UserDBO> getUserDBO({String? userKey}) async {
+    final userDBO = await _userDataSource.getUserData(userKey: userKey);
     return userDBO;
   }
 }

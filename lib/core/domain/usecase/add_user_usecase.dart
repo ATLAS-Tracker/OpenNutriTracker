@@ -6,7 +6,7 @@ class AddUserUsecase {
 
   AddUserUsecase(this._userRepository);
 
-  Future<void> addUser(UserEntity userEntity) async {
-    return await _userRepository.updateUserData(userEntity);
+  Future<void> addUser(UserEntity userEntity, {String? userKey}) async {
+    return await _userRepository.updateUserData(userEntity, userKey: userKey);
   }
 }

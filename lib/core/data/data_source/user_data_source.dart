@@ -13,25 +13,27 @@ class UserDataSource {
 
   UserDataSource(this._hive);
 
-  Future<void> saveUserData(UserDBO userDBO) async {
+  Future<void> saveUserData(UserDBO userDBO, {String? userKey}) async {
     log.fine('Updating user in db');
-    await _hive.userBox.put(_userKey, userDBO);
+    await _hive.userBox.put(userKey ?? _userKey, userDBO);
   }
 
-  Future<bool> hasUserData() async => _hive.userBox.containsKey(_userKey);
+  Future<bool> hasUserData({String? userKey}) async =>
+      _hive.userBox.containsKey(userKey ?? _userKey);
 
   // TODO remove dummy data
-  Future<UserDBO> getUserData() async {
-    return _hive.userBox.get(_userKey) ??
+  Future<UserDBO> getUserData({String? userKey}) async {
+    return _hive.userBox.get(userKey ?? _userKey) ??
         UserDBO(
-            name: 'John Doe',
-            birthday: DateTime(2000, 1, 1),
-            heightCM: 180,
-            weightKG: 80,
-            gender: UserGenderDBO.male,
-            goal: UserWeightGoalDBO.maintainWeight,
-            pal: UserPALDBO.active,
-            role: UserRoleDBO.coach, //  TODO
-            profileImagePath: null);
+          name: 'John Doe',
+          birthday: DateTime(2000, 1, 1),
+          heightCM: 180,
+          weightKG: 80,
+          gender: UserGenderDBO.male,
+          goal: UserWeightGoalDBO.maintainWeight,
+          pal: UserPALDBO.active,
+          role: UserRoleDBO.coach, //  TODO
+          profileImagePath: null,
+        );
   }
 }
