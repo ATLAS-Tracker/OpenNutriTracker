@@ -117,7 +117,8 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
   final configDS = ConfigDataSource(hive);
   locator.registerLazySingleton(() => configDS);
   hive.startUpdateWatchers(configDS);
-  locator.registerLazySingleton<UserDataSource>(() => UserDataSource(hive));
+  locator.registerLazySingleton<UserDataSource>(() => UserDataSource(
+      hive, Supabase.instance.client.auth.currentUser?.id ?? 'default_user'));
   locator.registerLazySingleton(() => IntakeDataSource(hive));
   locator.registerLazySingleton(() => RecipesDataSource(hive));
   locator.registerLazySingleton(() => UserActivityDataSource(hive));
