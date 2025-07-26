@@ -35,9 +35,9 @@ class ActivityDetailBloc
     on<LoadActivityDetailEvent>((event, emit) async {
       emit(ActivityDetailLoadingState());
       const quantityDefault = 60.0;
-      final user = await _getUserUsecase.getUserData();
+      final UserEntity? user = await _getUserUsecase.getUserData();
       final totalBurnedKcal = getTotalKcalBurned(
-        user,
+        user!,
         event.physicalActivity,
         quantityDefault,
       );
@@ -45,7 +45,7 @@ class ActivityDetailBloc
       emit(
         ActivityDetailLoadedState(
           totalBurnedKcal,
-          user,
+          user!,
           quantityDefault.toInt(),
         ),
       );

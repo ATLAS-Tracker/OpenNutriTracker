@@ -21,52 +21,64 @@ class ExportDataUsecase {
   final RecipeRepository _recipeRepository;
   final UserRepository _userRepository;
 
-  ExportDataUsecase(this._userActivityRepository, this._intakeRepository,
-      this._trackedDayRepository, this._userWeightRepository, this._recipeRepository, this._userRepository);
+  ExportDataUsecase(
+    this._userActivityRepository,
+    this._intakeRepository,
+    this._trackedDayRepository,
+    this._userWeightRepository,
+    this._recipeRepository,
+    this._userRepository,
+  );
 
   /// Exports user activity, intake, and tracked day data to a zip of json
   /// files at a user specified location.
   Future<bool> exportData(
-      String exportZipFileName,
-      String userActivityJsonFileName,
-      String userIntakeJsonFileName,
-      String trackedDayJsonFileName,
-      String userWeightJsonFileName,
-      String recipesJsonFileName,
-      String userJsonFileName) async {
+    String exportZipFileName,
+    String userActivityJsonFileName,
+    String userIntakeJsonFileName,
+    String trackedDayJsonFileName,
+    String userWeightJsonFileName,
+    String recipesJsonFileName,
+    String userJsonFileName,
+  ) async {
     // Export user activity data to Json File Bytes
     final fullUserActivity =
         await _userActivityRepository.getAllUserActivityDBO();
     final fullUserActivityJson = jsonEncode(
-        fullUserActivity.map((activity) => activity.toJson()).toList());
+      fullUserActivity.map((activity) => activity.toJson()).toList(),
+    );
     final userActivityJsonBytes = utf8.encode(fullUserActivityJson);
 
     // Export intake data to Json File Bytes
     final fullIntake = await _intakeRepository.getAllIntakesDBO();
-    final fullIntakeJson =
-        jsonEncode(fullIntake.map((intake) => intake.toJson()).toList());
+    final fullIntakeJson = jsonEncode(
+      fullIntake.map((intake) => intake.toJson()).toList(),
+    );
     final intakeJsonBytes = utf8.encode(fullIntakeJson);
 
     // Export tracked day data to Json File Bytes
     final fullTrackedDay = await _trackedDayRepository.getAllTrackedDaysDBO();
     final fullTrackedDayJson = jsonEncode(
-        fullTrackedDay.map((trackedDay) => trackedDay.toJson()).toList());
+      fullTrackedDay.map((trackedDay) => trackedDay.toJson()).toList(),
+    );
     final trackedDayJsonBytes = utf8.encode(fullTrackedDayJson);
 
     // Export user weight data to Json File Bytes
     final fullUserWeight = await _userWeightRepository.getAllUserWeightDBOs();
-    final fullUserWeightJson =
-        jsonEncode(fullUserWeight.map((w) => w.toJson()).toList());
+    final fullUserWeightJson = jsonEncode(
+      fullUserWeight.map((w) => w.toJson()).toList(),
+    );
     final userWeightJsonBytes = utf8.encode(fullUserWeightJson);
 
     // Export recipes data
     final fullRecipes = await _recipeRepository.getAllRecipeDBOs();
-    final fullRecipesJson =
-        jsonEncode(fullRecipes.map((r) => r.toJson()).toList());
+    final fullRecipesJson = jsonEncode(
+      fullRecipes.map((r) => r.toJson()).toList(),
+    );
     final recipesJsonBytes = utf8.encode(fullRecipesJson);
 
     // Export user data
-    final userDBO = await _userRepository.getUserDBO();
+    final userDBO = (await _userRepository.getUserDBO())!;
     final userMap = {
       'name': userDBO.name,
       'birthday': userDBO.birthday.toIso8601String(),
@@ -84,18 +96,44 @@ class ExportDataUsecase {
 
     // Create a zip file with the exported data
     final archive = Archive();
-    archive.addFile(ArchiveFile(userActivityJsonFileName,
-        userActivityJsonBytes.length, userActivityJsonBytes));
-    archive.addFile(ArchiveFile(
-        userIntakeJsonFileName, intakeJsonBytes.length, intakeJsonBytes));
-    archive.addFile(ArchiveFile(trackedDayJsonFileName, trackedDayJsonBytes.length,
-        trackedDayJsonBytes));
-    archive.addFile(ArchiveFile(userWeightJsonFileName, userWeightJsonBytes.length,
-        userWeightJsonBytes));
-    archive.addFile(ArchiveFile(recipesJsonFileName, recipesJsonBytes.length,
-        recipesJsonBytes));
-    archive.addFile(ArchiveFile(userJsonFileName, userJsonBytes.length,
-        userJsonBytes));
+    archive.addFile(
+      ArchiveFile(
+        userActivityJsonFileName,
+        userActivityJsonBytes.length,
+        userActivityJsonBytes,
+      ),
+    );
+    archive.addFile(
+      ArchiveFile(
+        userIntakeJsonFileName,
+        intakeJsonBytes.length,
+        intakeJsonBytes,
+      ),
+    );
+    archive.addFile(
+      ArchiveFile(
+        trackedDayJsonFileName,
+        trackedDayJsonBytes.length,
+        trackedDayJsonBytes,
+      ),
+    );
+    archive.addFile(
+      ArchiveFile(
+        userWeightJsonFileName,
+        userWeightJsonBytes.length,
+        userWeightJsonBytes,
+      ),
+    );
+    archive.addFile(
+      ArchiveFile(
+        recipesJsonFileName,
+        recipesJsonBytes.length,
+        recipesJsonBytes,
+      ),
+    );
+    archive.addFile(
+      ArchiveFile(userJsonFileName, userJsonBytes.length, userJsonBytes),
+    );
 
     final imagePaths = <String>{};
     if (userDBO.profileImagePath != null &&

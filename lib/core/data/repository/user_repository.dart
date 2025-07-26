@@ -15,13 +15,15 @@ class UserRepository {
   Future<bool> hasUserData({String? userKey}) async =>
       await _userDataSource.hasUserData(userKey: userKey);
 
-  Future<UserEntity> getUserData({String? userKey}) async {
+  Future<UserEntity?> getUserData({String? userKey}) async {
     final userDBO = await _userDataSource.getUserData(userKey: userKey);
+    if (userDBO == null) {
+      return null;
+    }
     return UserEntity.fromUserDBO(userDBO);
   }
 
-  Future<UserDBO> getUserDBO({String? userKey}) async {
-    final userDBO = await _userDataSource.getUserData(userKey: userKey);
-    return userDBO;
+  Future<UserDBO?> getUserDBO({String? userKey}) async {
+    return await _userDataSource.getUserData(userKey: userKey);
   }
 }

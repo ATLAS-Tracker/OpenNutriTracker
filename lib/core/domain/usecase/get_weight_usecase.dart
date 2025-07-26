@@ -1,5 +1,6 @@
 import 'package:opennutritracker/core/data/repository/user_weight_repository.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
+import 'package:opennutritracker/core/domain/entity/user_entity.dart';
 import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 
@@ -33,13 +34,15 @@ class GetWeightUsecase {
     }
 
     // If no last weight is found, fetch the user's default weight from their profile.
-    final userData = await _getUserUsecase.getUserData();
-    return userData.weightKG;
+    final UserEntity? userData = await _getUserUsecase.getUserData();
+    return userData!.weightKG;
   }
 
   Future<List<UserWeightEntity>> getWeightsFromPastDays(
-      DateTime currentDay, int days,
-      {bool includeToday = false}) async {
+    DateTime currentDay,
+    int days, {
+    bool includeToday = false,
+  }) async {
     final List<UserWeightEntity> weights = [];
 
     for (int i = includeToday ? 0 : 1; i < days; i++) {
@@ -59,12 +62,14 @@ class GetWeightUsecase {
   /// up to 7 days ago and calculate their average.
   /// If no weights are found in that period, it falls back to the user's default weight.
   Future<double> getAverageWeight(DateTime date, int numberOfDays) async {
-    final List<UserWeightEntity> userWeights =
-        await getWeightsFromPastDays(date, numberOfDays);
+    final List<UserWeightEntity> userWeights = await getWeightsFromPastDays(
+      date,
+      numberOfDays,
+    );
 
     if (userWeights.isEmpty) {
-      final userData = await _getUserUsecase.getUserData();
-      return userData.weightKG;
+      final UserEntity? userData = await _getUserUsecase.getUserData();
+      return userData!.weightKG;
     }
 
     final List<double> weights =

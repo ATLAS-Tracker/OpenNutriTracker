@@ -6,8 +6,8 @@ class GetUserUsecase {
 
   GetUserUsecase(this.userRepository);
 
-  Future<UserEntity> getUserData({String? userKey}) async {
-    return await userRepository.getUserData(userKey: userKey);
+  Future<UserEntity?> getUserData({String? userKey}) {
+    return userRepository.getUserData(userKey: userKey);
   }
 
   Future<bool> hasUserData({String? userKey}) async {

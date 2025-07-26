@@ -49,35 +49,40 @@ class ExportDataSupabaseUsecase {
     final fullUserActivity =
         await _userActivityRepository.getAllUserActivityDBO();
     final fullUserActivityJson = jsonEncode(
-        fullUserActivity.map((activity) => activity.toJson()).toList());
+      fullUserActivity.map((activity) => activity.toJson()).toList(),
+    );
     final userActivityJsonBytes = utf8.encode(fullUserActivityJson);
 
     // Export intake data to Json File Bytes
     final fullIntake = await _intakeRepository.getAllIntakesDBO();
-    final fullIntakeJson =
-        jsonEncode(fullIntake.map((intake) => intake.toJson()).toList());
+    final fullIntakeJson = jsonEncode(
+      fullIntake.map((intake) => intake.toJson()).toList(),
+    );
     final intakeJsonBytes = utf8.encode(fullIntakeJson);
 
     // Export tracked day data to Json File Bytes
     final fullTrackedDay = await _trackedDayRepository.getAllTrackedDaysDBO();
     final fullTrackedDayJson = jsonEncode(
-        fullTrackedDay.map((trackedDay) => trackedDay.toJson()).toList());
+      fullTrackedDay.map((trackedDay) => trackedDay.toJson()).toList(),
+    );
     final trackedDayJsonBytes = utf8.encode(fullTrackedDayJson);
 
     // Export user weight data to Json File Bytes
     final fullUserWeight = await _userWeightRepository.getAllUserWeightDBOs();
-    final fullUserWeightJson =
-        jsonEncode(fullUserWeight.map((w) => w.toJson()).toList());
+    final fullUserWeightJson = jsonEncode(
+      fullUserWeight.map((w) => w.toJson()).toList(),
+    );
     final userWeightJsonBytes = utf8.encode(fullUserWeightJson);
 
     // Export recipes data to Json File Bytes
     final fullRecipes = await _recipeRepository.getAllRecipeDBOs();
-    final fullRecipesJson =
-        jsonEncode(fullRecipes.map((r) => r.toJson()).toList());
+    final fullRecipesJson = jsonEncode(
+      fullRecipes.map((r) => r.toJson()).toList(),
+    );
     final recipesJsonBytes = utf8.encode(fullRecipesJson);
 
     // Export user data to Json File Bytes
-    final userDBO = await _userRepository.getUserDBO();
+    final userDBO = (await _userRepository.getUserDBO())!;
     final userMap = {
       'name': userDBO.name,
       'birthday': userDBO.birthday.toIso8601String(),
@@ -95,18 +100,44 @@ class ExportDataSupabaseUsecase {
 
     // Create a zip file with the exported data
     final archive = Archive()
-      ..addFile(ArchiveFile(userActivityJsonFileName,
-          userActivityJsonBytes.length, userActivityJsonBytes))
-      ..addFile(ArchiveFile(
-          userIntakeJsonFileName, intakeJsonBytes.length, intakeJsonBytes))
-      ..addFile(ArchiveFile(trackedDayJsonFileName, trackedDayJsonBytes.length,
-          trackedDayJsonBytes))
-      ..addFile(ArchiveFile(userWeightJsonFileName, userWeightJsonBytes.length,
-          userWeightJsonBytes))
-      ..addFile(ArchiveFile(recipesJsonFileName, recipesJsonBytes.length,
-          recipesJsonBytes))
-      ..addFile(ArchiveFile(userJsonFileName, userJsonBytes.length,
-          userJsonBytes));
+      ..addFile(
+        ArchiveFile(
+          userActivityJsonFileName,
+          userActivityJsonBytes.length,
+          userActivityJsonBytes,
+        ),
+      )
+      ..addFile(
+        ArchiveFile(
+          userIntakeJsonFileName,
+          intakeJsonBytes.length,
+          intakeJsonBytes,
+        ),
+      )
+      ..addFile(
+        ArchiveFile(
+          trackedDayJsonFileName,
+          trackedDayJsonBytes.length,
+          trackedDayJsonBytes,
+        ),
+      )
+      ..addFile(
+        ArchiveFile(
+          userWeightJsonFileName,
+          userWeightJsonBytes.length,
+          userWeightJsonBytes,
+        ),
+      )
+      ..addFile(
+        ArchiveFile(
+          recipesJsonFileName,
+          recipesJsonBytes.length,
+          recipesJsonBytes,
+        ),
+      )
+      ..addFile(
+        ArchiveFile(userJsonFileName, userJsonBytes.length, userJsonBytes),
+      );
 
     final imagePaths = <String>{};
     if (userDBO.profileImagePath != null &&
@@ -141,9 +172,13 @@ class ExportDataSupabaseUsecase {
     final filePath = '$userId/$exportZipFileName';
     try {
       await _client.storage.from('exports').uploadBinary(
-          filePath, Uint8List.fromList(zipBytes),
-          fileOptions:
-              const FileOptions(contentType: 'application/zip', upsert: true));
+            filePath,
+            Uint8List.fromList(zipBytes),
+            fileOptions: const FileOptions(
+              contentType: 'application/zip',
+              upsert: true,
+            ),
+          );
       return true;
     } catch (e, stack) {
       _log.severe('Upload FAILED for “$filePath”.', e, stack);
