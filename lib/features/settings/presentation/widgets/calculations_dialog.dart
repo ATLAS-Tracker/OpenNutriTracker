@@ -1,8 +1,5 @@
-import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
-import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
 import 'package:opennutritracker/core/domain/usecase/add_macro_goal_usecase.dart';
 import 'package:opennutritracker/core/domain/usecase/get_macro_goal_usecase.dart';
-import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:flutter/material.dart';
