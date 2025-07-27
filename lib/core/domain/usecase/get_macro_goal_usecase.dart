@@ -8,22 +8,42 @@ class GetMacroGoalUsecase {
 
   GetMacroGoalUsecase();
 
+  bool isSameOrAfterToday(DateTime target) {
+    final today = DateTime.now();
+    final todayDateOnly = DateTime(today.year, today.month, today.day);
+    final targetDateOnly = DateTime(target.year, target.month, target.day);
+    return targetDateOnly.isAfter(todayDateOnly) ||
+        targetDateOnly == todayDateOnly;
+  }
+
   Future<double?> getCarbsGoal() async {
-    final MacroGoalEntity? macroGoal =
-        await _macroGoalRepository.getMacroGoal();
-    return macroGoal?.newCarbsGoal;
+    final macroGoal = await _macroGoalRepository.getMacroGoal();
+
+    if (macroGoal != null && isSameOrAfterToday(macroGoal.date)) {
+      return macroGoal.newCarbsGoal;
+    }
+
+    return macroGoal?.oldCarbsGoal;
   }
 
   Future<double?> getFatsGoal() async {
-    final MacroGoalEntity? macroGoal =
-        await _macroGoalRepository.getMacroGoal();
-    return macroGoal?.newFatsGoal;
+    final macroGoal = await _macroGoalRepository.getMacroGoal();
+
+    if (macroGoal != null && isSameOrAfterToday(macroGoal.date)) {
+      return macroGoal.newFatsGoal;
+    }
+
+    return macroGoal?.oldFatsGoal;
   }
 
   Future<double?> getProteinsGoal() async {
-    final MacroGoalEntity? macroGoal =
-        await _macroGoalRepository.getMacroGoal();
-    return macroGoal?.newProteinsGoal;
+    final macroGoal = await _macroGoalRepository.getMacroGoal();
+
+    if (macroGoal != null && isSameOrAfterToday(macroGoal.date)) {
+      return macroGoal.newProteinsGoal;
+    }
+
+    return macroGoal?.oldProteinsGoal;
   }
 
   /// Optionnel : récupérer l'entité complète

@@ -13,34 +13,26 @@ class MacroGoalDbo extends HiveObject {
   final DateTime date;
 
   @HiveField(2)
-  final DateTime updatedAt;
-
-  @HiveField(3)
-  final double weight;
-
-  @HiveField(4)
   final double oldCarbsGoal;
 
-  @HiveField(5)
+  @HiveField(3)
   final double oldFatsGoal;
 
-  @HiveField(6)
+  @HiveField(4)
   final double oldProteinsGoal;
 
-  @HiveField(7)
+  @HiveField(5)
   final double newCarbsGoal;
 
-  @HiveField(8)
+  @HiveField(6)
   final double newFatsGoal;
 
-  @HiveField(9)
+  @HiveField(7)
   final double newProteinsGoal;
 
   MacroGoalDbo(
     this.id,
     this.date,
-    this.updatedAt,
-    this.weight,
     this.oldCarbsGoal,
     this.oldFatsGoal,
     this.oldProteinsGoal,

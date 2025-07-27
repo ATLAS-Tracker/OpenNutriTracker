@@ -124,9 +124,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           totalKcalBurned: totalKcalActivities,
           totalCarbsIntake: totalCarbsIntake,
           totalFatsIntake: totalFatsIntake,
-          totalCarbsGoal: 200, // TODO: Use from config
-          totalFatsGoal: 70,
-          totalProteinsGoal: 100,
+          totalCarbsGoal: totalCarbsGoal ?? 250.0,
+          totalFatsGoal: totalFatsGoal ?? 60.0,
+          totalProteinsGoal: totalProteinsGoal ?? 120.0,
           totalProteinsIntake: totalProteinsIntake,
           breakfastIntakeList: breakfastIntakeList,
           lunchIntakeList: lunchIntakeList,

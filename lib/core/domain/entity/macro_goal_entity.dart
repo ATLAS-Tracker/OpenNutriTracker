@@ -1,11 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:opennutritracker/core/data/data_source/macro_goal_dbo.dart';
 
 class MacroGoalEntity {
   final String id;
   final DateTime date;
-  final DateTime updatedAt;
-  final double weight;
 
   final double oldCarbsGoal;
   final double oldFatsGoal;
@@ -18,8 +15,6 @@ class MacroGoalEntity {
   MacroGoalEntity({
     required this.id,
     required this.date,
-    required this.weight,
-    required this.updatedAt,
     required this.oldCarbsGoal,
     required this.oldFatsGoal,
     required this.oldProteinsGoal,
@@ -33,8 +28,6 @@ class MacroGoalEntity {
     return MacroGoalEntity(
       id: dbo.id,
       date: dbo.date,
-      updatedAt: dbo.updatedAt,
-      weight: dbo.weight,
       oldCarbsGoal: dbo.oldCarbsGoal,
       oldFatsGoal: dbo.oldFatsGoal,
       oldProteinsGoal: dbo.oldProteinsGoal,
@@ -49,8 +42,6 @@ class MacroGoalEntity {
     return MacroGoalDbo(
       id,
       date,
-      updatedAt,
-      weight,
       oldCarbsGoal,
       oldFatsGoal,
       oldProteinsGoal,

@@ -1,4 +1,11 @@
+import 'package:opennutritracker/features/diary/presentation/bloc/calendar_day_bloc.dart';
+import 'package:opennutritracker/features/diary/presentation/bloc/diary_bloc.dart';
+import 'package:opennutritracker/core/domain/usecase/add_macro_goal_usecase.dart';
+import 'package:opennutritracker/features/home/presentation/bloc/home_bloc.dart';
+import 'package:opennutritracker/core/domain/usecase/get_user_usecase.dart';
+import 'package:opennutritracker/core/domain/entity/user_role_entity.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import './local_notifications_service.dart';
 import 'package:logging/logging.dart';
@@ -124,7 +131,7 @@ class FirebaseMessagingService {
     }
   }
 
-  void _onForegroundMessage(RemoteMessage message) {
+  void _onForegroundMessage(RemoteMessage message) async {
     log.fine('[📥] Message reçu en foreground');
     log.fine(
         '🔸 Notification: ${message.notification?.title} - ${message.notification?.body}');
@@ -140,12 +147,45 @@ class FirebaseMessagingService {
     } else {
       log.warning('[⚠️] Aucune donnée de notification à afficher');
     }
+
+    // If a student received a notification, update macro goals
+    final user = await locator.get<GetUserUsecase>().getUserData();
+    if (user.role == UserRoleEntity.student) {
+      try {
+        await locator.get<AddMacroGoalUsecase>().addMacroGoalFromCoach();
+        log.fine('[✅] Objectifs macro mis à jour depuis Supabase');
+        // Refresh Home Page
+        locator<HomeBloc>().add(const LoadItemsEvent());
+        // Refresh Diary Page
+        locator<DiaryBloc>().add(const LoadDiaryYearEvent());
+        locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
+      } catch (e, stack) {
+        log.warning('[❌] Erreur lors de la mise à jour des macros : $e');
+        log.warning(stack.toString());
+      }
+    }
   }
 
-  void _onMessageOpenedApp(RemoteMessage message) {
+  void _onMessageOpenedApp(RemoteMessage message) async {
     log.fine('[📲] Notification tapée - app ouverte');
     log.fine('🔸 Données: ${message.data}');
     // TODO: Add navigation or specific handling
+    // If a student received a notification, update macro goals
+    final user = await locator.get<GetUserUsecase>().getUserData();
+    if (user.role == UserRoleEntity.student) {
+      try {
+        await locator.get<AddMacroGoalUsecase>().addMacroGoalFromCoach();
+        log.fine('[✅] Objectifs macro mis à jour depuis Supabase');
+        // Refresh Home Page
+        locator<HomeBloc>().add(const LoadItemsEvent());
+        // Refresh Diary Page
+        locator<DiaryBloc>().add(const LoadDiaryYearEvent());
+        locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
+      } catch (e, stack) {
+        log.warning('[❌] Erreur lors de la mise à jour des macros : $e');
+        log.warning(stack.toString());
+      }
+    }
   }
 }
 

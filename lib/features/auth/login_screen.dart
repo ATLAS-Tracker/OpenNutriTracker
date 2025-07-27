@@ -21,6 +21,7 @@ import 'package:opennutritracker/core/domain/entity/user_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_gender_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_goal_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_pal_entity.dart';
+import 'package:opennutritracker/core/domain/usecase/add_macro_goal_usecase.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -171,6 +172,24 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           }
           return; // reste sur l’écran de login
+        }
+
+        // Récuperer les objectifs si student
+        final user = await getUser.getUserData();
+        if (user.role == UserRoleEntity.student) {
+          try {
+            final user = await locator.get<GetUserUsecase>().getUserData();
+            if (user.role == UserRoleEntity.student) {
+              await locator.get<AddMacroGoalUsecase>().addMacroGoalFromCoach();
+              Logger('LoginScreen')
+                  .fine('[✅] Objectifs macro mis à jour depuis Supabase');
+            }
+          } catch (e, stack) {
+            Logger('LoginScreen')
+                .warning('[❌] Erreur lors de la mise à jour des macros : $e');
+            Logger('LoginScreen').warning(stack.toString());
+            return;
+          }
         }
 
         // ✅ Init Firebase Messaging & Local Notifications après login
