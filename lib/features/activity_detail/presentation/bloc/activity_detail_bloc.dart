@@ -86,9 +86,8 @@ class ActivityDetailBloc
     final hasTrackedDay = await _addTrackedDayUsecase.hasTrackedDay(day);
     if (!hasTrackedDay) {
       // If the tracked day does not exist, create a new one
-      final totalKcalGoal = await _getKcalGoalUsecase.getKcalGoal(
-        totalKcalActivitiesParam: 0,
-      ); // Exclude persisted activities
+      final totalKcalGoal = await _getKcalGoalUsecase
+          .getKcalGoal(); // Exclude persisted activities
       final totalCarbsGoal = await _getMacroGoalUsecase.getCarbsGoal();
       final totalFatGoal = await _getMacroGoalUsecase.getFatsGoal();
       final totalProteinGoal = await _getMacroGoalUsecase.getProteinsGoal();

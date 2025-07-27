@@ -208,7 +208,7 @@ Future<void> registerUserScope(HiveDBProvider hive) async {
     () => AddTrackedDayUsecase(locator()),
   );
   locator.registerLazySingleton(
-    () => GetKcalGoalUsecase(locator(), locator(), locator()),
+    () => GetKcalGoalUsecase(),
   );
   locator.registerLazySingleton(() => GetMacroGoalUsecase());
   locator.registerLazySingleton(
