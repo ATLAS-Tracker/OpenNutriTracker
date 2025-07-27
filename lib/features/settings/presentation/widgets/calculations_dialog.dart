@@ -63,16 +63,12 @@ class _CalculationsDialogState extends State<CalculationsDialog> {
     try {
       await addMacroGoalUsecase.addMacroGoal(protein, carbs, fats);
 
-      // Refresh Home Page
-      locator<HomeBloc>().add(const LoadItemsEvent());
-      // Refresh Diary Page
-      locator<DiaryBloc>().add(const LoadDiaryYearEvent());
-      locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
-
+      if (!mounted) return;
       Navigator.of(context).pop();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error saving macro goals: $e")),
+        SnackBar(content: Text("error saving macro goals: $e")),
       );
     }
   }
