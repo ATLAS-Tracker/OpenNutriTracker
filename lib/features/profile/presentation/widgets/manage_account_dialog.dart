@@ -5,6 +5,7 @@ import 'package:opennutritracker/generated/l10n.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/features/auth/auth_safe_sign_out.dart';
 import 'package:opennutritracker/core/data/repository/config_repository.dart';
+import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 
 class ManageAccountDialog extends StatefulWidget {
   const ManageAccountDialog({super.key});
@@ -111,6 +112,8 @@ class _ManageAccountDialogState extends State<ManageAccountDialog> {
       final response = await supabase.functions.invoke('delete_my_account');
 
       if (response.status == 200) {
+        final hive = locator<HiveDBProvider>();
+        await hive.deleteCurrentUserDatabase();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Account successfully deleted.")),
