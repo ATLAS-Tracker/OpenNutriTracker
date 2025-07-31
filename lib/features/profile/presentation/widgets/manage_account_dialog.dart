@@ -97,13 +97,41 @@ class _ManageAccountDialogState extends State<ManageAccountDialog> {
   Future<void> _deleteAccount() async {
     final supabase = Supabase.instance.client;
     final userId = supabase.auth.currentUser?.id;
-    try {
-      if (userId != null) {
-        await supabase.rpc('delete_user', params: {'uid': userId});
+
+    if (userId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("User not connected.")),
+        );
       }
-    } catch (_) {}
-    if (mounted) {
-      await safeSignOut(context);
+      return;
+    }
+
+    try {
+      final response = await supabase.functions.invoke('delete_my_account');
+
+      if (response.status == 200) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Account successfully deleted.")),
+          );
+          await safeSignOut(context); // or redirect
+        }
+      } else {
+        final errorMessage = response.data?['error'] ?? 'Unknown error';
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Failed to delete: $errorMessage")),
+          );
+        }
+      }
+    } catch (e, stackTrace) {
+      debugPrint("Error deleting account: $e\n$stackTrace");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("An error occurred.")),
+        );
+      }
     }
   }
 }
