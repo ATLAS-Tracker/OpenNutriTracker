@@ -26,6 +26,19 @@ serve(async (req) => {
 
     if (!user) throw new Error("No user found for JWT!");
 
+    const userId = user.id;
+
+    // Supprimer le dossier dans le bucket 'exports' (nom du dossier = user.id)
+    const { error: storageError } = await supabaseClient
+      .storage
+      .from("exports")
+      .remove([`${userId}/`]); // Remarque: le "/" est important pour indiquer un dossier
+
+    if (storageError) {
+      console.error("Error :", storageError.message);
+      throw new Error("Failed to delete storage folder.");
+    }
+
     //Call deleteUser method and pass user's ID
     const { data, error } = await supabaseClient.auth.admin.deleteUser(user.id);
 
