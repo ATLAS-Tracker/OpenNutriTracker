@@ -91,6 +91,7 @@ class _ManageAccountDialogState extends State<ManageAccountDialog> {
       ),
     );
     if (confirm == true) {
+      if (!mounted) return;
       await _deleteAccount();
     }
   }

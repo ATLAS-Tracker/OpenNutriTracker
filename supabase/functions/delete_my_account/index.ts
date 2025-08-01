@@ -59,8 +59,11 @@ serve(async (req) => {
       console.warn("⚠️ Storage deletion failed (non-blocking):", storageCatchError.message);
     }
 
-    //Call deleteUser method and pass user's ID
-    const { data, error } = await supabaseClient.auth.admin.deleteUser(user.id);
+  //Call deleteUser method and pass user's ID
+  const { data, error } = await supabaseClient.auth.admin.deleteUser(user.id);
+  if (error) {
+    throw error;
+  }
 
     return new Response(JSON.stringify(data), {
       headers: { "Content-Type": "application/json" },
