@@ -33,22 +33,16 @@ class _ManageAccountDialogState extends State<ManageAccountDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Manage account'),
+      title: Text(S.of(context).manageAccountTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'We only collect data essential to the proper functioning of the app:\n\n'
-              'Email address: used for login and account identification.\n\n'
-              'Nutrition data: your daily weight, calories, protein, fat, and carbohydrate intake.\n\n'
-              'Goals: your personalized targets for calories, protein, fat, and carbs.\n\n'
-              'All data is securely stored on Supabase. We do not share any of your data with third parties.',
-            ),
+            Text(S.of(context).manageAccountDescription),
             const SizedBox(height: 16),
             SwitchListTile(
-              title: const Text('Enable Supabase Sync'),
+              title: Text(S.of(context).manageAccountEnableSync),
               value: _syncEnabled,
               onChanged: (value) {
                 setState(() => _syncEnabled = value);
@@ -58,7 +52,7 @@ class _ManageAccountDialogState extends State<ManageAccountDialog> {
             const SizedBox(height: 8),
             TextButton(
               onPressed: () => _confirmDelete(context),
-              child: const Text('Delete My Account'),
+              child: Text(S.of(context).manageAccountDelete),
             ),
           ],
         ),
@@ -76,8 +70,8 @@ class _ManageAccountDialogState extends State<ManageAccountDialog> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Are you sure?'),
-        content: const Text('This action cannot be undone.'),
+        title: Text(S.of(context).manageAccountConfirmTitle),
+        content: Text(S.of(context).manageAccountConfirmMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -85,7 +79,7 @@ class _ManageAccountDialogState extends State<ManageAccountDialog> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Confirm Deletion'),
+            child: Text(S.of(context).manageAccountConfirmAction),
           ),
         ],
       ),
