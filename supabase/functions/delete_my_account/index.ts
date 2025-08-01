@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.0.0";
 
-console.log("Delete user account function up and running");
+console.log("Delete user account");
 
 serve(async (req) => {
   try {
@@ -28,15 +28,35 @@ serve(async (req) => {
 
     const userId = user.id;
 
-    // Supprimer le dossier dans le bucket 'exports' (nom du dossier = user.id)
-    const { error: storageError } = await supabaseClient
-      .storage
-      .from("exports")
-      .remove([`${userId}/`]); // Remarque: le "/" est important pour indiquer un dossier
+    try {
+      const { data: files, error: listError } = await supabaseClient
+        .storage
+        .from("exports")
+        .list(userId, { limit: 100, offset: 0 });
 
-    if (storageError) {
-      console.error("Error :", storageError.message);
-      throw new Error("Failed to delete storage folder.");
+      if (listError) {
+        console.warn("⚠️ Failed to list files (non-blocking):", listError.message);
+      } else if (files && files.length > 0) {
+        console.log(`📂 Found ${files.length} file(s):`);
+        files.forEach(file => console.log(` - ${userId}/${file.name}`));
+
+        const pathsToDelete = files.map(file => `${userId}/${file.name}`);
+
+        const { error: removeError } = await supabaseClient
+          .storage
+          .from("exports")
+          .remove(pathsToDelete);
+
+        if (removeError) {
+          console.warn("⚠️ Failed to delete some files (non-blocking):", removeError.message);
+        } else {
+          console.log("✅ Files deleted successfully.");
+        }
+      } else {
+        console.log("📭 No files found in user's folder.");
+      }
+    } catch (storageCatchError) {
+      console.warn("⚠️ Storage deletion failed (non-blocking):", storageCatchError.message);
     }
 
     //Call deleteUser method and pass user's ID
