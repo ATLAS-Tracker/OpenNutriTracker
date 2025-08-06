@@ -368,7 +368,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         applicationName: S.of(context).appTitle,
         applicationIcon: SizedBox(
           width: 40,
-          child: Image.asset('assets/icon/ont_logo_square.png'),
+          child: Image.asset(Theme.of(context).brightness == Brightness.light
+              ? 'assets/icon/ont_logo_atlas_tracker_white.png'
+              : 'assets/icon/ont_logo_atlas_tracker_dark.png'),
         ),
         applicationVersion: packageInfo.version,
         applicationLegalese: S.of(context).appLicenseLabel,
