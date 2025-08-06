@@ -681,8 +681,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Rol Seçin"),
         "selectWeightDialogLabel":
             MessageLookupByLibrary.simpleMessage("Kilo Seçin"),
-        "sendAnonymousUserData": MessageLookupByLibrary.simpleMessage(
-            "Anonim kullanım verileri gönder"),
         "servingLabel": MessageLookupByLibrary.simpleMessage("Porsiyon"),
         "servingSizeLabelImperial":
             MessageLookupByLibrary.simpleMessage("Porsiyon boyutu (oz/fl oz)"),
@@ -704,8 +702,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingsMassLabel": MessageLookupByLibrary.simpleMessage("Kütle"),
         "settingsMetricLabel":
             MessageLookupByLibrary.simpleMessage("Metrik (kg, cm, ml)"),
-        "settingsPrivacySettings":
-            MessageLookupByLibrary.simpleMessage("Gizlilik Ayarları"),
         "settingsReportErrorLabel":
             MessageLookupByLibrary.simpleMessage("Hata Bildir"),
         "settingsSourceCodeLabel":

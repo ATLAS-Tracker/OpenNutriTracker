@@ -37,16 +37,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       final usesImperialUnits = userConfig.usesImperialUnits;
 
       emit(SettingsLoadedState(
-          appVersion,
-          userConfig.hasAcceptedSendAnonymousData,
-          userConfig.appTheme,
-          usesImperialUnits));
+          appVersion, userConfig.appTheme, usesImperialUnits));
     });
-  }
-
-  void setHasAcceptedAnonymousData(bool hasAcceptedAnonymousData) {
-    _addConfigUsecase
-        .setConfigHasAcceptedAnonymousData(hasAcceptedAnonymousData);
   }
 
   void setAppTheme(AppThemeEntity appTheme) async {

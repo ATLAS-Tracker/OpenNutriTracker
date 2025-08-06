@@ -54,14 +54,10 @@ Future<void> main() async {
   const isUserInitialized = true;
   final hasAuthSession = Supabase.instance.client.auth.currentSession != null;
   final configRepo = locator<ConfigRepository>();
-  final hasAcceptedAnonymousData =
-      await configRepo.getConfigHasAcceptedAnonymousData();
   final savedAppTheme = await configRepo.getConfigAppTheme();
   final log = Logger('main');
 
-  // If the user has accepted anonymous data collection, run the app with
-  // sentry enabled, else run without it
-  if (kReleaseMode && hasAcceptedAnonymousData) {
+  if (kReleaseMode) {
     log.info('Starting App with Sentry enabled ...');
     _runAppWithSentryReporting(
         isUserInitialized, hasAuthSession, savedAppTheme);

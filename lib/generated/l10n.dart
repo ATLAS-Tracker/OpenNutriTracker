@@ -451,16 +451,6 @@ class S {
     );
   }
 
-  /// `Privacy Settings`
-  String get settingsPrivacySettings {
-    return Intl.message(
-      'Privacy Settings',
-      name: 'settingsPrivacySettings',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Source Code`
   String get settingsSourceCodeLabel {
     return Intl.message(
@@ -556,16 +546,6 @@ class S {
     return Intl.message(
       'Do you want to report an error to the developer?',
       name: 'reportErrorDialogText',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Send anonymous usage data`
-  String get sendAnonymousUserData {
-    return Intl.message(
-      'Send anonymous usage data',
-      name: 'sendAnonymousUserData',
       desc: '',
       args: [],
     );

@@ -708,8 +708,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Sélectionner le rôle"),
         "selectWeightDialogLabel":
             MessageLookupByLibrary.simpleMessage("Sélectionner le poids"),
-        "sendAnonymousUserData": MessageLookupByLibrary.simpleMessage(
-            "Envoyer des données d\'utilisation anonymes"),
         "servingLabel": MessageLookupByLibrary.simpleMessage("Portion"),
         "servingSizeLabelImperial": MessageLookupByLibrary.simpleMessage(
             "Taille de la portion (oz/fl oz)"),
@@ -732,8 +730,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingsMassLabel": MessageLookupByLibrary.simpleMessage("Masse"),
         "settingsMetricLabel":
             MessageLookupByLibrary.simpleMessage("Métrique (kg, cm, ml)"),
-        "settingsPrivacySettings": MessageLookupByLibrary.simpleMessage(
-            "Paramètres de confidentialité"),
         "settingsReportErrorLabel":
             MessageLookupByLibrary.simpleMessage("Signaler une erreur"),
         "settingsSourceCodeLabel":

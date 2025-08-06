@@ -16,7 +16,6 @@ import 'package:opennutritracker/features/settings/presentation/widgets/calculat
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -88,12 +87,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leading: const Icon(Icons.bug_report_outlined),
                   title: Text(S.of(context).settingsReportErrorLabel),
                   onTap: () => _showReportErrorDialog(context),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.policy_outlined),
-                  title: Text(S.of(context).settingsPrivacySettings),
-                  onTap: () =>
-                      _showPrivacyDialog(context, state.sendAnonymousData),
                 ),
                 ListTile(
                   leading: const Icon(Icons.error_outline_outlined),
@@ -295,47 +288,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SnackBar(content: Text(S.of(context).errorOpeningEmail)));
       }
     }
-  }
-
-  void _showPrivacyDialog(
-      BuildContext context, bool hasAcceptedAnonymousData) async {
-    bool switchActive = hasAcceptedAnonymousData;
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(S.of(context).settingsPrivacySettings),
-            content: StatefulBuilder(
-              builder: (BuildContext context,
-                  void Function(void Function()) setState) {
-                return SwitchListTile(
-                  title: Text(S.of(context).sendAnonymousUserData),
-                  value: switchActive,
-                  onChanged: (bool value) {
-                    setState(() {
-                      switchActive = value;
-                    });
-                  },
-                );
-              },
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(S.of(context).dialogCancelLabel)),
-              TextButton(
-                  onPressed: () async {
-                    _settingsBloc.setHasAcceptedAnonymousData(switchActive);
-                    if (!switchActive) Sentry.close();
-                    _settingsBloc.add(LoadSettingsEvent());
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(S.of(context).dialogOKLabel))
-            ],
-          );
-        });
   }
 
   void _showAboutDialog(BuildContext context) async {

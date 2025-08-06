@@ -21,15 +21,6 @@ class ConfigDataSource {
     _hive.configBox.put(_configKey, configDBO);
   }
 
-  Future<void> setConfigAcceptedAnonymousData(
-      bool hasAcceptedAnonymousData) async {
-    _log.fine(
-        'Updating config hasAcceptedAnonymousData to $hasAcceptedAnonymousData');
-    final config = _hive.configBox.get(_configKey);
-    config?.hasAcceptedSendAnonymousData = hasAcceptedAnonymousData;
-    await config?.save();
-  }
-
   Future<AppThemeDBO> getAppTheme() async {
     final config = _hive.configBox.get(_configKey);
     return config?.selectedAppTheme ?? AppThemeDBO.defaultTheme;
@@ -96,11 +87,6 @@ class ConfigDataSource {
 
   Future<ConfigDBO> getConfig() async {
     return _hive.configBox.get(_configKey) ?? ConfigDBO.empty();
-  }
-
-  Future<bool> getHasAcceptedAnonymousData() async {
-    final config = _hive.configBox.get(_configKey);
-    return config?.hasAcceptedSendAnonymousData ?? false;
   }
 
   Future<void> setLastDataUpdate(DateTime date) async {

@@ -14,15 +14,6 @@ class ConfigRepository {
     _configDataSource.addConfig(configDBO);
   }
 
-  Future<void> setConfigHasAcceptedAnonymousData(
-      bool hasAcceptedAnonymousData) async {
-    _configDataSource.setConfigAcceptedAnonymousData(hasAcceptedAnonymousData);
-  }
-
-  Future<bool> getConfigHasAcceptedAnonymousData() async {
-    return await _configDataSource.getHasAcceptedAnonymousData();
-  }
-
   Future<AppThemeEntity> getConfigAppTheme() async {
     final appThemeDBO = await _configDataSource.getAppTheme();
     return AppThemeEntity.fromAppThemeDBO(appThemeDBO);

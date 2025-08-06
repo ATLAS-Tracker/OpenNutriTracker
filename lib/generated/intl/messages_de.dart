@@ -706,8 +706,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Rolle auswählen"),
         "selectWeightDialogLabel":
             MessageLookupByLibrary.simpleMessage("Gewicht auswählen"),
-        "sendAnonymousUserData": MessageLookupByLibrary.simpleMessage(
-            "Anonyme Nutzungsdaten senden?"),
         "servingLabel": MessageLookupByLibrary.simpleMessage("Portion"),
         "servingSizeLabelImperial":
             MessageLookupByLibrary.simpleMessage("Portionsgröße (oz/fl oz)"),
@@ -726,8 +724,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingsLicensesLabel":
             MessageLookupByLibrary.simpleMessage("Lizenzen"),
         "settingsMassLabel": MessageLookupByLibrary.simpleMessage("Masse"),
-        "settingsPrivacySettings":
-            MessageLookupByLibrary.simpleMessage("Datenschutzeinstellungen"),
         "settingsReportErrorLabel":
             MessageLookupByLibrary.simpleMessage("Fehler melden"),
         "settingsSourceCodeLabel":

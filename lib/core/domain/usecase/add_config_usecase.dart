@@ -11,12 +11,6 @@ class AddConfigUsecase {
     _configRepository.updateConfig(configEntity);
   }
 
-  Future<void> setConfigHasAcceptedAnonymousData(
-      bool hasAcceptedAnonymousData) async {
-    _configRepository
-        .setConfigHasAcceptedAnonymousData(hasAcceptedAnonymousData);
-  }
-
   Future<void> setConfigAppTheme(AppThemeEntity appTheme) async {
     await _configRepository.setConfigAppTheme(appTheme);
   }
