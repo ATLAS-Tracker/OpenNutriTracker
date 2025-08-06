@@ -105,11 +105,11 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/icon/ont_logo_square.png
-    - assets/icon/ont_logo_square.svg
-    - assets/icon/ont_logo_square_light.png
-    - assets/icon/ont_banner_top.png
-    - assets/icon/ont_banner_top_light.png
+    - assets/icon/ont_icon_atlas_tracker_white.png
+    - assets/icon/ont_logo_atlas_tracker_white.png
+    - assets/icon/ont_logo_atlas_tracker_dark.png
+    - assets/icon/ont_logo_atlas_tracker.svg
+
   fonts:
     - family: CustomIcons
       fonts:
@@ -149,9 +149,9 @@ flutter_intl:
 
 flutter_launcher_icons:
   android: true
-  adaptive_icon_foreground: "assets/icon/ont_logo_square.png"
+  adaptive_icon_foreground: "assets/icon/ont_icon_atlas_tracker_white.png"
   adaptive_icon_background: "#ffffff"
   ios: true
   remove_alpha_ios: true
-  image_path: "assets/icon/ont_logo_square.png"
+  image_path: "assets/icon/ont_icon_atlas_tracker_white.png"
   min_sdk_android: 21
