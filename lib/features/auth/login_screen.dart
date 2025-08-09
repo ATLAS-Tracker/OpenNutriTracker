@@ -85,6 +85,13 @@ class _LoginScreenState extends State<LoginScreen> {
     final l10n = S.of(context);
 
     try {
+      // Always disconnect any existing session before attempting to sign in.
+      try {
+        await supabase.auth.signOut();
+      } catch (e, s) {
+        Logger('LoginScreen').fine('Pre-login sign-out failed', e, s);
+      }
+
       final res = await supabase.auth.signInWithPassword(
         email: email,
         password: pass,
@@ -183,12 +190,14 @@ class _LoginScreenState extends State<LoginScreen> {
             final user = await locator.get<GetUserUsecase>().getUserData();
             if (user.role == UserRoleEntity.student) {
               await locator.get<AddMacroGoalUsecase>().addMacroGoalFromCoach();
-              Logger('LoginScreen')
-                  .fine('[✅] Objectifs macro mis à jour depuis Supabase');
+              Logger(
+                'LoginScreen',
+              ).fine('[✅] Objectifs macro mis à jour depuis Supabase');
             }
           } catch (e, stack) {
-            Logger('LoginScreen')
-                .warning('[❌] Erreur lors de la mise à jour des macros : $e');
+            Logger(
+              'LoginScreen',
+            ).warning('[❌] Erreur lors de la mise à jour des macros : $e');
             Logger('LoginScreen').warning(stack.toString());
             return;
           }
@@ -250,8 +259,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 validator: (v) => (v == null || v.trim().isEmpty)
                     ? S.of(context).loginEmailRequired
                     : (EmailValidator.validate(v.trim())
-                        ? null
-                        : S.of(context).loginEmailInvalid),
+                          ? null
+                          : S.of(context).loginEmailInvalid),
               ),
               const SizedBox(height: 16),
               TextFormField(
