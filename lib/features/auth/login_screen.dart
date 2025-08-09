@@ -119,6 +119,63 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  UserGenderEntity parseGender(String? v) {
+    switch ((v ?? '').toLowerCase()) {
+      case 'female':
+        return UserGenderEntity.female;
+      case 'male':
+        return UserGenderEntity.male;
+      default:
+        return UserGenderEntity.male; // défaut raisonnable
+    }
+  }
+
+  UserWeightGoalEntity parseGoal(String? v) {
+    switch ((v ?? '').toLowerCase()) {
+      case 'loseweight':
+        return UserWeightGoalEntity.loseWeight;
+      case 'gainweight':
+        return UserWeightGoalEntity.gainWeight;
+      case 'maintainweight':
+        return UserWeightGoalEntity.maintainWeight;
+      default:
+        return UserWeightGoalEntity.maintainWeight;
+    }
+  }
+
+  UserPALEntity parsePal(String? v) {
+    switch ((v ?? '').toLowerCase()) {
+      case 'sedentary':
+        return UserPALEntity.sedentary;
+      case 'lightlyactive':
+        return UserPALEntity.lowActive;
+      case 'active':
+        return UserPALEntity.active;
+      case 'veryactive':
+        return UserPALEntity.veryActive;
+      default:
+        return UserPALEntity.active;
+    }
+  }
+
+  double parseNumToDouble(dynamic v, {double fallback = 0}) {
+    if (v == null) return fallback;
+    if (v is num) return v.toDouble();
+    if (v is String) return double.tryParse(v) ?? fallback;
+    return fallback;
+  }
+
+  DateTime parseBirthday(dynamic v) {
+    if (v == null) return DateTime(2000, 1, 1);
+    // Supabase renvoie généralement une string ISO pour DATE/TIMESTAMPTZ
+    if (v is String) {
+      final parsed = DateTime.tryParse(v);
+      return parsed ?? DateTime(2000, 1, 1);
+    }
+    if (v is DateTime) return v;
+    return DateTime(2000, 1, 1);
+  }
+
   /// Attempt to authenticate with e-mail / password.
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -156,7 +213,8 @@ class _LoginScreenState extends State<LoginScreen> {
           try {
             final List<Map<String, dynamic>> rows = await supabase
                 .from('users')
-                .select('display_name, role')
+                .select(
+                    'display_name, role, height_cm, weight_kg, gender, goal, birthday, pal')
                 .eq('id', userId!);
 
             if (rows.isEmpty) {
@@ -167,24 +225,31 @@ class _LoginScreenState extends State<LoginScreen> {
             if (rows.isNotEmpty) {
               final row = rows.first;
               final roleStr = (row['role'] as String?) ?? 'student';
-              final displayName =
-                  (row['display_name'] as String?) ?? 'John Doe';
+              final displayName = (row['display_name'] as String?)?.trim();
+              final heightCm =
+                  parseNumToDouble(row['height_cm'], fallback: 180);
+              final weightKg = parseNumToDouble(row['weight_kg'], fallback: 80);
+              final gender = parseGender(row['gender'] as String?);
+              final goal = parseGoal(row['goal'] as String?);
+              final pal = parsePal(row['pal'] as String?);
+              final birthday = parseBirthday(row['birthday']);
               final role = roleStr == 'coach'
                   ? UserRoleEntity.coach
                   : UserRoleEntity.student;
-              final defaultUser = UserEntity(
-                name: displayName,
-                birthday: DateTime(2000, 1, 1),
-                heightCM: 180,
-                weightKG: 80,
-                gender: UserGenderEntity.male,
-                goal: UserWeightGoalEntity.maintainWeight,
-                pal: UserPALEntity.active,
+
+              final user = UserEntity(
+                name: displayName!,
+                birthday: birthday,
+                heightCM: heightCm,
+                weightKG: weightKg,
+                gender: gender,
+                goal: goal,
+                pal: pal,
                 role: role,
                 profileImagePath: null,
               );
 
-              await addUser.addUser(defaultUser);
+              await addUser.addUser(user);
             }
           } catch (e, stackTrace) {
             debugPrint('Error when getting profile from Supabase: $e');
