@@ -1,15 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/utils/navigation_options.dart';
-import 'package:app_links/app_links.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:opennutritracker/features/auth/validate_password.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'forgot_password_screen.dart';
-import 'reset_password_screen.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/core/utils/hive_db_provider.dart';
 import 'package:opennutritracker/features/settings/presentation/bloc/export_import_bloc.dart';
@@ -40,13 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _obscurePassword = true;
   bool _loading = false;
-  Timer? _deepLinkDebounce;
   final supabase = Supabase.instance.client;
-
-  // Deep-link / auth
-  StreamSubscription<Uri?>? _linksSub;
-  bool _handledDeepLink = false; // évite de consommer le flow PKCE 2x
-  bool _navigatedToReset = false; // évite la navigation multiple
 
   /// Navigate to the home screen after a successful sign-in.
   void _navigateHome() =>
@@ -59,65 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
     Logger('LoginScreen').warning('Auth error', error);
   }
 
-  /// Configure deep-link handling (password-reset flow).
-  void _configDeepLink() {
-    final links = AppLinks();
-
-    _linksSub = links.uriLinkStream.listen((Uri? uri) async {
-      if (!mounted || uri == null || uri.host != 'login-callback') return;
-
-      // Debounce pour éviter 2 appels en rafale (Android activity resume, etc.)
-      _deepLinkDebounce?.cancel();
-      _deepLinkDebounce = Timer(const Duration(milliseconds: 250), () async {
-        if (_handledDeepLink) return;
-        _handledDeepLink = true;
-
-        try {
-          // Consomme le flow state UNE fois
-          await supabase.auth.getSessionFromUrl(uri);
-          // Ne pas naviguer ici : on attend l’event passwordRecovery
-        } on AuthException catch (e, s) {
-          final msg = e.message.toLowerCase();
-
-          // ➜ Cas “bruyant mais OK” : 500 ‘Database error granting user’
-          final isGrantingUser500 = e.statusCode == "500" &&
-              msg.contains('database error granting user');
-
-          // ➜ Cas « déjà consommé »
-          final alreadyConsumed =
-              msg.contains('flow state') || e.statusCode == "404";
-
-          if (isGrantingUser500 || alreadyConsumed) {
-            Logger('LoginScreen').fine('Deep-link secondaire ignoré: $e');
-            // On relâche le verrou pour autoriser une future tentative si besoin
-            _handledDeepLink = false;
-            return;
-          }
-
-          Logger('LoginScreen').warning('Deep-link error', e, s);
-          _handledDeepLink = false;
-        } catch (e, s) {
-          Logger('LoginScreen').warning('Deep-link error', e, s);
-          _handledDeepLink = false;
-        }
-      });
-    });
-  }
-
-  /// Écoute les changements d’état auth (dont passwordRecovery).
-  void _listenAuthEvents() {
-    supabase.auth.onAuthStateChange.listen((data) {
-      final event = data.event;
-      if (!mounted) return;
-
-      if (event == AuthChangeEvent.passwordRecovery && !_navigatedToReset) {
-        _navigatedToReset = true;
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const ResetPasswordScreen()),
-        );
-      }
-    });
-  }
 
   UserGenderEntity parseGender(String? v) {
     switch ((v ?? '').toLowerCase()) {
@@ -341,14 +272,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _configDeepLink();
-    _listenAuthEvents();
   }
 
   @override
   void dispose() {
-    _deepLinkDebounce?.cancel();
-    _linksSub?.cancel();
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
     super.dispose();

@@ -644,19 +644,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "recipeLabel": MessageLookupByLibrary.simpleMessage("Tarif"),
         "reportErrorDialogText": MessageLookupByLibrary.simpleMessage(
             "Geliştiriciye bir hata bildirmek istiyor musunuz?"),
-        "resetPasswordButton":
             MessageLookupByLibrary.simpleMessage("Şifreyi değiştir"),
-        "resetPasswordChanged": MessageLookupByLibrary.simpleMessage(
             "Şifre değiştirildi! Artık yeni şifrenle giriş yapabilirsin."),
-        "resetPasswordConfirmLabel":
             MessageLookupByLibrary.simpleMessage("Şifreyi onayla"),
-        "resetPasswordNewLabel":
             MessageLookupByLibrary.simpleMessage("Yeni şifre"),
-        "resetPasswordNoMatch":
             MessageLookupByLibrary.simpleMessage("Şifreler eşleşmiyor"),
-        "resetPasswordTips": MessageLookupByLibrary.simpleMessage(
             "• En az 8 karakter kullan\n• Rakam ve özel karakterler ekle\n• Büyük ve küçük harf kullan"),
-        "resetPasswordTitle":
             MessageLookupByLibrary.simpleMessage("Yeni şifre"),
         "retryLabel": MessageLookupByLibrary.simpleMessage("Tekrar Dene"),
         "roleCoachLabel": MessageLookupByLibrary.simpleMessage("Antrenör"),

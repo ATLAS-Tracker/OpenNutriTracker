@@ -12,5 +12,4 @@ class NavigationOptions {
   static const createMealRoute = 'createMeal';
   static const recipeRoute = "recipe";
   static const loginRoute = "login";
-  static const resetPasswordRoute = "resetPassword";
 }

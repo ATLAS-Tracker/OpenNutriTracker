@@ -654,19 +654,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "recipeLabel": MessageLookupByLibrary.simpleMessage("Recipe"),
         "reportErrorDialogText": MessageLookupByLibrary.simpleMessage(
             "Do you want to report an error to the developer?"),
-        "resetPasswordButton":
             MessageLookupByLibrary.simpleMessage("Change password"),
-        "resetPasswordChanged": MessageLookupByLibrary.simpleMessage(
             "Password changed! You can now sign in with your new password."),
-        "resetPasswordConfirmLabel":
             MessageLookupByLibrary.simpleMessage("Confirm password"),
-        "resetPasswordNewLabel":
             MessageLookupByLibrary.simpleMessage("New password"),
-        "resetPasswordNoMatch":
             MessageLookupByLibrary.simpleMessage("Passwords do not match"),
-        "resetPasswordTips": MessageLookupByLibrary.simpleMessage(
             "• Use at least 8 characters\n• Mix numbers & special characters\n• Uppercase + lowercase"),
-        "resetPasswordTitle":
             MessageLookupByLibrary.simpleMessage("New password"),
         "retryLabel": MessageLookupByLibrary.simpleMessage("Retry"),
         "roleCoachLabel": MessageLookupByLibrary.simpleMessage("Coach"),

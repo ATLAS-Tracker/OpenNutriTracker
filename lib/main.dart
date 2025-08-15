@@ -24,7 +24,6 @@ import 'package:opennutritracker/features/create_meal/create_meal_screen.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/features/recipe/recipe_page.dart';
 import 'package:opennutritracker/features/auth/login_screen.dart';
-import 'package:opennutritracker/features/auth/reset_password_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -137,8 +136,6 @@ class AtlasTrackerApp extends StatelessWidget {
             const MealCreationScreen(),
         NavigationOptions.recipeRoute: (context) => const RecipePage(),
         NavigationOptions.loginRoute: (context) => const LoginScreen(),
-        NavigationOptions.resetPasswordRoute: (context) =>
-            ResetPasswordScreen(),
       },
     );
   }
