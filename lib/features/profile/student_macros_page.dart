@@ -117,6 +117,8 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
           final double calorieGoal = (data?['calorieGoal'] ?? 0).toDouble();
           final double caloriesTracked =
               (data?['caloriesTracked'] ?? 0).toDouble();
+          final double caloriesBurned =
+              (data?['caloriesBurned'] ?? 0).toDouble();
           final double carbsGoal = (data?['carbsGoal'] ?? 0).toDouble();
           final double carbsTracked = (data?['carbsTracked'] ?? 0).toDouble();
           final double fatGoal = (data?['fatGoal'] ?? 0).toDouble();
@@ -239,7 +241,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                               Icon(Icons.keyboard_arrow_down_outlined,
                                   color:
                                       Theme.of(context).colorScheme.onSurface),
-                              Text('0',
+                              Text('${caloriesBurned.toInt()}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleLarge
