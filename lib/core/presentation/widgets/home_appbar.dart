@@ -15,7 +15,7 @@ class HomeAppbar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _HomeAppbarState extends State<HomeAppbar> {
-  bool _hasToken = true;
+  bool _hasToken = false;
 
   @override
   void initState() {
@@ -85,7 +85,7 @@ class _HomeAppbarState extends State<HomeAppbar> {
             color: Theme.of(context)
                 .colorScheme
                 .onSurface
-                .withOpacity(_hasToken ? 1 : 0.5),
+                .withAlpha(_hasToken ? 255 : 128),
           ),
           tooltip: S.of(context).notificationsLabel,
           onPressed: _onNotificationPressed,
