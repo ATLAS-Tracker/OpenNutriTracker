@@ -73,6 +73,7 @@ class TrackedDayRepository {
         fatTracked: 0,
         proteinGoal: totalProteinGoal,
         proteinTracked: 0,
+        caloriesBurned: 0,
         updatedAt: DateTime.now().toUtc(),
       ),
     );
@@ -94,6 +95,18 @@ class TrackedDayRepository {
   ) async {
     if (await _trackedDayDataSource.hasTrackedDay(day)) {
       await _trackedDayDataSource.decreaseDayCaloriesTracked(day, addCalories);
+    }
+  }
+
+  Future<void> addDayCaloriesBurned(DateTime day, double calories) async {
+    if (await _trackedDayDataSource.hasTrackedDay(day)) {
+      await _trackedDayDataSource.addDayCaloriesBurned(day, calories);
+    }
+  }
+
+  Future<void> removeDayCaloriesBurned(DateTime day, double calories) async {
+    if (await _trackedDayDataSource.hasTrackedDay(day)) {
+      await _trackedDayDataSource.decreaseDayCaloriesBurned(day, calories);
     }
   }
 

@@ -52,7 +52,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     final macroResponse = await supabase
         .from('tracked_days')
         .select(
-          'day, calorieGoal, caloriesTracked, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked',
+          'day, calorieGoal, caloriesTracked, caloriesBurned, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked',
         )
         .eq('user_id', widget.studentId)
         .gte('day', startDate)
