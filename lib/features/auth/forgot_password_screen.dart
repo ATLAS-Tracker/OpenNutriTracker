@@ -83,15 +83,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 .textTheme
                                 .bodyMedium
                                 ?.copyWith(color: Colors.black87),
-                            children: [
-                              const TextSpan(
-                                text:
-                                    "Si le reset de mot de passe ne fonctionne pas :\n"
-                                    "- quitter l'application et recommencer la manipulation, ou\n"
-                                    "- faire la demande depuis le site : ",
+                          children: [
+                              TextSpan(
+                                text: S.of(context).forgotPasswordHelp,
                               ),
                               TextSpan(
-                                text: "website",
+                                text: S.of(context).websiteLabel,
                                 style: const TextStyle(
                                   decoration: TextDecoration.underline,
                                 ),
