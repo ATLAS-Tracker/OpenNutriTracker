@@ -46,7 +46,9 @@ class AddMacroGoalUsecase {
     await _macroGoalRepository.saveMacroGoal(newMacro);
 
     // 4. Update existing tracked days from startDate onward
-    final newCalorieGoal = (response['calorie_goal'] as num).toDouble();
+    final newCalorieGoal = (newMacro.newCarbsGoal * 4) +
+        (newMacro.newFatsGoal * 9) +
+        (newMacro.newProteinsGoal * 4);
     final existingDays = await _getTrackedDayUsecase.getTrackedDaysFrom(
       startDate,
     );
