@@ -54,6 +54,9 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
 
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(title: Text(S.of(context).setMacrosLabel)),
@@ -69,7 +72,9 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.chevron_left),
-                    onPressed: _goToPreviousDay,
+                    onPressed: _startDate.isAfter(todayDate)
+                        ? _goToPreviousDay
+                        : null,
                   ),
                   InkWell(
                     onTap: _selectDate,
@@ -155,8 +160,12 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
   }
 
   void _goToPreviousDay() {
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
     setState(() {
-      _startDate = _startDate.subtract(const Duration(days: 1));
+      if (_startDate.isAfter(todayDate)) {
+        _startDate = _startDate.subtract(const Duration(days: 1));
+      }
     });
   }
 
@@ -167,10 +176,12 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
   }
 
   Future<void> _selectDate() async {
+    final now = DateTime.now();
+    final todayDate = DateTime(now.year, now.month, now.day);
     final picked = await showDatePicker(
       context: context,
-      initialDate: _startDate,
-      firstDate: DateTime(2000),
+      initialDate: _startDate.isBefore(todayDate) ? todayDate : _startDate,
+      firstDate: todayDate,
       lastDate: DateTime(2100),
     );
     if (picked != null) {
