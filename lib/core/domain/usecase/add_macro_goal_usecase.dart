@@ -31,12 +31,22 @@ class AddMacroGoalUsecase {
     final oldEntity = await _macroGoalRepository.getMacroGoal();
 
     final startDate = DateTime.parse(response['start_date']);
+    final now = DateTime.now();
+
     final newMacro = MacroGoalEntity(
       id: userId,
       date: startDate,
-      oldCarbsGoal: oldEntity?.newCarbsGoal ?? 0,
-      oldFatsGoal: oldEntity?.newFatsGoal ?? 0,
-      oldProteinsGoal: oldEntity?.newProteinsGoal ?? 0,
+      oldCarbsGoal: now.isBefore(startDate)
+          ? (oldEntity?.oldCarbsGoal ??
+              (response['carb_goal'] as num).toDouble())
+          : (response['carb_goal'] as num).toDouble(),
+      oldFatsGoal: now.isBefore(startDate)
+          ? (oldEntity?.oldFatsGoal ?? (response['fat_goal'] as num).toDouble())
+          : (response['fat_goal'] as num).toDouble(),
+      oldProteinsGoal: now.isBefore(startDate)
+          ? (oldEntity?.oldProteinsGoal ??
+              (response['protein_goal'] as num).toDouble())
+          : (response['protein_goal'] as num).toDouble(),
       newCarbsGoal: (response['carb_goal'] as num).toDouble(),
       newFatsGoal: (response['fat_goal'] as num).toDouble(),
       newProteinsGoal: (response['protein_goal'] as num).toDouble(),
