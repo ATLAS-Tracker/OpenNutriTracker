@@ -47,11 +47,13 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
   void initState() {
     super.initState();
     _startDate = _dateOnly(_startDate);
-    _carbsController =
-        TextEditingController(text: widget.initialCarbs.toString());
+    _carbsController = TextEditingController(
+      text: widget.initialCarbs.toString(),
+    );
     _fatController = TextEditingController(text: widget.initialFat.toString());
-    _proteinController =
-        TextEditingController(text: widget.initialProtein.toString());
+    _proteinController = TextEditingController(
+      text: widget.initialProtein.toString(),
+    );
     _calculateCalories();
 
     _carbsController.addListener(_calculateCalories);
@@ -162,8 +164,8 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
                 child: Text(
                   '${S.of(context).caloriesLabel}: $_calculatedCalories kcal',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
 
@@ -203,8 +205,9 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
 
   Future<void> _selectDate() async {
     final todayDate = _today();
-    final initial =
-        _dateOnly(_startDate).isBefore(todayDate) ? todayDate : _startDate;
+    final initial = _dateOnly(_startDate).isBefore(todayDate)
+        ? todayDate
+        : _startDate;
 
     final picked = await showDatePicker(
       context: context,
@@ -252,7 +255,13 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
           .eq('user_id', widget.studentId);
 
       if (!mounted) return;
-      Navigator.pop(context);
+      Navigator.pop(context, {
+        'startDate': startDate,
+        'carbsGoal': int.parse(_carbsController.text),
+        'fatGoal': int.parse(_fatController.text),
+        'proteinGoal': int.parse(_proteinController.text),
+        'calorieGoal': _calculatedCalories,
+      });
     } catch (exception, stacktrace) {
       log.warning("Erreur lors de l'enregistrement des objectifs macro.");
       FirebaseCrashlytics.instance.recordError(exception, stacktrace);
