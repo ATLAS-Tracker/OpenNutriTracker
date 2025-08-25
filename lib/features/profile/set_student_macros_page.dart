@@ -222,9 +222,13 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
   Future<void> _saveMacros() async {
     try {
       final supabase = locator<SupabaseClient>();
+
+      final startDate = DateFormat('yyyy-MM-dd').format(_startDate);
+
+      // d’abord tu enregistres les objectifs globaux
       final json = {
         'user_id': widget.studentId,
-        'start_date': DateFormat('yyyy-MM-dd').format(_startDate),
+        'start_date': startDate,
         'calorie_goal': _calculatedCalories,
         'carb_goal': int.parse(_carbsController.text),
         'fat_goal': int.parse(_fatController.text),
@@ -234,6 +238,18 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
       await supabase
           .from('coach_macro_goals')
           .upsert(json, onConflict: 'user_id');
+
+      // ensuite tu mets à jour les tracked_days de cet élève après startDate
+      await supabase
+          .from('tracked_days')
+          .update({
+            'calorieGoal': _calculatedCalories,
+            'carbsGoal': int.parse(_carbsController.text),
+            'fatGoal': int.parse(_fatController.text),
+            'proteinGoal': int.parse(_proteinController.text),
+          })
+          .gte('day', startDate)
+          .eq('user_id', widget.studentId);
 
       if (!mounted) return;
       Navigator.pop(context);

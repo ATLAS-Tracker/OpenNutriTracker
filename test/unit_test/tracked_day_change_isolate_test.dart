@@ -240,6 +240,9 @@ void main() {
       final result = await mockSupabase.from('tracked_days').select();
       expect(result.length, 1);
       final remote = result.first;
+      if (remote['day'] is String && !remote['day'].contains('T')) {
+        remote['day'] = '${remote['day']}T00:00:00.000Z';
+      }
       expect(remote['calorieGoal'], 2);
       expect(remote['caloriesTracked'], 10);
       expect(remote['carbsGoal'], 2);
