@@ -236,7 +236,7 @@ class _SetStudentMacrosPageState extends State<SetStudentMacrosPage> {
           .upsert(json, onConflict: 'user_id');
 
       if (!mounted) return;
-      Navigator.pop(context);
+      Navigator.pop(context, json);
     } catch (exception, stacktrace) {
       log.warning("Erreur lors de l'enregistrement des objectifs macro.");
       FirebaseCrashlytics.instance.recordError(exception, stacktrace);

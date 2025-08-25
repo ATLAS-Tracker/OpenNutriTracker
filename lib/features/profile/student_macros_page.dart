@@ -461,8 +461,8 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     }
   }
 
-  void _openSetMacrosPage() {
-    Navigator.push(
+  void _openSetMacrosPage() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
       context,
       MaterialPageRoute(
         builder: (_) => SetStudentMacrosPage(
@@ -472,6 +472,32 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
             initialProtein: proteinGoal.toInt()),
       ),
     );
+    if (!mounted || result == null) return;
+
+    await _updateTrackedDays(result);
+
+    setState(() {
+      calorieGoal = (result['calorie_goal'] as num).toDouble();
+      carbsGoal = (result['carb_goal'] as num).toDouble();
+      fatGoal = (result['fat_goal'] as num).toDouble();
+      proteinGoal = (result['protein_goal'] as num).toDouble();
+      _macrosFuture = _fetchMacros();
+    });
+  }
+
+  Future<void> _updateTrackedDays(Map<String, dynamic> newGoal) async {
+    final supabase = locator<SupabaseClient>();
+
+    await supabase
+        .from('tracked_days')
+        .update({
+          'calorieGoal': newGoal['calorie_goal'],
+          'carbsGoal': newGoal['carb_goal'],
+          'fatGoal': newGoal['fat_goal'],
+          'proteinGoal': newGoal['protein_goal'],
+        })
+        .eq('user_id', widget.studentId)
+        .gte('day', newGoal['start_date']);
   }
 
   List<_MacroPoint> _getMacroPoints(MacroType type) {
