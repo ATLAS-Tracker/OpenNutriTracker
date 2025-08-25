@@ -46,7 +46,10 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
   @override
   void initState() {
     super.initState();
-    _macrosFuture = _fetchMacros();
+    _macrosFuture = _fetchMacros().then((data) {
+      _updateGoalsFromData(data);
+      return data;
+    });
   }
 
   Future<Map<String, Map<String, dynamic>>> _fetchMacros() async {
@@ -67,34 +70,6 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
         .gte('day', startDate)
         .lte('day', endDate)
         .order('day');
-
-    caloriesTracked = macroResponse.isNotEmpty
-        ? (macroResponse.last['caloriesTracked'] as num?)?.toDouble() ?? 0
-        : 0;
-    caloriesBurned = macroResponse.isNotEmpty
-        ? (macroResponse.last['caloriesBurned'] as num?)?.toDouble() ?? 0
-        : 0;
-    calorieGoal = macroResponse.isNotEmpty
-        ? (macroResponse.last['calorieGoal'] as num?)?.toDouble() ?? 0
-        : 0;
-    carbsTracked = macroResponse.isNotEmpty
-        ? (macroResponse.last['carbsTracked'] as num?)?.toDouble() ?? 0
-        : 0;
-    carbsGoal = macroResponse.isNotEmpty
-        ? (macroResponse.last['carbsGoal'] as num?)?.toDouble() ?? 0
-        : 0;
-    fatTracked = macroResponse.isNotEmpty
-        ? (macroResponse.last['fatTracked'] as num?)?.toDouble() ?? 0
-        : 0;
-    fatGoal = macroResponse.isNotEmpty
-        ? (macroResponse.last['fatGoal'] as num?)?.toDouble() ?? 0
-        : 0;
-    proteinTracked = macroResponse.isNotEmpty
-        ? (macroResponse.last['proteinTracked'] as num?)?.toDouble() ?? 0
-        : 0;
-    proteinGoal = macroResponse.isNotEmpty
-        ? (macroResponse.last['proteinGoal'] as num?)?.toDouble() ?? 0
-        : 0;
 
     // 2. Récupère les poids
     final weightResponse = await supabase
@@ -118,6 +93,43 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     }
 
     return result;
+  }
+
+  void _updateGoalsFromData(Map<String, Map<String, dynamic>> data) {
+    if (data.isEmpty) {
+      setState(() {
+        caloriesTracked = 0;
+        caloriesBurned = 0;
+        calorieGoal = 0;
+        carbsTracked = 0;
+        carbsGoal = 0;
+        fatTracked = 0;
+        fatGoal = 0;
+        proteinTracked = 0;
+        proteinGoal = 0;
+      });
+      return;
+    }
+
+    final last = data.values.last;
+    setState(() {
+      caloriesTracked =
+          (last['caloriesTracked'] as num?)?.toDouble() ?? 0;
+      caloriesBurned =
+          (last['caloriesBurned'] as num?)?.toDouble() ?? 0;
+      calorieGoal =
+          (last['calorieGoal'] as num?)?.toDouble() ?? 0;
+      carbsTracked =
+          (last['carbsTracked'] as num?)?.toDouble() ?? 0;
+      carbsGoal =
+          (last['carbsGoal'] as num?)?.toDouble() ?? 0;
+      fatTracked = (last['fatTracked'] as num?)?.toDouble() ?? 0;
+      fatGoal = (last['fatGoal'] as num?)?.toDouble() ?? 0;
+      proteinTracked =
+          (last['proteinTracked'] as num?)?.toDouble() ?? 0;
+      proteinGoal =
+          (last['proteinGoal'] as num?)?.toDouble() ?? 0;
+    });
   }
 
   @override
@@ -491,8 +503,8 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
       carbsGoal = (result['carb_goal'] as num).toDouble();
       fatGoal = (result['fat_goal'] as num).toDouble();
       proteinGoal = (result['protein_goal'] as num).toDouble();
-      _macrosFuture = _fetchMacros();
     });
+    _macrosFuture = _fetchMacros();
   }
 
   Future<void> _updateTrackedDays(Map<String, dynamic> newGoal) async {
