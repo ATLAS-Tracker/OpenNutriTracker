@@ -474,7 +474,17 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     );
     if (!mounted || result == null) return;
 
-    await _updateTrackedDays(result);
+    try {
+      await _updateTrackedDays(result);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to update macro goals."),
+        ),
+      );
+      return;
+    }
 
     setState(() {
       calorieGoal = (result['calorie_goal'] as num).toDouble();

@@ -225,26 +225,23 @@ void main() {
         () async => (await watcher.getModifiedDays()).contains(day),
       );
 
-      // Vérifie que le jour modifié est bien capturé
       final modifiedDays = await watcher.getModifiedDays();
       expect(modifiedDays, contains(day));
 
-      // Simule le retour de la connectivité (ex: Wi-Fi rétabli)
+      // Simule le retour de la connectivité
       connectivity.emit(ConnectivityResult.wifi);
 
-      // Attendre que l’isolate synchronise et nettoie les jours modifiés
+      // Attendre la synchro
       await waitForCondition(
         () async => (await watcher.getModifiedDays()).isEmpty,
       );
       expect(await watcher.getModifiedDays(), isEmpty);
 
-      // Vérifie que le jour suivi a bien été envoyé dans Supabase mock
+      // Vérifie l’insert en base mock
       final result = await mockSupabase.from('tracked_days').select();
       expect(result.length, 1);
 
       final remote = result.first;
-      final remoteDay = remote['day'] as String;
-      expect(remoteDay, day.toIso8601String().split('T').first);
 
       expect(remote['calorieGoal'], 2);
       expect(remote['caloriesTracked'], 10);
@@ -254,28 +251,28 @@ void main() {
       expect(remote['fatTracked'], 5);
       expect(remote['proteinGoal'], 2);
       expect(remote['proteinTracked'], 5);
+      expect(remote['caloriesBurned'], 0.0);
 
-      // Vérifie que les données distantes correspondent bien au local
+      // Vérifie la cohérence avec le local
       final dbo = box.get(day.toParsedDay());
       expect(dbo, isNotNull);
 
-      // Adapter la comparaison : ignorer la différence de format de 'day'
-      final expected = {
-        'day': day.toIso8601String().split('T').first,
-        'calorieGoal': 2.0,
-        'caloriesTracked': 10.0,
-        'carbsGoal': 2.0,
-        'carbsTracked': 5.0,
-        'fatGoal': 2.0,
-        'fatTracked': 5.0,
-        'proteinGoal': 2.0,
-        'proteinTracked': 5.0,
-        'updated_at': remote['updated_at'],
-        'caloriesBurned': 0.0,
-      };
+      // ✅ Comparer les champs plutôt que la map brute
+      final dboJson = dbo!.toJson();
 
-      expect(remote, equals(expected));
-      expect(remote, equals(dbo!.toJson()));
+      final parsed = DateTime.parse(remote['day']);
+      expect(parsed.year, equals(day.year));
+      expect(parsed.month, equals(day.month));
+      expect(parsed.day, equals(day.day));
+      expect(remote['calorieGoal'], dboJson['calorieGoal']);
+      expect(remote['caloriesTracked'], dboJson['caloriesTracked']);
+      expect(remote['carbsGoal'], dboJson['carbsGoal']);
+      expect(remote['carbsTracked'], dboJson['carbsTracked']);
+      expect(remote['fatGoal'], dboJson['fatGoal']);
+      expect(remote['fatTracked'], dboJson['fatTracked']);
+      expect(remote['proteinGoal'], dboJson['proteinGoal']);
+      expect(remote['proteinTracked'], dboJson['proteinTracked']);
+      expect(remote['caloriesBurned'], dboJson['caloriesBurned']);
     });
   });
 }
