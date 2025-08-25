@@ -64,8 +64,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
           'day, calorieGoal, caloriesTracked, caloriesBurned, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked',
         )
         .eq('user_id', widget.studentId)
-        .gte('day', startDate)
-        .lte('day', endDate)
+        .eq('day', '2025-08-25')
         .order('day');
 
     caloriesTracked = macroResponse.isNotEmpty
