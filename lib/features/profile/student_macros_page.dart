@@ -492,18 +492,27 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
 
     if (result != null) {
       setState(() {
-        carbsGoal = (result['carbsGoal'] as num).toDouble();
-        fatGoal = (result['fatGoal'] as num).toDouble();
-        proteinGoal = (result['proteinGoal'] as num).toDouble();
-        calorieGoal = (result['calorieGoal'] as num).toDouble();
-
         final startDate = result['startDate'] as String?;
+
+        final double newCarbs = (result['carbsGoal'] as num).toDouble();
+        final double newFat = (result['fatGoal'] as num).toDouble();
+        final double newProtein = (result['proteinGoal'] as num).toDouble();
+        final double newCalories = (result['calorieGoal'] as num).toDouble();
+
         if (startDate != null) {
           _allMacros.putIfAbsent(startDate, () => {});
-          _allMacros[startDate]!['carbsGoal'] = carbsGoal;
-          _allMacros[startDate]!['fatGoal'] = fatGoal;
-          _allMacros[startDate]!['proteinGoal'] = proteinGoal;
-          _allMacros[startDate]!['calorieGoal'] = calorieGoal;
+          _allMacros[startDate]!['carbsGoal'] = newCarbs;
+          _allMacros[startDate]!['fatGoal'] = newFat;
+          _allMacros[startDate]!['proteinGoal'] = newProtein;
+          _allMacros[startDate]!['calorieGoal'] = newCalories;
+
+          final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+          if (startDate == today) {
+            carbsGoal = newCarbs;
+            fatGoal = newFat;
+            proteinGoal = newProtein;
+            calorieGoal = newCalories;
+          }
         }
       });
     }
