@@ -34,9 +34,12 @@ class AddMacroGoalUsecase {
     final newMacro = MacroGoalEntity(
       id: userId,
       date: startDate,
-      oldCarbsGoal: oldEntity?.newCarbsGoal ?? 0,
-      oldFatsGoal: oldEntity?.newFatsGoal ?? 0,
-      oldProteinsGoal: oldEntity?.newProteinsGoal ?? 0,
+      oldCarbsGoal:
+          oldEntity?.newCarbsGoal ?? (response['carb_goal'] as num).toDouble(),
+      oldFatsGoal:
+          oldEntity?.newFatsGoal ?? (response['fat_goal'] as num).toDouble(),
+      oldProteinsGoal: oldEntity?.newProteinsGoal ??
+          (response['protein_goal'] as num).toDouble(),
       newCarbsGoal: (response['carb_goal'] as num).toDouble(),
       newFatsGoal: (response['fat_goal'] as num).toDouble(),
       newProteinsGoal: (response['protein_goal'] as num).toDouble(),
