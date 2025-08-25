@@ -53,8 +53,9 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     final supabase = locator<SupabaseClient>();
 
     final now = DateTime.now();
-    final startDate = DateFormat('yyyy-MM-dd')
-        .format(now.subtract(const Duration(days: 365)));
+    final startDate = DateFormat(
+      'yyyy-MM-dd',
+    ).format(now.subtract(const Duration(days: 365)));
     final endDate = DateFormat('yyyy-MM-dd').format(now);
 
     // 1. Récupère les macros
@@ -122,9 +123,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.studentName),
-      ),
+      appBar: AppBar(title: Text(widget.studentName)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openSetMacrosPage,
         icon: const Icon(Icons.edit_outlined),
@@ -156,221 +155,238 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
               : (caloriesTracked / calorieGoal).clamp(0.0, 1.0);
 
           return SafeArea(
-              child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Card(
-              elevation: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    // Navigation toujours visible
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.chevron_left),
-                          onPressed: _goToPreviousDay,
-                        ),
-                        InkWell(
-                          onTap: _selectDate,
-                          child: Text(
-                            DateFormat('yyyy-MM-dd').format(_selectedDate),
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.chevron_right),
-                          onPressed: _goToNextDay,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Si pas de données pour ce jour
-                    if (data == null)
-                      Text(S.of(context).noDataToday)
-                    else ...[
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Card(
+                elevation: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      // Navigation toujours visible
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Column(
-                            children: [
-                              Icon(Icons.keyboard_arrow_up_outlined,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface),
-                              Text('${caloriesTracked.toInt()}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface)),
-                              Text(S.of(context).suppliedLabel,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface)),
-                            ],
+                          IconButton(
+                            icon: const Icon(Icons.chevron_left),
+                            onPressed: _goToPreviousDay,
                           ),
-                          CircularPercentIndicator(
-                            radius: 90.0,
-                            lineWidth: 13.0,
-                            animation: true,
-                            percent: gaugeValue,
-                            arcType: ArcType.FULL,
-                            progressColor:
-                                Theme.of(context).colorScheme.primary,
-                            arcBackgroundColor: Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withAlpha(50),
-                            center: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                          InkWell(
+                            onTap: _selectDate,
+                            child: Text(
+                              DateFormat('yyyy-MM-dd').format(_selectedDate),
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.chevron_right),
+                            onPressed: _goToNextDay,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Si pas de données pour ce jour
+                      if (data == null)
+                        Text(S.of(context).noDataToday)
+                      else ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Column(
                               children: [
-                                AnimatedFlipCounter(
-                                  duration: const Duration(milliseconds: 1000),
-                                  value: kcalLeft.clamp(0, calorieGoal).toInt(),
-                                  textStyle: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium
-                                      ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface,
-                                          letterSpacing: -1),
+                                Icon(
+                                  Icons.keyboard_arrow_up_outlined,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                                 Text(
-                                  S.of(context).kcalLeftLabel,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
+                                  '${caloriesTracked.toInt()}',
+                                  style: Theme.of(context).textTheme.titleLarge
                                       ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface),
-                                )
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                                      ),
+                                ),
+                                Text(
+                                  S.of(context).suppliedLabel,
+                                  style: Theme.of(context).textTheme.titleSmall
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                                      ),
+                                ),
                               ],
                             ),
-                            circularStrokeCap: CircularStrokeCap.round,
+                            CircularPercentIndicator(
+                              radius: 90.0,
+                              lineWidth: 13.0,
+                              animation: true,
+                              percent: gaugeValue,
+                              arcType: ArcType.FULL,
+                              progressColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
+                              arcBackgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.primary.withAlpha(50),
+                              center: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  AnimatedFlipCounter(
+                                    duration: const Duration(
+                                      milliseconds: 1000,
+                                    ),
+                                    value: kcalLeft
+                                        .clamp(0, calorieGoal)
+                                        .toInt(),
+                                    textStyle: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                          letterSpacing: -1,
+                                        ),
+                                  ),
+                                  Text(
+                                    S.of(context).kcalLeftLabel,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                              circularStrokeCap: CircularStrokeCap.round,
+                            ),
+                            Column(
+                              children: [
+                                Icon(
+                                  Icons.keyboard_arrow_down_outlined,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
+                                Text(
+                                  '${caloriesBurned.toInt()}',
+                                  style: Theme.of(context).textTheme.titleLarge
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                                      ),
+                                ),
+                                Text(
+                                  S.of(context).burnedLabel,
+                                  style: Theme.of(context).textTheme.titleSmall
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        MacroNutrientsView(
+                          totalCarbsIntake: carbsTracked,
+                          totalFatsIntake: fatTracked,
+                          totalProteinsIntake: proteinTracked,
+                          totalCarbsGoal: carbsGoal,
+                          totalFatsGoal: fatGoal,
+                          totalProteinsGoal: proteinGoal,
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          DropdownButton<MacroType>(
+                            value: _selectedMacro,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _selectedMacro = value;
+                                });
+                              }
+                            },
+                            items: [
+                              DropdownMenuItem(
+                                value: MacroType.calories,
+                                child: Text(S.of(context).caloriesLabel),
+                              ),
+                              DropdownMenuItem(
+                                value: MacroType.carbs,
+                                child: Text(S.of(context).carbsLabel),
+                              ),
+                              DropdownMenuItem(
+                                value: MacroType.fat,
+                                child: Text(S.of(context).fatLabel),
+                              ),
+                              DropdownMenuItem(
+                                value: MacroType.protein,
+                                child: Text(S.of(context).proteinLabel),
+                              ),
+                              DropdownMenuItem(
+                                value: MacroType.weight,
+                                child: Text(
+                                  S.of(context).weightLabel,
+                                ), // ou "Poids" si pas encore traduit
+                              ),
+                            ],
                           ),
-                          Column(
-                            children: [
-                              Icon(Icons.keyboard_arrow_down_outlined,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface),
-                              Text('${caloriesBurned.toInt()}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface)),
-                              Text(S.of(context).burnedLabel,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface)),
+                          DropdownButton<TimeRange>(
+                            value: _selectedRange,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _selectedRange = value;
+                                });
+                              }
+                            },
+                            items: const [
+                              DropdownMenuItem(
+                                value: TimeRange.week,
+                                child: Text('1W'),
+                              ),
+                              DropdownMenuItem(
+                                value: TimeRange.month,
+                                child: Text('1M'),
+                              ),
+                              DropdownMenuItem(
+                                value: TimeRange.threeMonths,
+                                child: Text('3M'),
+                              ),
+                              DropdownMenuItem(
+                                value: TimeRange.sixMonths,
+                                child: Text('6M'),
+                              ),
+                              DropdownMenuItem(
+                                value: TimeRange.year,
+                                child: Text('1Y'),
+                              ),
                             ],
                           ),
                         ],
                       ),
-                      MacroNutrientsView(
-                        totalCarbsIntake: carbsTracked,
-                        totalFatsIntake: fatTracked,
-                        totalProteinsIntake: proteinTracked,
-                        totalCarbsGoal: carbsGoal,
-                        totalFatsGoal: fatGoal,
-                        totalProteinsGoal: proteinGoal,
-                      ),
+                      buildChart(),
                     ],
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        DropdownButton<MacroType>(
-                          value: _selectedMacro,
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedMacro = value;
-                              });
-                            }
-                          },
-                          items: [
-                            DropdownMenuItem(
-                              value: MacroType.calories,
-                              child: Text(S.of(context).caloriesLabel),
-                            ),
-                            DropdownMenuItem(
-                              value: MacroType.carbs,
-                              child: Text(S.of(context).carbsLabel),
-                            ),
-                            DropdownMenuItem(
-                              value: MacroType.fat,
-                              child: Text(S.of(context).fatLabel),
-                            ),
-                            DropdownMenuItem(
-                              value: MacroType.protein,
-                              child: Text(S.of(context).proteinLabel),
-                            ),
-                            DropdownMenuItem(
-                              value: MacroType.weight,
-                              child: Text(S
-                                  .of(context)
-                                  .weightLabel), // ou "Poids" si pas encore traduit
-                            ),
-                          ],
-                        ),
-                        DropdownButton<TimeRange>(
-                          value: _selectedRange,
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedRange = value;
-                              });
-                            }
-                          },
-                          items: const [
-                            DropdownMenuItem(
-                              value: TimeRange.week,
-                              child: Text('1W'),
-                            ),
-                            DropdownMenuItem(
-                              value: TimeRange.month,
-                              child: Text('1M'),
-                            ),
-                            DropdownMenuItem(
-                              value: TimeRange.threeMonths,
-                              child: Text('3M'),
-                            ),
-                            DropdownMenuItem(
-                              value: TimeRange.sixMonths,
-                              child: Text('6M'),
-                            ),
-                            DropdownMenuItem(
-                              value: TimeRange.year,
-                              child: Text('1Y'),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    buildChart(),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ));
+          );
         },
       ),
     );
@@ -418,7 +434,8 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
   }
 
   ({DateTimeIntervalType type, int interval}) _getAxisIntervalConfig(
-      TimeRange range) {
+    TimeRange range,
+  ) {
     switch (range) {
       case TimeRange.week:
         return (type: DateTimeIntervalType.days, interval: 1);
@@ -460,17 +477,45 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     }
   }
 
-  void _openSetMacrosPage() {
-    Navigator.push(
+  Future<void> _openSetMacrosPage() async {
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => SetStudentMacrosPage(
-            studentId: widget.studentId,
-            initialCarbs: carbsGoal.toInt(),
-            initialFat: fatGoal.toInt(),
-            initialProtein: proteinGoal.toInt()),
+          studentId: widget.studentId,
+          initialCarbs: carbsGoal.toInt(),
+          initialFat: fatGoal.toInt(),
+          initialProtein: proteinGoal.toInt(),
+        ),
       ),
     );
+
+    if (result != null) {
+      setState(() {
+        final startDate = result['startDate'] as String?;
+
+        final double newCarbs = (result['carbsGoal'] as num).toDouble();
+        final double newFat = (result['fatGoal'] as num).toDouble();
+        final double newProtein = (result['proteinGoal'] as num).toDouble();
+        final double newCalories = (result['calorieGoal'] as num).toDouble();
+
+        if (startDate != null) {
+          _allMacros.putIfAbsent(startDate, () => {});
+          _allMacros[startDate]!['carbsGoal'] = newCarbs;
+          _allMacros[startDate]!['fatGoal'] = newFat;
+          _allMacros[startDate]!['proteinGoal'] = newProtein;
+          _allMacros[startDate]!['calorieGoal'] = newCalories;
+
+          final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+          if (startDate == today) {
+            carbsGoal = newCarbs;
+            fatGoal = newFat;
+            proteinGoal = newProtein;
+            calorieGoal = newCalories;
+          }
+        }
+      });
+    }
   }
 
   List<_MacroPoint> _getMacroPoints(MacroType type) {
@@ -478,11 +523,16 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     final start = _rangeStart(now);
     final List<_MacroPoint> points = [];
 
-    for (var day = start;
-        !day.isAfter(now);
-        day = day.add(const Duration(days: 1))) {
-      final normalizedDay =
-          DateTime(day.year, day.month, day.day); // 👈 00:00:00
+    for (
+      var day = start;
+      !day.isAfter(now);
+      day = day.add(const Duration(days: 1))
+    ) {
+      final normalizedDay = DateTime(
+        day.year,
+        day.month,
+        day.day,
+      ); // 👈 00:00:00
       final key = DateFormat('yyyy-MM-dd').format(normalizedDay);
       final data = _allMacros[key];
 
