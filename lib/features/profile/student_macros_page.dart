@@ -366,6 +366,7 @@ class _StudentMacrosView extends StatelessWidget {
   }
 
   Future<void> _selectDate(BuildContext context, DateTime initial) async {
+    final bloc = context.read<StudentMacrosBloc>();
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initial,
@@ -373,7 +374,7 @@ class _StudentMacrosView extends StatelessWidget {
       lastDate: DateTime.now(),
     );
     if (picked != null) {
-      context.read<StudentMacrosBloc>().add(ChangeDateEvent(picked));
+      bloc.add(ChangeDateEvent(picked));
     }
   }
 
