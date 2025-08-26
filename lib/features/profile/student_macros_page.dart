@@ -33,15 +33,6 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
   DateTime _selectedDate = DateTime.now();
   MacroType _selectedMacro = MacroType.calories;
   TimeRange _selectedRange = TimeRange.month;
-  double caloriesTracked = 0;
-  double caloriesBurned = 0;
-  double calorieGoal = 0;
-  double carbsGoal = 0;
-  double carbsTracked = 0;
-  double fatGoal = 0;
-  double fatTracked = 0;
-  double proteinGoal = 0;
-  double proteinTracked = 0;
 
   @override
   void initState() {
@@ -68,34 +59,6 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
         .gte('day', startDate)
         .lte('day', endDate)
         .order('day');
-
-    caloriesTracked = macroResponse.isNotEmpty
-        ? (macroResponse.last['caloriesTracked'] as num?)?.toDouble() ?? 0
-        : 0;
-    caloriesBurned = macroResponse.isNotEmpty
-        ? (macroResponse.last['caloriesBurned'] as num?)?.toDouble() ?? 0
-        : 0;
-    calorieGoal = macroResponse.isNotEmpty
-        ? (macroResponse.last['calorieGoal'] as num?)?.toDouble() ?? 0
-        : 0;
-    carbsTracked = macroResponse.isNotEmpty
-        ? (macroResponse.last['carbsTracked'] as num?)?.toDouble() ?? 0
-        : 0;
-    carbsGoal = macroResponse.isNotEmpty
-        ? (macroResponse.last['carbsGoal'] as num?)?.toDouble() ?? 0
-        : 0;
-    fatTracked = macroResponse.isNotEmpty
-        ? (macroResponse.last['fatTracked'] as num?)?.toDouble() ?? 0
-        : 0;
-    fatGoal = macroResponse.isNotEmpty
-        ? (macroResponse.last['fatGoal'] as num?)?.toDouble() ?? 0
-        : 0;
-    proteinTracked = macroResponse.isNotEmpty
-        ? (macroResponse.last['proteinTracked'] as num?)?.toDouble() ?? 0
-        : 0;
-    proteinGoal = macroResponse.isNotEmpty
-        ? (macroResponse.last['proteinGoal'] as num?)?.toDouble() ?? 0
-        : 0;
 
     // 2. Récupère les poids
     final weightResponse = await supabase
@@ -149,6 +112,23 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
 
           final dayKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
           final data = _allMacros[dayKey];
+          final double calorieGoal =
+              (data?['calorieGoal'] as num?)?.toDouble() ?? 0;
+          final double caloriesTracked =
+              (data?['caloriesTracked'] as num?)?.toDouble() ?? 0;
+          final double caloriesBurned =
+              (data?['caloriesBurned'] as num?)?.toDouble() ?? 0;
+          final double carbsGoal =
+              (data?['carbsGoal'] as num?)?.toDouble() ?? 0;
+          final double carbsTracked =
+              (data?['carbsTracked'] as num?)?.toDouble() ?? 0;
+          final double fatGoal = (data?['fatGoal'] as num?)?.toDouble() ?? 0;
+          final double fatTracked =
+              (data?['fatTracked'] as num?)?.toDouble() ?? 0;
+          final double proteinGoal =
+              (data?['proteinGoal'] as num?)?.toDouble() ?? 0;
+          final double proteinTracked =
+              (data?['proteinTracked'] as num?)?.toDouble() ?? 0;
 
           final double kcalLeft = calorieGoal - caloriesTracked;
           final double gaugeValue = calorieGoal == 0
@@ -205,9 +185,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                 ),
                                 Text(
                                   '${caloriesTracked.toInt()}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
+                                  style: Theme.of(context).textTheme.titleLarge
                                       ?.copyWith(
                                         color: Theme.of(
                                           context,
@@ -216,9 +194,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                 ),
                                 Text(
                                   S.of(context).suppliedLabel,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
+                                  style: Theme.of(context).textTheme.titleSmall
                                       ?.copyWith(
                                         color: Theme.of(
                                           context,
@@ -246,8 +222,9 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                     duration: const Duration(
                                       milliseconds: 1000,
                                     ),
-                                    value:
-                                        kcalLeft.clamp(0, calorieGoal).toInt(),
+                                    value: kcalLeft
+                                        .clamp(0, calorieGoal)
+                                        .toInt(),
                                     textStyle: Theme.of(context)
                                         .textTheme
                                         .headlineMedium
@@ -283,9 +260,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                 ),
                                 Text(
                                   '${caloriesBurned.toInt()}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
+                                  style: Theme.of(context).textTheme.titleLarge
                                       ?.copyWith(
                                         color: Theme.of(
                                           context,
@@ -294,9 +269,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                 ),
                                 Text(
                                   S.of(context).burnedLabel,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
+                                  style: Theme.of(context).textTheme.titleSmall
                                       ?.copyWith(
                                         color: Theme.of(
                                           context,
@@ -486,14 +459,16 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
   }
 
   Future<void> _openSetMacrosPage() async {
+    final dayKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
+    final data = _allMacros[dayKey];
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => SetStudentMacrosPage(
           studentId: widget.studentId,
-          initialCarbs: carbsGoal.toInt(),
-          initialFat: fatGoal.toInt(),
-          initialProtein: proteinGoal.toInt(),
+          initialCarbs: (data?['carbsGoal'] as num?)?.toInt() ?? 0,
+          initialFat: (data?['fatGoal'] as num?)?.toInt() ?? 0,
+          initialProtein: (data?['proteinGoal'] as num?)?.toInt() ?? 0,
         ),
       ),
     );
@@ -513,14 +488,6 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
           _allMacros[startDate]!['fatGoal'] = newFat;
           _allMacros[startDate]!['proteinGoal'] = newProtein;
           _allMacros[startDate]!['calorieGoal'] = newCalories;
-
-          final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-          if (startDate == today) {
-            carbsGoal = newCarbs;
-            fatGoal = newFat;
-            proteinGoal = newProtein;
-            calorieGoal = newCalories;
-          }
         }
       });
     }
@@ -531,9 +498,11 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     final start = _rangeStart(now);
     final List<_MacroPoint> points = [];
 
-    for (var day = start;
-        !day.isAfter(now);
-        day = day.add(const Duration(days: 1))) {
+    for (
+      var day = start;
+      !day.isAfter(now);
+      day = day.add(const Duration(days: 1))
+    ) {
       final normalizedDay = DateTime(
         day.year,
         day.month,
