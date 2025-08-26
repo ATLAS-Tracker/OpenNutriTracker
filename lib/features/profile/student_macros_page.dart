@@ -65,7 +65,8 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
           'day, calorieGoal, caloriesTracked, caloriesBurned, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked',
         )
         .eq('user_id', widget.studentId)
-        .eq('day', '2025-08-25')
+        .gte('day', startDate)
+        .lte('day', endDate)
         .order('day');
 
     caloriesTracked = macroResponse.isNotEmpty
@@ -204,7 +205,9 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                 ),
                                 Text(
                                   '${caloriesTracked.toInt()}',
-                                  style: Theme.of(context).textTheme.titleLarge
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
                                       ?.copyWith(
                                         color: Theme.of(
                                           context,
@@ -213,7 +216,9 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                 ),
                                 Text(
                                   S.of(context).suppliedLabel,
-                                  style: Theme.of(context).textTheme.titleSmall
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
                                       ?.copyWith(
                                         color: Theme.of(
                                           context,
@@ -241,9 +246,8 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                     duration: const Duration(
                                       milliseconds: 1000,
                                     ),
-                                    value: kcalLeft
-                                        .clamp(0, calorieGoal)
-                                        .toInt(),
+                                    value:
+                                        kcalLeft.clamp(0, calorieGoal).toInt(),
                                     textStyle: Theme.of(context)
                                         .textTheme
                                         .headlineMedium
@@ -279,7 +283,9 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                 ),
                                 Text(
                                   '${caloriesBurned.toInt()}',
-                                  style: Theme.of(context).textTheme.titleLarge
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
                                       ?.copyWith(
                                         color: Theme.of(
                                           context,
@@ -288,7 +294,9 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                 ),
                                 Text(
                                   S.of(context).burnedLabel,
-                                  style: Theme.of(context).textTheme.titleSmall
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
                                       ?.copyWith(
                                         color: Theme.of(
                                           context,
@@ -523,11 +531,9 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     final start = _rangeStart(now);
     final List<_MacroPoint> points = [];
 
-    for (
-      var day = start;
-      !day.isAfter(now);
-      day = day.add(const Duration(days: 1))
-    ) {
+    for (var day = start;
+        !day.isAfter(now);
+        day = day.add(const Duration(days: 1))) {
       final normalizedDay = DateTime(
         day.year,
         day.month,
