@@ -1,15 +1,18 @@
+import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:opennutritracker/core/utils/locator.dart';
 import 'package:opennutritracker/features/home/presentation/widgets/macro_nutriments_widget.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:animated_flip_counter/animated_flip_counter.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:opennutritracker/features/profile/presentation/bloc/student_macros_bloc.dart';
 import 'package:opennutritracker/generated/l10n.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
 import 'set_student_macros_page.dart';
 
-class StudentMacrosPage extends StatefulWidget {
+class StudentMacrosPage extends StatelessWidget {
   final String studentId;
   final String studentName;
 
@@ -20,98 +23,54 @@ class StudentMacrosPage extends StatefulWidget {
   });
 
   @override
-  State<StudentMacrosPage> createState() => _StudentMacrosPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => StudentMacrosBloc(locator<SupabaseClient>())
+        ..add(LoadStudentMacrosEvent(studentId)),
+      child: _StudentMacrosView(
+        studentId: studentId,
+        studentName: studentName,
+      ),
+    );
+  }
 }
 
-enum MacroType { calories, carbs, fat, protein, weight }
+class _StudentMacrosView extends StatelessWidget {
+  final String studentId;
+  final String studentName;
 
-enum TimeRange { week, month, threeMonths, sixMonths, year }
-
-class _StudentMacrosPageState extends State<StudentMacrosPage> {
-  late Future<Map<String, Map<String, dynamic>>> _macrosFuture;
-  Map<String, Map<String, dynamic>> _allMacros = {};
-  DateTime _selectedDate = DateTime.now();
-  MacroType _selectedMacro = MacroType.calories;
-  TimeRange _selectedRange = TimeRange.month;
-
-  @override
-  void initState() {
-    super.initState();
-    _macrosFuture = _fetchMacros();
-  }
-
-  Future<Map<String, Map<String, dynamic>>> _fetchMacros() async {
-    final supabase = locator<SupabaseClient>();
-
-    final now = DateTime.now();
-    final startDate = DateFormat(
-      'yyyy-MM-dd',
-    ).format(now.subtract(const Duration(days: 365)));
-    final endDate = DateFormat('yyyy-MM-dd').format(now);
-
-    // 1. Récupère les macros
-    final macroResponse = await supabase
-        .from('tracked_days')
-        .select(
-          'day, calorieGoal, caloriesTracked, caloriesBurned, carbsGoal, carbsTracked, fatGoal, fatTracked, proteinGoal, proteinTracked',
-        )
-        .eq('user_id', widget.studentId)
-        .gte('day', startDate)
-        .lte('day', endDate)
-        .order('day');
-
-    // 2. Récupère les poids
-    final weightResponse = await supabase
-        .from('user_weight')
-        .select('date, weight')
-        .eq('user_id', widget.studentId)
-        .gte('date', startDate)
-        .lte('date', endDate)
-        .order('date');
-
-    // 3. Combine les deux
-    final Map<String, Map<String, dynamic>> result = {
-      for (final Map<String, dynamic> item in macroResponse)
-        item['day'] as String: item,
-    };
-
-    for (final Map<String, dynamic> item in weightResponse) {
-      final dateStr = item['date'] as String;
-      result.putIfAbsent(dateStr, () => {});
-      result[dateStr]!['weight'] = item['weight'];
-    }
-
-    return result;
-  }
+  const _StudentMacrosView({
+    required this.studentId,
+    required this.studentName,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.studentName)),
+      appBar: AppBar(title: Text(studentName)),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openSetMacrosPage,
+        onPressed: () => _openSetMacrosPage(context),
         icon: const Icon(Icons.edit_outlined),
         label: Text(S.of(context).setMacrosLabel),
       ),
-      body: FutureBuilder<Map<String, Map<String, dynamic>>>(
-        future: _macrosFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
+      body: BlocBuilder<StudentMacrosBloc, StudentMacrosState>(
+        builder: (context, state) {
+          if (state is StudentMacrosLoading || state is StudentMacrosInitial) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (snapshot.hasError) {
+          if (state is StudentMacrosError) {
             return Center(
-              child: Text('${S.of(context).errorPrefix} ${snapshot.error}'),
+              child: Text('${S.of(context).errorPrefix} ${state.message}'),
             );
           }
 
-          if (snapshot.hasData) {
-            _allMacros = snapshot.data!;
+          if (state is! StudentMacrosLoaded) {
+            return const SizedBox.shrink();
           }
 
-          final dayKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
-          final data = _allMacros[dayKey];
+          final dayKey = DateFormat('yyyy-MM-dd').format(state.selectedDate);
+          final data = state.macros[dayKey];
           final double calorieGoal =
               (data?['calorieGoal'] as num?)?.toDouble() ?? 0;
           final double caloriesTracked =
@@ -122,7 +81,8 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
               (data?['carbsGoal'] as num?)?.toDouble() ?? 0;
           final double carbsTracked =
               (data?['carbsTracked'] as num?)?.toDouble() ?? 0;
-          final double fatGoal = (data?['fatGoal'] as num?)?.toDouble() ?? 0;
+          final double fatGoal =
+              (data?['fatGoal'] as num?)?.toDouble() ?? 0;
           final double fatTracked =
               (data?['fatTracked'] as num?)?.toDouble() ?? 0;
           final double proteinGoal =
@@ -145,30 +105,37 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      // Navigation toujours visible
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.chevron_left),
-                            onPressed: _goToPreviousDay,
+                            onPressed: () => _goToPreviousDay(
+                              context,
+                              state.selectedDate,
+                            ),
                           ),
                           InkWell(
-                            onTap: _selectDate,
+                            onTap: () => _selectDate(
+                              context,
+                              state.selectedDate,
+                            ),
                             child: Text(
-                              DateFormat('yyyy-MM-dd').format(_selectedDate),
+                              DateFormat('yyyy-MM-dd')
+                                  .format(state.selectedDate),
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                           ),
                           IconButton(
                             icon: const Icon(Icons.chevron_right),
-                            onPressed: _goToNextDay,
+                            onPressed: () => _goToNextDay(
+                              context,
+                              state.selectedDate,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
-
-                      // Si pas de données pour ce jour
                       if (data == null)
                         Text(S.of(context).noDataToday)
                       else ...[
@@ -179,26 +146,30 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                               children: [
                                 Icon(
                                   Icons.keyboard_arrow_up_outlined,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface,
                                 ),
                                 Text(
                                   '${caloriesTracked.toInt()}',
-                                  style: Theme.of(context).textTheme.titleLarge
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
                                       ?.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
                                       ),
                                 ),
                                 Text(
                                   S.of(context).suppliedLabel,
-                                  style: Theme.of(context).textTheme.titleSmall
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
                                       ?.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
                                       ),
                                 ),
                               ],
@@ -209,12 +180,13 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                               animation: true,
                               percent: gaugeValue,
                               arcType: ArcType.FULL,
-                              progressColor: Theme.of(
-                                context,
-                              ).colorScheme.primary,
-                              arcBackgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.primary.withAlpha(50),
+                              progressColor: Theme.of(context)
+                                  .colorScheme
+                                  .primary,
+                              arcBackgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withAlpha(50),
                               center: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -229,9 +201,9 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                         .textTheme
                                         .headlineMedium
                                         ?.copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onSurface,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
                                           letterSpacing: -1,
                                         ),
                                   ),
@@ -241,9 +213,9 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                                         .textTheme
                                         .titleMedium
                                         ?.copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onSurface,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
                                         ),
                                   ),
                                 ],
@@ -254,26 +226,30 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                               children: [
                                 Icon(
                                   Icons.keyboard_arrow_down_outlined,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface,
                                 ),
                                 Text(
                                   '${caloriesBurned.toInt()}',
-                                  style: Theme.of(context).textTheme.titleLarge
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
                                       ?.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
                                       ),
                                 ),
                                 Text(
                                   S.of(context).burnedLabel,
-                                  style: Theme.of(context).textTheme.titleSmall
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
                                       ?.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
                                       ),
                                 ),
                               ],
@@ -294,12 +270,12 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           DropdownButton<MacroType>(
-                            value: _selectedMacro,
+                            value: state.selectedMacro,
                             onChanged: (value) {
                               if (value != null) {
-                                setState(() {
-                                  _selectedMacro = value;
-                                });
+                                context
+                                    .read<StudentMacrosBloc>()
+                                    .add(ChangeMacroTypeEvent(value));
                               }
                             },
                             items: [
@@ -321,19 +297,17 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                               ),
                               DropdownMenuItem(
                                 value: MacroType.weight,
-                                child: Text(
-                                  S.of(context).weightLabel,
-                                ), // ou "Poids" si pas encore traduit
+                                child: Text(S.of(context).weightLabel),
                               ),
                             ],
                           ),
                           DropdownButton<TimeRange>(
-                            value: _selectedRange,
+                            value: state.selectedRange,
                             onChanged: (value) {
                               if (value != null) {
-                                setState(() {
-                                  _selectedRange = value;
-                                });
+                                context
+                                    .read<StudentMacrosBloc>()
+                                    .add(ChangeRangeEvent(value));
                               }
                             },
                             items: const [
@@ -361,7 +335,11 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
                           ),
                         ],
                       ),
-                      buildChart(),
+                      buildChart(
+                        state.macros,
+                        state.selectedMacro,
+                        state.selectedRange,
+                      ),
                     ],
                   ),
                 ),
@@ -373,8 +351,77 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     );
   }
 
-  Widget buildChart() {
-    final axisConfig = _getAxisIntervalConfig(_selectedRange);
+  void _goToPreviousDay(BuildContext context, DateTime current) {
+    context.read<StudentMacrosBloc>().add(
+          ChangeDateEvent(
+            current.subtract(const Duration(days: 1)),
+          ),
+        );
+  }
+
+  void _goToNextDay(BuildContext context, DateTime current) {
+    context.read<StudentMacrosBloc>().add(
+          ChangeDateEvent(current.add(const Duration(days: 1))),
+        );
+  }
+
+  Future<void> _selectDate(BuildContext context, DateTime initial) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      context.read<StudentMacrosBloc>().add(ChangeDateEvent(picked));
+    }
+  }
+
+  Future<void> _openSetMacrosPage(BuildContext context) async {
+    final bloc = context.read<StudentMacrosBloc>();
+    final state = bloc.state;
+    if (state is! StudentMacrosLoaded) return;
+
+    final dayKey = DateFormat('yyyy-MM-dd').format(state.selectedDate);
+    final data = state.macros[dayKey];
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SetStudentMacrosPage(
+          studentId: studentId,
+          initialCarbs: (data?['carbsGoal'] as num?)?.toInt() ?? 0,
+          initialFat: (data?['fatGoal'] as num?)?.toInt() ?? 0,
+          initialProtein: (data?['proteinGoal'] as num?)?.toInt() ?? 0,
+        ),
+      ),
+    );
+
+    if (result != null) {
+      final startDate = result['startDate'] as String?;
+      final double newCarbs = (result['carbsGoal'] as num).toDouble();
+      final double newFat = (result['fatGoal'] as num).toDouble();
+      final double newProtein = (result['proteinGoal'] as num).toDouble();
+      final double newCalories = (result['calorieGoal'] as num).toDouble();
+
+      if (startDate != null) {
+        bloc.add(
+          UpdateDayMacrosEvent(startDate, {
+            'carbsGoal': newCarbs,
+            'fatGoal': newFat,
+            'proteinGoal': newProtein,
+            'calorieGoal': newCalories,
+          }),
+        );
+      }
+    }
+  }
+
+  Widget buildChart(
+    Map<String, Map<String, dynamic>> macros,
+    MacroType selectedMacro,
+    TimeRange range,
+  ) {
+    final axisConfig = _getAxisIntervalConfig(range);
 
     return SizedBox(
       height: 200,
@@ -388,7 +435,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
         ),
         series: <ScatterSeries<_MacroPoint, DateTime>>[
           ScatterSeries<_MacroPoint, DateTime>(
-            dataSource: _getMacroPoints(_selectedMacro),
+            dataSource: _getMacroPoints(macros, selectedMacro, range),
             xValueMapper: (p, _) => p.date,
             yValueMapper: (p, _) => p.value,
             emptyPointSettings: const EmptyPointSettings(
@@ -431,85 +478,19 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     }
   }
 
-  void _goToPreviousDay() {
-    setState(() {
-      _selectedDate = _selectedDate.subtract(const Duration(days: 1));
-    });
-  }
-
-  void _goToNextDay() {
-    setState(() {
-      _selectedDate = _selectedDate.add(const Duration(days: 1));
-    });
-  }
-
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-    );
-    if (!mounted) return;
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
-
-  Future<void> _openSetMacrosPage() async {
-    final dayKey = DateFormat('yyyy-MM-dd').format(_selectedDate);
-    final data = _allMacros[dayKey];
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => SetStudentMacrosPage(
-          studentId: widget.studentId,
-          initialCarbs: (data?['carbsGoal'] as num?)?.toInt() ?? 0,
-          initialFat: (data?['fatGoal'] as num?)?.toInt() ?? 0,
-          initialProtein: (data?['proteinGoal'] as num?)?.toInt() ?? 0,
-        ),
-      ),
-    );
-
-    if (result != null) {
-      setState(() {
-        final startDate = result['startDate'] as String?;
-
-        final double newCarbs = (result['carbsGoal'] as num).toDouble();
-        final double newFat = (result['fatGoal'] as num).toDouble();
-        final double newProtein = (result['proteinGoal'] as num).toDouble();
-        final double newCalories = (result['calorieGoal'] as num).toDouble();
-
-        if (startDate != null) {
-          _allMacros.putIfAbsent(startDate, () => {});
-          _allMacros[startDate]!['carbsGoal'] = newCarbs;
-          _allMacros[startDate]!['fatGoal'] = newFat;
-          _allMacros[startDate]!['proteinGoal'] = newProtein;
-          _allMacros[startDate]!['calorieGoal'] = newCalories;
-        }
-      });
-    }
-  }
-
-  List<_MacroPoint> _getMacroPoints(MacroType type) {
+  List<_MacroPoint> _getMacroPoints(
+    Map<String, Map<String, dynamic>> macros,
+    MacroType type,
+    TimeRange range,
+  ) {
     final now = DateTime.now();
-    final start = _rangeStart(now);
+    final start = _rangeStart(range, now);
     final List<_MacroPoint> points = [];
 
-    for (
-      var day = start;
-      !day.isAfter(now);
-      day = day.add(const Duration(days: 1))
-    ) {
-      final normalizedDay = DateTime(
-        day.year,
-        day.month,
-        day.day,
-      ); // 👈 00:00:00
+    for (var day = start; !day.isAfter(now); day = day.add(const Duration(days: 1))) {
+      final normalizedDay = DateTime(day.year, day.month, day.day);
       final key = DateFormat('yyyy-MM-dd').format(normalizedDay);
-      final data = _allMacros[key];
+      final data = macros[key];
 
       double? value;
       if (data != null) {
@@ -538,8 +519,8 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
     return points;
   }
 
-  DateTime _rangeStart(DateTime now) {
-    switch (_selectedRange) {
+  DateTime _rangeStart(TimeRange range, DateTime now) {
+    switch (range) {
       case TimeRange.week:
         return now.subtract(const Duration(days: 7));
       case TimeRange.month:
@@ -556,7 +537,7 @@ class _StudentMacrosPageState extends State<StudentMacrosPage> {
 
 class _MacroPoint {
   final DateTime date;
-  final double? value; // Nullable pour gérer les jours sans données
+  final double? value;
 
   _MacroPoint(this.date, this.value);
 }
