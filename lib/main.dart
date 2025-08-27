@@ -25,6 +25,7 @@ import 'package:opennutritracker/generated/l10n.dart';
 import 'package:opennutritracker/features/recipe/recipe_page.dart';
 import 'package:opennutritracker/features/auth/login_screen.dart';
 import 'package:opennutritracker/features/auth/reset_password_screen.dart';
+import 'package:opennutritracker/services/lifecycle_service.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -52,8 +53,8 @@ Future<void> main() async {
   const isUserInitialized = true;
   final hasAuthSession = Supabase.instance.client.auth.currentSession != null;
   final configRepo = locator<ConfigRepository>();
-  final hasAcceptedAnonymousData =
-      await configRepo.getConfigHasAcceptedAnonymousData();
+  final hasAcceptedAnonymousData = await configRepo
+      .getConfigHasAcceptedAnonymousData();
   final savedAppTheme = await configRepo.getConfigAppTheme();
   final log = Logger('main');
 
@@ -64,6 +65,8 @@ Future<void> main() async {
   log.info(
     'Starting App with Crashlytics ${hasAcceptedAnonymousData ? 'enabled' : 'disabled'} ...',
   );
+
+  await LifecycleService.instance().init();
   runAppWithChangeNotifiers(isUserInitialized, hasAuthSession, savedAppTheme);
 }
 
@@ -71,16 +74,15 @@ void runAppWithChangeNotifiers(
   bool userInitialized,
   bool hasAuthSession,
   AppThemeEntity savedAppTheme,
-) =>
-    runApp(
-      ChangeNotifierProvider(
-        create: (_) => ThemeModeProvider(appTheme: savedAppTheme),
-        child: AtlasTrackerApp(
-          userInitialized: userInitialized,
-          hasAuthSession: hasAuthSession,
-        ),
-      ),
-    );
+) => runApp(
+  ChangeNotifierProvider(
+    create: (_) => ThemeModeProvider(appTheme: savedAppTheme),
+    child: AtlasTrackerApp(
+      userInitialized: userInitialized,
+      hasAuthSession: hasAuthSession,
+    ),
+  ),
+);
 
 class AtlasTrackerApp extends StatelessWidget {
   final bool userInitialized;

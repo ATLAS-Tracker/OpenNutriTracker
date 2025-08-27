@@ -21,8 +21,9 @@ class FirebaseMessagingService {
 
   LocalNotificationsService? _localNotificationsService;
 
-  Future<void> init(
-      {required LocalNotificationsService localNotificationsService}) async {
+  Future<void> init({
+    required LocalNotificationsService localNotificationsService,
+  }) async {
     log.fine('[🔥] Initialisation FirebaseMessagingService démarrée');
 
     _localNotificationsService = localNotificationsService;
@@ -42,7 +43,8 @@ class FirebaseMessagingService {
     FirebaseMessaging.onMessage.listen(_onForegroundMessage);
 
     log.fine(
-        '[🟣] Écoute des messages quand l\'app est ouverte via notification...');
+      '[🟣] Écoute des messages quand l\'app est ouverte via notification...',
+    );
     FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpenedApp);
 
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
@@ -54,6 +56,22 @@ class FirebaseMessagingService {
     }
 
     log.fine('[✅] Initialisation FirebaseMessagingService terminée');
+  }
+
+  Future<void> refreshMacroGoalsIfStudent() async {
+    final user = await locator.get<GetUserUsecase>().getUserData();
+    if (user.role == UserRoleEntity.student) {
+      try {
+        await locator.get<AddMacroGoalUsecase>().addMacroGoalFromCoach();
+        log.fine('[✅] Objectifs macro mis à jour depuis Supabase');
+        locator<HomeBloc>().add(const LoadItemsEvent());
+        locator<DiaryBloc>().add(const LoadDiaryYearEvent());
+        locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
+      } catch (e, stack) {
+        log.warning('[❌] Erreur lors de la mise à jour des macros : $e');
+        log.warning(stack.toString());
+      }
+    }
   }
 
   Future<bool> _handlePushNotificationsToken() async {
@@ -69,7 +87,8 @@ class FirebaseMessagingService {
 
         if (userId == null) {
           log.severe(
-              '[❌] Utilisateur non authentifié, impossible de mettre à jour le token.');
+            '[❌] Utilisateur non authentifié, impossible de mettre à jour le token.',
+          );
           return false;
         }
 
@@ -91,28 +110,32 @@ class FirebaseMessagingService {
       log.fine('[❌] Token FCM est nul');
     }
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) async {
-      log.fine('[♻️] Token FCM rafraîchi: $fcmToken');
+    FirebaseMessaging.instance.onTokenRefresh
+        .listen((fcmToken) async {
+          log.fine('[♻️] Token FCM rafraîchi: $fcmToken');
 
-      final userId = Supabase.instance.client.auth.currentUser?.id;
-      if (userId == null) {
-        log.warning('[⚠️] Utilisateur non authentifié lors du refresh');
-        return;
-      }
+          final userId = Supabase.instance.client.auth.currentUser?.id;
+          if (userId == null) {
+            log.warning('[⚠️] Utilisateur non authentifié lors du refresh');
+            return;
+          }
 
-      try {
-        await Supabase.instance.client.from('user_devices').upsert({
-          'user_id': userId,
-          'fcm_token': fcmToken,
-        }, onConflict: 'user_id');
-        log.fine('[✅] Nouveau token FCM mis à jour après refresh');
-      } catch (e, stack) {
-        log.severe('[🔥] Erreur lors du refresh FCM dans Supabase: $e');
-        log.severe(stack.toString());
-      }
-    }).onError((error) {
-      log.severe('[❌] Erreur lors du rafraîchissement du token FCM: $error');
-    });
+          try {
+            await Supabase.instance.client.from('user_devices').upsert({
+              'user_id': userId,
+              'fcm_token': fcmToken,
+            }, onConflict: 'user_id');
+            log.fine('[✅] Nouveau token FCM mis à jour après refresh');
+          } catch (e, stack) {
+            log.severe('[🔥] Erreur lors du refresh FCM dans Supabase: $e');
+            log.severe(stack.toString());
+          }
+        })
+        .onError((error) {
+          log.severe(
+            '[❌] Erreur lors du rafraîchissement du token FCM: $error',
+          );
+        });
 
     return success;
   }
@@ -174,7 +197,8 @@ class FirebaseMessagingService {
     _lastMessageId = message.messageId;
     log.fine('[📥] Message reçu en foreground');
     log.fine(
-        '🔸 Notification: ${message.notification?.title} - ${message.notification?.body}');
+      '🔸 Notification: ${message.notification?.title} - ${message.notification?.body}',
+    );
     log.fine('🔸 Données: ${message.data}');
     log.fine('🔹 Message ID: ${message.messageId}');
 
@@ -189,40 +213,14 @@ class FirebaseMessagingService {
       log.warning('[⚠️] Aucune donnée de notification à afficher');
     }
 
-    try {
-      await locator.get<AddMacroGoalUsecase>().addMacroGoalFromCoach();
-      log.fine('[✅] Objectifs macro mis à jour depuis Supabase');
-      // Refresh Home Page
-      locator<HomeBloc>().add(const LoadItemsEvent());
-      // Refresh Diary Page
-      locator<DiaryBloc>().add(const LoadDiaryYearEvent());
-      locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
-    } catch (e, stack) {
-      log.warning('[❌] Erreur lors de la mise à jour des macros : $e');
-      log.warning(stack.toString());
-    }
+    await refreshMacroGoalsIfStudent();
   }
 
   void _onMessageOpenedApp(RemoteMessage message) async {
     log.fine('[📲] Notification tapée - app ouverte');
     log.fine('🔸 Données: ${message.data}');
     // TODO: Add navigation or specific handling
-    // If a student received a notification, update macro goals
-    final user = await locator.get<GetUserUsecase>().getUserData();
-    if (user.role == UserRoleEntity.student) {
-      try {
-        await locator.get<AddMacroGoalUsecase>().addMacroGoalFromCoach();
-        log.fine('[✅] Objectifs macro mis à jour depuis Supabase');
-        // Refresh Home Page
-        locator<HomeBloc>().add(const LoadItemsEvent());
-        // Refresh Diary Page
-        locator<DiaryBloc>().add(const LoadDiaryYearEvent());
-        locator<CalendarDayBloc>().add(RefreshCalendarDayEvent());
-      } catch (e, stack) {
-        log.warning('[❌] Erreur lors de la mise à jour des macros : $e');
-        log.warning(stack.toString());
-      }
-    }
+    await refreshMacroGoalsIfStudent();
   }
 }
 
