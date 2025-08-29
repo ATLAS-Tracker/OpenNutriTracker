@@ -33,7 +33,7 @@ class StudentMacrosBloc extends Bloc<StudentMacrosEvent, StudentMacrosState> {
           macros: macros,
           selectedDate: DateTime.now(),
           selectedMacro: MacroType.calories,
-          selectedRange: TimeRange.month,
+          selectedRange: TimeRange.week,
         ),
       );
     } catch (e) {
@@ -125,4 +125,3 @@ class StudentMacrosBloc extends Bloc<StudentMacrosEvent, StudentMacrosState> {
     return result;
   }
 }
-
