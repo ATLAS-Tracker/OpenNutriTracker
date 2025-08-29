@@ -446,6 +446,7 @@ class _StudentMacrosView extends StatelessWidget {
             dataSource: _getMacroPoints(macros, selectedMacro, range),
             xValueMapper: (p, _) => p.date,
             yValueMapper: (p, _) => p.value,
+            animationDuration: 0,
             emptyPointSettings: const EmptyPointSettings(
               mode: EmptyPointMode.gap,
             ),
