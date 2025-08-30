@@ -1,12 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
+import 'package:daily_pedometer2/daily_pedometer2.dart';
 import 'package:opennutritracker/core/domain/entity/intake_entity.dart';
 import 'package:opennutritracker/core/domain/entity/intake_type_entity.dart';
 import 'package:opennutritracker/core/domain/entity/tracked_day_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_activity_entity.dart';
 import 'package:opennutritracker/core/domain/entity/user_weight_entity.dart';
-import 'package:opennutritracker/core/presentation/widgets/activity_vertial_list.dart';
+// TEMP: hide activities UI
+// import 'package:opennutritracker/core/presentation/widgets/activity_vertial_list.dart';
 import 'package:opennutritracker/core/presentation/widgets/weight_vertical_list.dart';
 import 'package:opennutritracker/core/presentation/widgets/edit_dialog.dart';
 import 'package:opennutritracker/core/presentation/widgets/delete_dialog.dart';
@@ -17,6 +20,8 @@ import 'package:opennutritracker/features/home/presentation/widgets/dashboard_wi
 import 'package:opennutritracker/features/home/presentation/widgets/intake_vertical_list.dart';
 import 'package:opennutritracker/generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
+typedef Pedometer = DailyPedometer2;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,18 +35,40 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   late HomeBloc _homeBloc;
   bool _isDragging = false;
+  StreamSubscription<StepCount>? _dailyStepCountSubscription;
+  int _dailySteps = 0;
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     _homeBloc = locator<HomeBloc>();
+    initPlatformState();
     super.initState();
   }
 
   @override
   void dispose() {
+    _dailyStepCountSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void onDailyStepCount(StepCount event) {
+    setState(() {
+      _dailySteps = event.steps;
+    });
+  }
+
+  void onDailyStepCountError(error) {
+    log.severe('Daily step count error: $error');
+    setState(() {
+      _dailySteps = 0;
+    });
+  }
+
+  Future<void> initPlatformState() async {
+    _dailyStepCountSubscription = Pedometer.dailyStepCountStream
+        .listen(onDailyStepCount, onError: onDailyStepCountError);
   }
 
   @override
@@ -60,7 +87,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               state.totalKcalDaily,
               state.totalKcalLeft,
               state.totalKcalSupplied,
-              state.totalKcalBurned,
               state.totalCarbsIntake,
               state.totalFatsIntake,
               state.totalProteinsIntake,
@@ -101,7 +127,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       double totalKcalDaily,
       double totalKcalLeft,
       double totalKcalSupplied,
-      double totalKcalBurned,
       double totalCarbsIntake,
       double totalFatsIntake,
       double totalProteinsIntake,
@@ -121,7 +146,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           totalKcalDaily: totalKcalDaily,
           totalKcalLeft: totalKcalLeft,
           totalKcalSupplied: totalKcalSupplied,
-          totalKcalBurned: totalKcalBurned,
+          dailyStepCount: _dailySteps,
           totalCarbsIntake: totalCarbsIntake,
           totalFatsIntake: totalFatsIntake,
           totalProteinsIntake: totalProteinsIntake,
@@ -176,12 +201,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         SizedBox(
           height: 40,
         ),
-        ActivityVerticalList(
-          day: DateTime.now(),
-          title: S.of(context).activityLabel,
-          userActivityList: userActivities,
-          onItemLongPressedCallback: onActivityItemLongPressed,
-        ),
+        // TEMP: activities temporarily hidden by request
+        // ActivityVerticalList(
+        //   day: DateTime.now(),
+        //   title: S.of(context).activityLabel,
+        //   userActivityList: userActivities,
+        //   onItemLongPressedCallback: onActivityItemLongPressed,
+        // ),
         WeightVerticalList(
           day: DateTime.now(),
           title: S.of(context).weightLabel,
